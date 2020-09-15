@@ -7,7 +7,7 @@ interface Options<T extends Token<unknown>> {
   isWhitespace(char: string): boolean;
   createToken(value: string, type: T["type"], start: number, end: number): T;
 }
-  
+
 export function tokenize<T extends Token<unknown>>(
   source: string,
   {

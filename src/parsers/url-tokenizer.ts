@@ -1,6 +1,6 @@
 import { tokenize } from "../core";
+import { isStringDelimiter, isWhitespace, createToken } from "../helpers";
 import type { Token, Descriptors } from "../types";
-import type { isStringDelimiter, isWhitespace, createToken } from "../helpers";
 
 type Delimiters = "(" | ")" | "," | ";" | ":";
 

@@ -2,8 +2,8 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { transpileModule, ModuleKind } = require("typescript");
-const { Cipher } = require("crypto");
 
+const indexRoot = path.join(__dirname, "../demos");
 http
   .createServer(function respond(req, res) {
     const url = new URL(req.url, `http://${req.headers.host}`);
@@ -40,7 +40,7 @@ http
     }
   })
   .listen(8080, () => {
-    console.log("Listening on port 8080");
+    console.log("Listening at http://localhost:8080");
   });
 
 const headersTypes = {
@@ -71,14 +71,14 @@ function lookupFile(filePath, exts) {
       }
     }
   } catch (e) {
-    console.error(e);
+    // console.error(e);
   }
   Error.stackTraceLimit = stackTraceLimit;
   return { fullPath: filePath };
 }
 
 function createIndex() {
-  const files = fs.readdirSync(path.join(__dirname, "demos"), {
+  const files = fs.readdirSync(indexRoot, {
     withFileTypes: true,
   });
   const paths = files
