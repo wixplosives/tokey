@@ -1,3 +1,3 @@
-# Tokenit
+# Toky
 
-simple tokenizer 
+Simple tokenizer. TBD.
