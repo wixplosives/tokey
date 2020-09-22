@@ -1,47 +1,25 @@
 const http = require("http");
-const fs = require("fs");
+const fs = require("fs/promises");
 const path = require("path");
-const { transpileModule, ModuleKind } = require("typescript");
+const { Worker } = require("worker_threads");
 
 const indexRoot = path.join(__dirname, "../demos");
+
+const compileModule = createWorker(path.join(__dirname, "ts-worker.js"));
+
+const port = 8080;
 http
-  .createServer(function respond(req, res) {
-    const url = new URL(req.url, `http://${req.headers.host}`);
-
-    const lookupResults = lookupFile(path.join(process.cwd(), url.pathname), [
-      ".ts",
-      ".js",
-      ".html",
-    ]);
-
-    const { content, fullPath, ext } = lookupResults;
-
-    console.log(req.url, ext);
-
-    if (ext === ".ts") {
-      const target = transpileModule(content, {
-        fileName: path.basename(fullPath),
-        compilerOptions: {
-          module: ModuleKind.ESNext,
-          sourceMap: true,
-          inlineSourceMap: true,
-          inlineSources: true,
-        },
-      });
-      sendContent(res, target.outputText, headersTypes.js);
-    } else if (ext === ".js") {
-      sendContent(res, content, headersTypes.js);
-    } else if (ext === ".html") {
-      sendContent(res, content, headersTypes.html);
-    } else if (ext === ".css") {
-      sendContent(res, content, headersTypes.css);
-    } else {
-      sendContent(res, createIndex(), headersTypes.html);
-    }
+  .createServer((req, res) => {
+    respond(req, res).catch((e) => {
+      res.statusCode = 500;
+      res.write(e.stack);
+      res.end();
+    });
   })
-  .listen(8080, () => {
-    console.log("Listening at http://localhost:8080");
-  });
+  .listen(
+    port,
+    console.log.bind(console, `Listening at http://localhost:${port}`)
+  );
 
 const headersTypes = {
   js: { "Content-Type": "application/javascript" },
@@ -49,42 +27,63 @@ const headersTypes = {
   css: { "Content-Type": "text/css" },
 };
 
-function lookupFile(filePath, exts) {
+const extensions = [".ts", ".js", ".html"];
+
+async function respond(req, res) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+
+  const { fullPath, content, ext } = await lookupRequest(url);
+
+  console.log(req.url, ext);
+
+  if (ext === ".ts") {
+    const compiled = await compileModule(content, path.basename(fullPath));
+    sendContent(res, compiled, headersTypes.js);
+  } else if (ext === ".js") {
+    sendContent(res, content, headersTypes.js);
+  } else if (ext === ".html") {
+    sendContent(res, content, headersTypes.html);
+  } else if (ext === ".css") {
+    sendContent(res, content, headersTypes.css);
+  } else {
+    sendContent(res, await createIndex(), headersTypes.html);
+  }
+}
+
+async function lookupRequest(url) {
+  const filePath = path.join(process.cwd(), url.pathname);
   const stackTraceLimit = Error.stackTraceLimit;
   Error.stackTraceLimit = 0;
   try {
-    if (fs.existsSync(filePath)) {
-      return {
-        fullPath: filePath,
-        content: fs.readFileSync(filePath, "utf-8"),
-        ext: path.extname(filePath),
-      };
-    }
-    for (const ext of exts) {
+    return {
+      fullPath: filePath,
+      content: await fs.readFile(filePath, "utf-8"),
+      ext: path.extname(filePath),
+    };
+  } catch {
+    for (const ext of extensions) {
       const fullPath = filePath + ext;
-      if (fs.existsSync(fullPath)) {
+      try {
         return {
           fullPath,
-          content: fs.readFileSync(fullPath, "utf-8"),
+          content: await fs.readFile(fullPath, "utf-8"),
           ext,
         };
+      } catch (e) {
+        console.error(e);
       }
     }
-  } catch (e) {
-    // console.error(e);
   }
   Error.stackTraceLimit = stackTraceLimit;
-  return { fullPath: filePath };
+  return { fullPath: filePath, content: undefined, ext: undefined };
 }
 
-function createIndex() {
-  const files = fs.readdirSync(indexRoot, {
+async function createIndex() {
+  const files = await fs.readdir(indexRoot, {
     withFileTypes: true,
   });
   const paths = files
-    .filter((file) => {
-      return !file.isDirectory();
-    })
+    .filter((file) => !file.isDirectory())
     .map(({ name: fileName }) => {
       const name = path.parse(fileName).name;
       const href = `/demos/${name}`;
@@ -95,6 +94,23 @@ function createIndex() {
       <h2>Demos</h2>
       ${paths.join("")}
     `;
+}
+
+function createWorker(filePath) {
+  const tsWorker = new Worker(filePath);
+  let id = 0;
+  const pending = new Map();
+  tsWorker.on("message", ({ id, result }) => {
+    pending.get(id).resolve(result);
+    pending.delete(id);
+  });
+  return (...args) => {
+    return new Promise((resolve, reject) => {
+      const mid = id++;
+      tsWorker.postMessage({ args, id: mid });
+      pending.set(mid, { resolve, reject });
+    });
+  };
 }
 
 function sendContent(res, content, headers) {
