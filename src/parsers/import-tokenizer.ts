@@ -43,7 +43,7 @@ const isDelimiter = (char: string) =>
 const shouldAddToken = (type: CodeToken["type"]) =>
   isComment(type) || type === "space" ? false : true;
 
-interface ImportValue {
+export interface ImportValue {
   star: boolean;
   defaultName: string | undefined;
   named: Record<string, string> | undefined;
