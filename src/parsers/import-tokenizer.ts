@@ -94,7 +94,7 @@ function findImports(
               errors.push("missing as name");
             }
           } else {
-            errors.push("expected as");
+            errors.push("expected as after *");
           }
         } else if (t.type === ",") {
           errors.push("missing default name");
