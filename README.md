@@ -1,10 +1,10 @@
 # Toky
 
-Toky is a configurable general purpose code tokenizer that supports comments and strings skipping. When you need to find specific structure in a code block like: imports in Javascript, or urls in CSS, and you don't want to use a full blown parser you can create a specific tokenizer to do the job.
+Toky is a configurable general-purpose code tokenizer that supports comment and string skipping. When you need to find specific structure in a code block such as imports in JavaScript, or URLs in CSS, and you don't want to use a full-blown Parser you can create a specific tokenizer to do the job.
 
 ## API
 
-The core api is super simple just one function
+The core API is just one function.
 
 ```ts
 type Descriptors =
@@ -43,7 +43,7 @@ function tokenize<T extends Token<unknown>>(
 ): T[];
 ```
 
-You can extend the tokenizer by providing the options and extending the Token type.
+You can extend the tokenizer by providing options that match your use-case and extending the Token type.
 
 ```ts
 
@@ -53,10 +53,10 @@ tokenize<CSSCodeToken>(source, {...})
 
 ```
 
-## How is works
+## How it works
 
-The main idea is looping over all the characters and splitting tokens via `isDelimiter`, `isWhitespace` and `isStringDelimiter`.
-After that you can decide about the shape of the token with `createToken` and if it should be included with `shouldAddToken`
+The main idea is looping over all the characters and splitting tokens via `isDelimiter`, `isWhitespace`, and `isStringDelimiter`.
+After that, you can decide about the shape of the token with `createToken` and if it should be included with `shouldAddToken`
 
 ## What to do with the tokens
 
