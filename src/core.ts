@@ -17,7 +17,7 @@ export function tokenize<T extends Token<unknown>>(
     shouldAddToken,
     createToken,
   }: Options<T>
-) {
+): T[] {
   const tokens: T[] = [];
   let previousChar = "";
   let buffer = "";

@@ -6,6 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "node -r @ts-tools/node/r test/index.spec.ts",
+    "typecheck": "tsc --noEmit",
     "build": "tsc",
     "prepack": "npm run build",
     "start": "node scripts/dev-server.js"
