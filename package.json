@@ -7,12 +7,13 @@
   "scripts": {
     "test": "node -r @ts-tools/node/r test/index.spec.ts",
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
     "prepack": "npm run build",
     "start": "node scripts/dev-server.js"
   },
   "devDependencies": {
     "@ts-tools/node": "^2.1.1",
+    "rimraf": "^3.0.2",
     "typescript": "~4.0.2"
   },
   "keywords": [
