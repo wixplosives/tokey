@@ -19,22 +19,26 @@ export class Seeker<T extends Token<unknown>> {
   peek(num = 1) {
     return this.tokens[this.index + num] || { type: "" };
   }
-  flatBlock(start: string, end: string, endError: string) {
+  flatBlock(
+    start: string,
+    end: string,
+    isEndError: (token: Token<any>) => boolean
+  ) {
     let token = this.next();
     if (token.type !== start) {
       return [];
     }
     const block = [];
-    let fromIndex;
+    let endIndex;
     while ((token = this.next())) {
       if (!token.type) {
-        if (fromIndex !== undefined) {
-          this.index = fromIndex - 1;
+        if (endIndex !== undefined) {
+          this.index = endIndex - 1;
         }
         return;
       }
-      if (token.value === endError) {
-        fromIndex = this.index;
+      if (isEndError(token)) {
+        endIndex = this.index;
       }
       if (token.type === end) {
         return block;

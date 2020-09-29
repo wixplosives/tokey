@@ -49,7 +49,12 @@ export interface ImportValue {
   named: Record<string, string> | undefined;
   from: string | undefined;
   errors: string[];
+  start: number;
+  end: number;
 }
+
+const isImportBlockEndError = (token: CodeToken) =>
+  token.value === "from" || token.type === ";";
 
 function findImports(
   tokens: CodeToken[],
@@ -65,6 +70,7 @@ function findImports(
       break;
     }
     if (token.value === "import") {
+      let startTokenIndex = s.index;
       let errors = [];
       let defaultName;
       let star = false;
@@ -105,7 +111,11 @@ function findImports(
             errors.push("Invalid named after *");
           }
           s.back();
-          const block = s.flatBlock(blockStart, blockEnd, "from");
+          const block = s.flatBlock(
+            blockStart,
+            blockEnd,
+            isImportBlockEndError
+          );
           if (block) {
             named = processNamedBlock(block);
           } else {
@@ -126,7 +136,11 @@ function findImports(
             if (star) {
               errors.push("Invalid named after *");
             }
-            const block = s.flatBlock(blockStart, blockEnd, "from");
+            const block = s.flatBlock(
+              blockStart,
+              blockEnd,
+              isImportBlockEndError
+            );
             if (block) {
               named = processNamedBlock(block);
             } else {
@@ -149,12 +163,19 @@ function findImports(
           errors.push("invalid missing source");
         }
       }
+
+      if (s.peek().type === ";") {
+        s.next();
+      }
+
       imports.push({
         star,
         defaultName,
         named,
         from,
         errors,
+        start: s.tokens[startTokenIndex].start,
+        end: s.tokens[s.index].end,
       });
     }
   }
