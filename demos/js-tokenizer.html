@@ -9,22 +9,13 @@
   </head>
   <body>
     <main>
-      <textarea id="input">
-import * from "1";
-import Name from "2";
-import * as Name from "3";
-import * , {name, name1, name2 as name3} from "4";
-import {name} from "5";
-import *, {name as name1} from "6";
-import "7";
-        </textarea
-      >
+      <textarea id="input"></textarea>
       <pre id="output"></pre>
     </main>
     <script type="module">
       import { initPreview } from "./client/view.ts";
-      import { tokenizeImports } from "../src/parsers/import-tokenizer.ts";
-      initPreview(input, output, tokenizeImports);
+      import { tokenizeJS } from "../src/parsers/js-tokenizer.ts";
+      initPreview(input, output, tokenizeJS);
     </script>
   </body>
 </html>

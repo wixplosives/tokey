@@ -65,3 +65,7 @@ TBD Seeker
 ## Helpers
 
 TBD helpers
+
+## TODO
+
+* better unclosed string ending detection

@@ -9,7 +9,7 @@
   </head>
   <body>
     <main>
-      <textarea oninput="updateOutput()" id="input" cols="30" rows="10">
+      <textarea id="input">
 @function getLegacyAssetUrl($assetName) {
     @return url('../../legacy-assets/' + $assetName);
 }
@@ -28,22 +28,9 @@
       <pre id="output"></pre>
     </main>
     <script type="module">
-      import { tokenizeCSSUrls } from "../src/parsers/url-tokenizer";
-      const render = true;
-      window.updateOutput = function () {
-        const value = input.value;
-        try {
-          const start = performance.now();
-          const tokens = tokenizeCSSUrls(value);
-          const end = performance.now();
-
-          output.textContent = `time: ${end - start}ms\ntokens: ${
-            tokens.length
-          }\n${render ? JSON.stringify(tokens, null, 2) : ""}`;
-        } catch (e) {
-          output.textContent = e.message;
-        }
-      };
+      import { initPreview } from "./client/view.ts";
+      import { tokenizeCSSUrls } from "../src/parsers/url-tokenizer.ts";
+      initPreview(input, output, tokenizeCSSUrls);
     </script>
   </body>
 </html>

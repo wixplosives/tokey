@@ -70,7 +70,7 @@ async function lookupRequest(url) {
           ext,
         };
       } catch (e) {
-        console.error(e);
+        // console.error(e);
       }
     }
   }

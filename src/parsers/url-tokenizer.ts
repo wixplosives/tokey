@@ -24,12 +24,13 @@ const isDelimiter = (char: string) =>
 const shouldAddToken = () => true;
 
 function getUrlTokens(tokens: CSSCodeToken[]) {
-  const urls: CSSCodeToken[][] = [];
+  const urls: { start: number; end: number; tokens: CSSCodeToken[] }[] = [];
   let inUrl;
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
     if (inUrl) {
-      inUrl.push(token);
+      inUrl.tokens.push(token);
+      inUrl.end = token.end;
       if (token.type === ")") {
         urls.push(inUrl);
         inUrl = undefined;
@@ -39,7 +40,7 @@ function getUrlTokens(tokens: CSSCodeToken[]) {
       token.value === "url" &&
       tokens[i + 1]?.type === "("
     ) {
-      inUrl = [token];
+      inUrl = { tokens: [token], start: token.start, end: token.end };
     }
   }
   return urls;
