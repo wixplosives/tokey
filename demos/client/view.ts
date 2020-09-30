@@ -25,18 +25,18 @@ export function initPreview(
             .map((token) => {
               if (range.end === range.start) {
                 if (token.start <= range.start && range.start < token.end) {
-                  return `<strong>${JSON.stringify(token, null, 0)}</strong>`;
+                  return `<strong>${JSON.stringify(token, null, 2)}</strong>`;
                 }
               } else {
                 if (
                   (token.start > range.start || token.end > range.start) &&
                   token.start < range.end
                 ) {
-                  return `<strong>${JSON.stringify(token, null, 0)}</strong>`;
+                  return `<strong>${JSON.stringify(token, null, 2)}</strong>`;
                 }
               }
 
-              return JSON.stringify(token, null, 0);
+              return JSON.stringify(token, null, 2);
             })
             .join("\n")
         : ""

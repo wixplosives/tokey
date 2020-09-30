@@ -22,7 +22,7 @@ export class Seeker<T extends Token<unknown>> {
   flatBlock(
     start: string,
     end: string,
-    isEndError: (token: Token<any>) => boolean
+    isEndError?: (token: Token<any>) => boolean
   ) {
     let token = this.next();
     if (token.type !== start) {
@@ -37,7 +37,7 @@ export class Seeker<T extends Token<unknown>> {
         }
         return;
       }
-      if (isEndError(token)) {
+      if (isEndError && isEndError(token)) {
         endIndex = this.index;
       }
       if (token.type === end) {
