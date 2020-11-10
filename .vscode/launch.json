@@ -7,6 +7,18 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Current",
+      "skipFiles": ["<node_internals>/**"],
+      "args": [
+        "-r",
+        "@ts-tools/node/r",
+        "${file}"
+      ]
+    },
+
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Dev Server",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}//scripts//dev-server.js"
@@ -16,7 +28,11 @@
       "request": "launch",
       "name": "Tests",
       "skipFiles": ["<node_internals>/**"],
-      "args": ["-r", "@ts-tools/node/r", "${workspaceFolder}//test/index.spec.ts"]
+      "args": [
+        "-r",
+        "@ts-tools/node/r",
+        "${workspaceFolder}//test/index.spec.ts"
+      ]
     }
   ]
 }
