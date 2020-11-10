@@ -6,6 +6,12 @@ type Delimiters = "(" | ")" | "," | ";" | ":";
 
 export type CSSCodeToken = Token<Descriptors | Delimiters>;
 
+export type CSSCodeTokenGroup = {
+  tokens: CSSCodeToken[];
+  start: number;
+  end: number;
+};
+
 export function tokenizeCSSUrls(source: string) {
   return getUrlTokens(
     tokenize<CSSCodeToken>(source, {
@@ -23,8 +29,8 @@ const isDelimiter = (char: string) =>
 
 const shouldAddToken = () => true;
 
-function getUrlTokens(tokens: CSSCodeToken[]) {
-  const urls: { start: number; end: number; tokens: CSSCodeToken[] }[] = [];
+function getUrlTokens(tokens: CSSCodeToken[]): CSSCodeTokenGroup[] {
+  const urls: CSSCodeTokenGroup[] = [];
   let inUrl;
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
