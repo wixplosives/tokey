@@ -1,15 +1,5 @@
 import { test } from "../test-kit/testing";
-import {
-  tokenizeCssValue,
-  createCssValueAST,
-} from "../src/parsers/css-value-tokenizer";
-test("10px 10px 10px", tokenizeCssValue, [
-  { value: "10px", type: "text", start: 0, end: 4 },
-  { value: " ", type: "space", start: 4, end: 5 },
-  { value: "10px", type: "text", start: 5, end: 9 },
-  { value: " ", type: "space", start: 9, end: 10 },
-  { value: "10px", type: "text", start: 10, end: 14 },
-]);
+import { createCssValueAST } from "../src/parsers/css-value-tokenizer";
 
 test("10px 10px 10px", createCssValueAST, [
   { value: "10px", type: "text", start: 0, end: 4, beforeText: "" },

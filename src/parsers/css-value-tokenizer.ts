@@ -1,5 +1,10 @@
 import { tokenize } from "../core";
-import { isStringDelimiter, isWhitespace, createToken } from "../helpers";
+import {
+  isStringDelimiter,
+  isWhitespace,
+  createToken,
+  getText,
+} from "../helpers";
 import type { Token, Descriptors } from "../types";
 
 type Delimiters = "(" | ")" | ",";
@@ -18,17 +23,16 @@ export interface MethodCall extends ASTNode<"call"> {
 export interface StringNode extends ASTNode<"string"> {}
 export interface TextNode extends ASTNode<"text"> {}
 
-export function tokenizeCssValue(source: string) {
-  return tokenize<CSSCodeToken>(source, {
-    isDelimiter,
-    isStringDelimiter,
-    isWhitespace,
-    shouldAddToken,
-    createToken,
-  });
-}
-export function createCssValueAST(source: string) {
-  return getDeclValueTokens(tokenizeCssValue(source));
+export function createCssValueAST(source: string): CSSCodeAst[] {
+  return getDeclValueTokens(
+    tokenize<CSSCodeToken>(source, {
+      isDelimiter,
+      isStringDelimiter,
+      isWhitespace,
+      shouldAddToken,
+      createToken,
+    })
+  ).ast;
 }
 
 const isDelimiter = (char: string) =>
@@ -36,21 +40,7 @@ const isDelimiter = (char: string) =>
 
 const shouldAddToken = () => true;
 
-function getTextOfTokens(tokens: CSSCodeToken[], fromIdx = 0, toIdx = -1) {
-  if (toIdx === -1) {
-    toIdx = tokens.length;
-  }
-  let res = "";
-
-  for (let i = fromIdx; i < toIdx; i++) {
-    res += tokens[i].value;
-  }
-  return res;
-}
-function getDeclValueTokens(tokens: CSSCodeToken[]): CSSCodeAst[] {
-  return getDeclValueTokensInternal(tokens).ast;
-}
-function getDeclValueTokensInternal(
+function getDeclValueTokens(
   tokens: CSSCodeToken[],
   startAtIdx = 0
 ): { ast: CSSCodeAst[]; stoppedAtIdx: number } {
@@ -71,8 +61,8 @@ function getDeclValueTokensInternal(
       beforeText += tokens[i].value;
     } else if (token.type === "text") {
       if (tokens[i + 1]?.type === "(") {
-        const res = getDeclValueTokensInternal(tokens, i + 2);
-        const methodText = getTextOfTokens(tokens, i, res.stoppedAtIdx + 1);
+        const res = getDeclValueTokens(tokens, i + 2);
+        const methodText = getText(tokens, i, res.stoppedAtIdx + 1);
         i = res.stoppedAtIdx;
         ast.push({
           type: "call",
