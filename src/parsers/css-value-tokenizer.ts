@@ -24,7 +24,7 @@ export interface StringNode extends ASTNode<"string"> {}
 export interface TextNode extends ASTNode<"text"> {}
 
 export function createCssValueAST(source: string): CSSCodeAst[] {
-  return getDeclValueTokens(
+  return parseDeclValueTokens(
     tokenize<CSSCodeToken>(source, {
       isDelimiter,
       isStringDelimiter,
@@ -40,7 +40,7 @@ const isDelimiter = (char: string) =>
 
 const shouldAddToken = () => true;
 
-function getDeclValueTokens(
+function parseDeclValueTokens(
   tokens: CSSCodeToken[],
   startAtIdx = 0
 ): { ast: CSSCodeAst[]; stoppedAtIdx: number } {
@@ -61,7 +61,7 @@ function getDeclValueTokens(
       beforeText += tokens[i].value;
     } else if (token.type === "text") {
       if (tokens[i + 1]?.type === "(") {
-        const res = getDeclValueTokens(tokens, i + 2);
+        const res = parseDeclValueTokens(tokens, i + 2);
         const methodText = getText(tokens, i, res.stoppedAtIdx + 1);
         i = res.stoppedAtIdx;
         ast.push({
