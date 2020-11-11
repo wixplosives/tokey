@@ -10,10 +10,19 @@ import type { Token, Descriptors } from "../types";
 type Delimiters = "(" | ")" | ",";
 
 export type CSSCodeToken = Token<Descriptors | Delimiters>;
+export const separatorTokens = ["line-comment", "multi-comment", ",", "space"];
+export type SeparatorTokens = typeof separatorTokens extends Array<infer U>
+  ? U
+  : never;
+export type CSSSeparatorTokens = Token<SeparatorTokens>;
 export type CSSCodeAst = StringNode | MethodCall | TextNode;
-export interface ASTNode<Types = Descriptors> extends Token<Types> {
-  beforeText: string;
-  afterText?: string;
+export interface ASTNode<Types = Descriptors> {
+  type: Types;
+  start: number;
+  end: number;
+  text: string;
+  before: CSSSeparatorTokens[];
+  after?: CSSSeparatorTokens[];
 }
 
 export interface MethodCall extends ASTNode<"call"> {
@@ -45,20 +54,21 @@ function parseDeclValueTokens(
   startAtIdx = 0
 ): { ast: CSSCodeAst[]; stoppedAtIdx: number } {
   const ast: CSSCodeAst[] = [];
-  let beforeText = "";
+  let before: CSSSeparatorTokens[] = [];
   for (let i = startAtIdx; i < tokens.length; i++) {
     const token = tokens[i];
     if (token.type === ")") {
       const lastAst = ast[ast.length - 1];
-      if (lastAst && beforeText) {
-        lastAst.afterText = beforeText;
+      if (lastAst && before.length) {
+        lastAst.after = before;
+        before = [];
       }
       return {
         ast,
         stoppedAtIdx: i,
       };
-    } else if (token.type === "space") {
-      beforeText += tokens[i].value;
+    } else if (separatorTokens.includes(token.type)) {
+      before.push(token);
     } else if (token.type === "text") {
       if (tokens[i + 1]?.type === "(") {
         const res = parseDeclValueTokens(tokens, i + 2);
@@ -66,23 +76,23 @@ function parseDeclValueTokens(
         i = res.stoppedAtIdx;
         ast.push({
           type: "call",
-          beforeText,
+          before,
           name: token.value,
           args: res.ast,
           start: token.start,
-          value: methodText,
+          text: methodText,
           end: token.start + methodText.length,
         });
-        beforeText = "";
+        before = [];
       } else {
         ast.push({
           type: token.type,
           start: token.start,
-          beforeText,
+          before,
           end: token.end,
-          value: token.value,
+          text: token.value,
         });
-        beforeText = "";
+        before = [];
       }
     }
   }
