@@ -9,7 +9,7 @@ import type { Token, Descriptors } from "../types";
 
 type Delimiters = "(" | ")" | ",";
 export type SeparatorTokens = "line-comment" | "multi-comment" | "," | "space";
-export type CSSCodeToken = Token<Descriptors | Delimiters>;
+export type CSSValueCodeToken = Token<Descriptors | Delimiters>;
 export type CSSSeparatorTokens = Token<SeparatorTokens>;
 export type CSSCodeAst = StringNode | MethodCall | TextNode;
 export interface ASTNode<Types = Descriptors> {
@@ -29,7 +29,7 @@ export interface StringNode extends ASTNode<"string"> {}
 export interface TextNode extends ASTNode<"text"> {}
 
 export const isSeparatorToken = (
-  token: CSSCodeToken
+  token: CSSValueCodeToken
 ): token is CSSSeparatorTokens => {
   const { type } = token;
   return (
@@ -43,7 +43,7 @@ export const isSeparatorToken = (
 export function createCssValueAST(source: string): CSSCodeAst[] {
   return parseDeclValueTokens(
     source,
-    tokenize<CSSCodeToken>(source, {
+    tokenize<CSSValueCodeToken>(source, {
       isDelimiter,
       isStringDelimiter,
       isWhitespace,
@@ -60,7 +60,7 @@ const shouldAddToken = () => true;
 
 function parseDeclValueTokens(
   source: string,
-  tokens: CSSCodeToken[],
+  tokens: CSSValueCodeToken[],
   startAtIdx = 0
 ): { ast: CSSCodeAst[]; stoppedAtIdx: number } {
   const ast: CSSCodeAst[] = [];
