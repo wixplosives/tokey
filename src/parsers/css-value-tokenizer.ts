@@ -9,7 +9,7 @@ import type { Token, Descriptors } from "../types";
 
 type Delimiters = "(" | ")" | ",";
 
-export type CSSCodeToken = Token<Descriptors | Delimiters>;
+type CSSCodeToken = Token<Descriptors | Delimiters>;
 export const separatorTokens = ["line-comment", "multi-comment", ",", "space"];
 export type SeparatorTokens = typeof separatorTokens extends Array<infer U>
   ? U
