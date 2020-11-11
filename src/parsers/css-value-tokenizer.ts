@@ -8,7 +8,7 @@ import {
 import type { Token, Descriptors } from "../types";
 
 type Delimiters = "(" | ")" | ",";
-type SeparatorTokens = "line-comment" | "multi-comment" | "," | "space";
+export type SeparatorTokens = "line-comment" | "multi-comment" | "," | "space";
 export type CSSCodeToken = Token<Descriptors | Delimiters>;
 export type CSSSeparatorTokens = Token<SeparatorTokens>;
 export type CSSCodeAst = StringNode | MethodCall | TextNode;
