@@ -8,21 +8,17 @@ import {
 import type { Token, Descriptors } from "../types";
 
 type Delimiters = "(" | ")" | ",";
-
+type SeparatorTokens = "line-comment" | "multi-comment" | "," | "space";
 export type CSSCodeToken = Token<Descriptors | Delimiters>;
-export const separatorTokens = ["line-comment", "multi-comment", ",", "space"];
-export type SeparatorTokens = typeof separatorTokens extends Array<infer U>
-  ? U
-  : never;
 export type CSSSeparatorTokens = Token<SeparatorTokens>;
 export type CSSCodeAst = StringNode | MethodCall | TextNode;
 export interface ASTNode<Types = Descriptors> {
   type: Types;
+  text: string;
   start: number;
   end: number;
-  text: string;
   before: CSSSeparatorTokens[];
-  after?: CSSSeparatorTokens[];
+  after: CSSSeparatorTokens[];
 }
 
 export interface MethodCall extends ASTNode<"call"> {
@@ -31,6 +27,18 @@ export interface MethodCall extends ASTNode<"call"> {
 }
 export interface StringNode extends ASTNode<"string"> {}
 export interface TextNode extends ASTNode<"text"> {}
+
+export const isSeparatorToken = (
+  token: CSSCodeToken
+): token is CSSSeparatorTokens => {
+  const { type } = token;
+  return (
+    type === "line-comment" ||
+    type === "multi-comment" ||
+    type === "," ||
+    type === "space"
+  );
+};
 
 export function createCssValueAST(source: string): CSSCodeAst[] {
   return parseDeclValueTokens(
@@ -67,7 +75,7 @@ function parseDeclValueTokens(
         ast,
         stoppedAtIdx: i,
       };
-    } else if (separatorTokens.includes(token.type)) {
+    } else if (isSeparatorToken(token)) {
       before.push(token);
     } else if (token.type === "text") {
       if (tokens[i + 1]?.type === "(") {
@@ -76,21 +84,23 @@ function parseDeclValueTokens(
         i = res.stoppedAtIdx;
         ast.push({
           type: "call",
+          text: methodText,
+          start: token.start,
+          end: token.start + methodText.length,
           before,
+          after: [],
           name: token.value,
           args: res.ast,
-          start: token.start,
-          text: methodText,
-          end: token.start + methodText.length,
         });
         before = [];
       } else {
         ast.push({
           type: token.type,
-          start: token.start,
-          before,
-          end: token.end,
           text: token.value,
+          start: token.start,
+          end: token.end,
+          before,
+          after: [],
         });
         before = [];
       }

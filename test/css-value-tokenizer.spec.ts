@@ -2,7 +2,7 @@ import { test } from "../test-kit/testing";
 import { createCssValueAST } from "../src/parsers/css-value-tokenizer";
 
 test("10px 10px 10px", createCssValueAST, [
-  { text: "10px", type: "text", start: 0, end: 4, before: [] },
+  { text: "10px", type: "text", start: 0, end: 4, before: [], after: [] },
   {
     text: "10px",
     type: "text",
@@ -16,6 +16,7 @@ test("10px 10px 10px", createCssValueAST, [
         end: 5,
       },
     ],
+    after: [],
   },
   {
     text: "10px",
@@ -30,11 +31,12 @@ test("10px 10px 10px", createCssValueAST, [
         end: 10,
       },
     ],
+    after: [],
   },
 ]);
 
 test("10px var( myColor ) 10px", createCssValueAST, [
-  { type: "text", text: "10px", start: 0, end: 4, before: [] },
+  { type: "text", text: "10px", start: 0, end: 4, before: [], after: [] },
   {
     type: "call",
     text: "var( myColor )",
@@ -48,6 +50,7 @@ test("10px var( myColor ) 10px", createCssValueAST, [
         end: 5,
       },
     ],
+    after: [],
     name: "var",
     args: [
       {
@@ -87,11 +90,12 @@ test("10px var( myColor ) 10px", createCssValueAST, [
         end: 20,
       },
     ],
+    after: [],
   },
 ]);
 
 test("10px var( var( myColor ) )", createCssValueAST, [
-  { type: "text", text: "10px", start: 0, end: 4, before: [] },
+  { type: "text", text: "10px", start: 0, end: 4, before: [], after: [] },
   {
     type: "call",
     text: "var( var( myColor ) )",
@@ -105,6 +109,7 @@ test("10px var( var( myColor ) )", createCssValueAST, [
         end: 5,
       },
     ],
+    after: [],
     name: "var",
     args: [
       {
@@ -179,6 +184,7 @@ test("var( a, b, c )", createCssValueAST, [
             end: 5,
           },
         ],
+        after: [],
       },
       {
         type: "text",
@@ -199,6 +205,7 @@ test("var( a, b, c )", createCssValueAST, [
             end: 8,
           },
         ],
+        after: [],
       },
       {
         type: "text",
@@ -229,6 +236,7 @@ test("var( a, b, c )", createCssValueAST, [
         ],
       },
     ],
+    after: [],
   },
 ]);
 
@@ -254,6 +262,7 @@ test("var( a,/*a comment*/ b)", createCssValueAST, [
             end: 5,
           },
         ],
+        after: [],
       },
       {
         type: "text",
@@ -282,7 +291,9 @@ test("var( a,/*a comment*/ b)", createCssValueAST, [
             end: 21,
           },
         ],
+        after: [],
       },
     ],
+    after: [],
   },
 ]);
