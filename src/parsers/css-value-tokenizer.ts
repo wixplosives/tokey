@@ -8,10 +8,10 @@ import {
 import type { Token, Descriptors } from "../types";
 
 type Delimiters = "(" | ")" | ",";
-export type SeparatorTokens = "line-comment" | "multi-comment" | "," | "space";
+export type SeparatorTokens = "line-comment" | "multi-comment" | "space";
 export type CSSValueCodeToken = Token<Descriptors | Delimiters>;
 export type CSSSeparatorTokens = Token<SeparatorTokens>;
-export type CSSCodeAst = StringNode | MethodCall | TextNode;
+export type CSSCodeAst = StringNode | MethodCall | TextNode | CommaNode;
 export interface ASTNode<Types = Descriptors> {
   type: Types;
   text: string;
@@ -27,16 +27,14 @@ export interface MethodCall extends ASTNode<"call"> {
 }
 export interface StringNode extends ASTNode<"string"> {}
 export interface TextNode extends ASTNode<"text"> {}
+export interface CommaNode extends ASTNode<","> {}
 
 export const isSeparatorToken = (
   token: CSSValueCodeToken
 ): token is CSSSeparatorTokens => {
   const { type } = token;
   return (
-    type === "line-comment" ||
-    type === "multi-comment" ||
-    type === "," ||
-    type === "space"
+    type === "line-comment" || type === "multi-comment" || type === "space"
   );
 };
 
@@ -79,35 +77,34 @@ function parseDeclValueTokens(
       };
     } else if (isSeparatorToken(token)) {
       before.push(token);
-    } else if (token.type === "text") {
-      if (tokens[i + 1]?.type === "(") {
-        const res = parseDeclValueTokens(source, tokens, i + 2);
-        const methodText = getText(tokens, i, res.stoppedAtIdx + 1, source);
-        i = res.stoppedAtIdx;
-        ast.push({
-          type: "call",
-          text: methodText,
-          start: token.start,
-          end: token.start + methodText.length,
-          before,
-          after: [],
-          name: token.value,
-          args: res.ast,
-        });
-        before = [];
-      } else {
-        ast.push({
-          type: token.type,
-          text: token.value,
-          start: token.start,
-          end: token.end,
-          before,
-          after: [],
-        });
-        before = [];
-      }
+    } else if (token.type === "text" && tokens[i + 1]?.type === "(") {
+      const res = parseDeclValueTokens(source, tokens, i + 2);
+      const methodText = getText(tokens, i, res.stoppedAtIdx + 1, source);
+      i = res.stoppedAtIdx;
+      ast.push({
+        type: "call",
+        text: methodText,
+        start: token.start,
+        end: token.start + methodText.length,
+        before,
+        after: [],
+        name: token.value,
+        args: res.ast,
+      });
+      before = [];
+    } else {
+      ast.push({
+        type: token.type as any,
+        text: token.value,
+        start: token.start,
+        end: token.end,
+        before,
+        after: [],
+      });
+      before = [];
     }
   }
+
   return {
     ast,
     stoppedAtIdx: tokens.length,
