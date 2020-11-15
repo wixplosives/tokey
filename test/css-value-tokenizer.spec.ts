@@ -187,17 +187,19 @@ test("var( a, b, c )", createCssValueAST, [
         after: [],
       },
       {
+        type: ",",
+        text: ",",
+        start: 6,
+        end: 7,
+        after: [],
+        before: [],
+      },
+      {
         type: "text",
         text: "b",
         start: 8,
         end: 9,
         before: [
-          {
-            type: ",",
-            value: ",",
-            start: 6,
-            end: 7,
-          },
           {
             type: "space",
             value: " ",
@@ -208,17 +210,19 @@ test("var( a, b, c )", createCssValueAST, [
         after: [],
       },
       {
+        type: ",",
+        text: ",",
+        start: 9,
+        end: 10,
+        after: [],
+        before: [],
+      },
+      {
         type: "text",
         text: "c",
         start: 11,
         end: 12,
         before: [
-          {
-            type: ",",
-            value: ",",
-            start: 9,
-            end: 10,
-          },
           {
             type: "space",
             value: " ",
@@ -265,18 +269,19 @@ test("var( a,/*a comment*/ b)", createCssValueAST, [
         after: [],
       },
       {
+        type: ",",
+        text: ",",
+        start: 6,
+        end: 7,
+        after: [],
+        before: [],
+      },
+      {
         type: "text",
         text: "b",
         start: 21,
         end: 22,
         before: [
-          {
-            type: ",",
-            value: ",",
-            start: 6,
-            end: 7,
-          },
-
           {
             type: "multi-comment",
             value: "/*a comment*/",
