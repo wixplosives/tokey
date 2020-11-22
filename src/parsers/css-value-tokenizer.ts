@@ -38,7 +38,10 @@ export const isSeparatorToken = (
   );
 };
 
-export function createCssValueAST(source: string): CSSCodeAst[] {
+export function createCssValueAST(
+  source: string,
+  parseLineComments = false
+): CSSCodeAst[] {
   return parseDeclValueTokens(
     source,
     tokenize<CSSValueCodeToken>(source, {
@@ -47,6 +50,7 @@ export function createCssValueAST(source: string): CSSCodeAst[] {
       isWhitespace,
       shouldAddToken,
       createToken,
+      parseLineComments,
     })
   ).ast;
 }

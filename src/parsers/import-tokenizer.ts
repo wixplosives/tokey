@@ -24,6 +24,7 @@ export function tokenizeImports(
       isWhitespace,
       shouldAddToken,
       createToken,
+      parseLineComments: true,
     }),
     blockStart,
     blockEnd

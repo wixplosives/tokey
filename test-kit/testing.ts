@@ -1,7 +1,8 @@
-export function test<T extends string, U>(
+export function test<T, U>(
   input: T,
   aFn: (input: T) => U,
-  expected: U
+  expected: U,
+  log = console.log.bind(console)
 ) {
   const actual = aFn(input);
   const normInput = JSON.stringify(input);
@@ -10,9 +11,22 @@ export function test<T extends string, U>(
     const a = JSON.stringify(actual, null, 2);
     throw new Error(`Fail Input: ${normInput}\n${a}\nTo\n${e}`);
   } else {
-    console.log(`Pass Input: ${normInput}`);
+    log(`Pass Input: ${normInput}`);
   }
 }
+
+test.TODO = function <T, U>(
+  input: T,
+  aFn: (input: T) => U,
+  expected: U,
+  log = console.log.bind(console)
+) {
+  try {
+    test(input, aFn, expected, log);
+  } catch (e) {
+    console.warn("TODO Failed: " + JSON.stringify(input));
+  }
+};
 
 function isMatch(a: any, b: any): boolean {
   if (a === b) {

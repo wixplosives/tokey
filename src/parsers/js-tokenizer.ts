@@ -43,6 +43,7 @@ export function tokenizeJS(source: string) {
     isWhitespace,
     shouldAddToken,
     createToken,
+    parseLineComments: true,
   });
 }
 

@@ -1,6 +1,84 @@
 import { test } from "../test-kit/testing";
 import { createCssValueAST } from "../src/parsers/css-value-tokenizer";
 
+test(`red url(http://localhost/x.png)`, createCssValueAST, [
+  {
+    type: "text",
+    text: "red",
+    start: 0,
+    end: 3,
+    before: [],
+    after: [],
+  },
+  {
+    type: "call",
+    text: "url(http://localhost/x.png)",
+    start: 4,
+    end: 31,
+    before: [
+      {
+        value: " ",
+        type: "space",
+        start: 3,
+        end: 4,
+      },
+    ],
+    after: [],
+    name: "url",
+    args: [
+      {
+        type: "text",
+        text: "http://localhost/x.png",
+        start: 8,
+        end: 30,
+        before: [],
+        after: [],
+      },
+    ],
+  },
+]);
+
+test.TODO(
+  `red url(http://localhost/x.png)`,
+  (input) => createCssValueAST(input, true),
+  [
+    {
+      type: "text",
+      text: "red",
+      start: 0,
+      end: 3,
+      before: [],
+      after: [],
+    },
+    {
+      type: "call",
+      text: "url(http://localhost/x.png)",
+      start: 4,
+      end: 31,
+      before: [
+        {
+          value: " ",
+          type: "space",
+          start: 3,
+          end: 4,
+        },
+      ],
+      after: [],
+      name: "url",
+      args: [
+        {
+          type: "text",
+          text: "http://localhost/x.png",
+          start: 8,
+          end: 30,
+          before: [],
+          after: [],
+        },
+      ],
+    },
+  ]
+);
+
 test("10px 10px 10px", createCssValueAST, [
   { text: "10px", type: "text", start: 0, end: 4, before: [], after: [] },
   {

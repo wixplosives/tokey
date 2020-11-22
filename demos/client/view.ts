@@ -50,4 +50,5 @@ export function initPreview(
 
   input.oninput = updateOutput;
   document.addEventListener("selectionchange", updateHTML);
+  document.addEventListener("playground:updateOutput", updateOutput);
 }
