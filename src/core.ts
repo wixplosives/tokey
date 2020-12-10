@@ -1,11 +1,12 @@
 import type { Token } from "./types";
 
-interface Options<T extends Token<unknown>> {
+export interface TokyOptions<T extends Token<unknown>> {
   shouldAddToken(type: T["type"], value: string): boolean;
   isStringDelimiter(char: string): boolean;
   isDelimiter(char: string): boolean;
   isWhitespace(char: string): boolean;
   createToken(value: string, type: T["type"], start: number, end: number): T;
+  parseLineComments: boolean;
 }
 
 export function tokenize<T extends Token<unknown>>(
@@ -16,7 +17,8 @@ export function tokenize<T extends Token<unknown>>(
     isWhitespace,
     shouldAddToken,
     createToken,
-  }: Options<T>
+    parseLineComments,
+  }: TokyOptions<T>
 ): T[] {
   const tokens: T[] = [];
   let previousChar = "";
@@ -46,7 +48,11 @@ export function tokenize<T extends Token<unknown>>(
         inComment = "";
         pushBuffer("multi-comment");
       }
-    } else if (ch === "/" && source[nextCharIndex] === "/") {
+    } else if (
+      parseLineComments &&
+      ch === "/" &&
+      source[nextCharIndex] === "/"
+    ) {
       pushBuffer();
       buffer += ch;
       inComment = "line-comment";

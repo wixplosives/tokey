@@ -12,7 +12,7 @@ export type CSSCodeTokenGroup = {
   end: number;
 };
 
-export function tokenizeCSSUrls(source: string) {
+export function tokenizeCSSUrls(source: string, parseLineComments = false) {
   return getUrlTokens(
     tokenize<CSSCodeToken>(source, {
       isDelimiter,
@@ -20,6 +20,7 @@ export function tokenizeCSSUrls(source: string) {
       isWhitespace,
       shouldAddToken,
       createToken,
+      parseLineComments,
     })
   );
 }

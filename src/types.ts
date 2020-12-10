@@ -7,9 +7,17 @@ export type Descriptors =
   | "unclosed-comment"
   | "space";
 
-export interface Token<Types = Descriptors> {
-  type: Types;
+export interface Token<Type = Descriptors> {
+  type: Type;
   start: number;
   end: number;
   value: string;
+}
+
+export interface TokenGroup<GroupType, Type = Descriptors> {
+  type: GroupType;
+  start: number;
+  end: number;
+  value: string;
+  tokens: Token<Type>[];
 }

@@ -1,8 +1,9 @@
 import { test } from "../test-kit/testing";
-import { tokenize } from "../src/core";
+import { tokenize, TokyOptions } from "../src/core";
 import { createToken, isWhitespace, isStringDelimiter } from "../src/helpers";
+import type { Token } from "../src";
 
-const options = {
+const options: TokyOptions<Token> = {
   isDelimiter(char: string) {
     return (
       char === "(" ||
@@ -19,6 +20,7 @@ const options = {
   isStringDelimiter: isStringDelimiter,
   isWhitespace: isWhitespace,
   createToken: createToken,
+  parseLineComments: true,
 };
 
 const defaultTokenizer = <T extends string>(input: T) =>
