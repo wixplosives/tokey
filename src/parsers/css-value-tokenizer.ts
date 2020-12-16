@@ -6,28 +6,22 @@ import {
   getText,
 } from "../helpers";
 import type { Token, Descriptors } from "../types";
+import type { ASTNode } from "./ast-types";
 
 type Delimiters = "(" | ")" | ",";
 export type SeparatorTokens = "line-comment" | "multi-comment" | "space";
+export type CSSAstNode<T extends string> = ASTNode<T, SeparatorTokens>;
 export type CSSValueCodeToken = Token<Descriptors | Delimiters>;
 export type CSSSeparatorTokens = Token<SeparatorTokens>;
 export type CSSCodeAst = StringNode | MethodCall | TextNode | CommaNode;
-export interface ASTNode<Types = Descriptors> {
-  type: Types;
-  text: string;
-  start: number;
-  end: number;
-  before: CSSSeparatorTokens[];
-  after: CSSSeparatorTokens[];
-}
 
-export interface MethodCall extends ASTNode<"call"> {
+export interface MethodCall extends CSSAstNode<"call"> {
   name: string;
   args: CSSCodeAst[];
 }
-export interface StringNode extends ASTNode<"string"> {}
-export interface TextNode extends ASTNode<"text"> {}
-export interface CommaNode extends ASTNode<","> {}
+export interface StringNode extends CSSAstNode<"string"> {}
+export interface TextNode extends CSSAstNode<"text"> {}
+export interface CommaNode extends CSSAstNode<","> {}
 
 export const isSeparatorToken = (
   token: CSSValueCodeToken

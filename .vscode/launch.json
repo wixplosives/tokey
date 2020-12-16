@@ -5,15 +5,29 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "args": [
+        "-u",
+        "tdd",
+        "--timeout",
+        "999999",
+        "--colors",
+        "-r",
+        "@ts-tools/node/r",
+        "${file}"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "name": "Mocha Current",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "pwa-node"
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Current",
       "skipFiles": ["<node_internals>/**"],
-      "args": [
-        "-r",
-        "@ts-tools/node/r",
-        "${file}"
-      ]
+      "args": ["-r", "@ts-tools/node/r", "${file}"]
     },
 
     {
