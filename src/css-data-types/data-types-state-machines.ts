@@ -3,12 +3,13 @@ import type { AstItem, DataTypePredicate } from './data-types-types';
 import {
   AUTO_KEYWORD,
   BG_POSITION_CENTER_KEYWORD,
-  BG_POSITION_HORIZONTAL_KEYWORDS,
-  BG_POSITION_VERTICAL_KEYWORDS,
+  BG_POSITION_HORIZONTAL_KEYWORDS_MAP,
+  BG_POSITION_VERTICAL_KEYWORDS_MAP,
+  BG_POSITION_ALL_EDGES_KEYWORDS,
   REPEAT_STYLE_MULTIPLE_KEYWORDS,
   FONT_STYLE_OBLIQUE_KEYWORD,
 } from './data-types-consts';
-import { singleKeywordPredicate, unorderedListPredicate } from './data-types-utils';
+import { unorderedListPredicate } from './data-types-utils';
 
 const PREDICATE_STATE_START = 'start';
 
@@ -79,10 +80,10 @@ type BgPositionStateMachineKey =
 export const bgPositionStateMachine = (
   lengthPercentagePredicate: DataTypePredicate,
 ): StateMachine<BgPositionStateMachineKey> => {
-  const centerPredicate = singleKeywordPredicate(BG_POSITION_CENTER_KEYWORD);
-  const horizontalPredicate = unorderedListPredicate(BG_POSITION_HORIZONTAL_KEYWORDS);
-  const verticalPredicate = unorderedListPredicate(BG_POSITION_VERTICAL_KEYWORDS);
-  const allEdgesPredicate = unorderedListPredicate(BG_POSITION_HORIZONTAL_KEYWORDS.concat(BG_POSITION_VERTICAL_KEYWORDS));
+  const centerPredicate = unorderedListPredicate(BG_POSITION_CENTER_KEYWORD);
+  const horizontalPredicate = unorderedListPredicate(BG_POSITION_HORIZONTAL_KEYWORDS_MAP);
+  const verticalPredicate = unorderedListPredicate(BG_POSITION_VERTICAL_KEYWORDS_MAP);
+  const allEdgesPredicate = unorderedListPredicate(BG_POSITION_ALL_EDGES_KEYWORDS);
 
   /*
     syntax: [
@@ -174,7 +175,7 @@ type BgSizeStateMachineKey =
 export const bgSizeStateMachine = (
   lengthPercentagePredicate: DataTypePredicate,
 ): StateMachine<BgSizeStateMachineKey> => {
-  const multipleValuesKeywordPredicate = singleKeywordPredicate(AUTO_KEYWORD);
+  const multipleValuesKeywordPredicate = unorderedListPredicate(AUTO_KEYWORD);
 
   // syntax: [ <length-percentage> | auto ]{1,2}
   return [
@@ -227,7 +228,7 @@ type FontStyleStateMachineKey =
 export const fontStyleStateMachine = (
   anglePredicate: DataTypePredicate,
 ): StateMachine<FontStyleStateMachineKey> => {
-  const obliquePredicate = singleKeywordPredicate(FONT_STYLE_OBLIQUE_KEYWORD);
+  const obliquePredicate = unorderedListPredicate(FONT_STYLE_OBLIQUE_KEYWORD);
 
   // syntax: oblique <angle>?
   return [

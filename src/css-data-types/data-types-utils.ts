@@ -1,12 +1,19 @@
 import type {DataTypePredicate, DataType, PredicatePrefix } from './data-types-types';
-import type { DataTypeType } from './data-types-consts';
+import type { DataTypeType, KeywordsMap } from './data-types-consts';
 
 export interface Dimension {
   number: number;
   unit: string;
 }
 
+export interface DimensionPredicateOptions {
+  units?: string | KeywordsMap;
+  min?: number;
+  max?: number;
+}
+
 const NUMBER_REGEX = /^[+-]?(\d+|\d*\.\d+|\d*\.?\d+[eE][+-]?\d+)(\D*$)/;
+const HEX_COLOR_REGEX = /^#([a-fA-F\d]{3}){1,2}$/;
 
 export const parseDimension = (text: string): Dimension | undefined => {
   const number = parseFloat(text);
@@ -19,36 +26,46 @@ export const parseDimension = (text: string): Dimension | undefined => {
   return;
 };
 
-export const singleKeywordPredicate = (keyword: string): DataTypePredicate =>
-  ast => ast.type === 'text' && ast.text === keyword;
+export const unorderedListPredicate = (keywords: string | KeywordsMap): DataTypePredicate =>
+  ast => ast.type === 'text' && (
+    typeof keywords === 'string'
+      ? ast.text === keywords
+      : keywords.has(ast.text)
+  );
 
-export const unorderedListPredicate = (keywords: string[]): DataTypePredicate =>
-  ast => ast.type === 'text' && keywords.includes(ast.text);
-
-export const functionPredicate = (functionNames: string[]): DataTypePredicate =>
-  ast => ast.type === 'call' && functionNames.includes(ast.name);
+export const functionPredicate = (functions: string | KeywordsMap): DataTypePredicate =>
+  ast => ast.type === 'call' && (
+    typeof functions === 'string'
+      ? ast.name === functions
+      : functions.has(ast.name)
+  );
 
 // <hex-color>
 // TODO: Match #RRGGBBAA? (Only Internet Explorer doesn't support it)
 export const hexColorPredicate = (): DataTypePredicate =>
-  ast => ast.type === 'text' && !!ast.text.match(/^#([a-fA-F\d]{3}){1,2}$/);
+  ast => ast.type === 'text' && !!ast.text.match(HEX_COLOR_REGEX);
 
 export const dimensionPredicate = (
-  units?: string[],
-  min?: number,
-  max?: number,
+  {
+    units,
+    min,
+    max,
+  }: DimensionPredicateOptions = {},
 ): DataTypePredicate => ast => {
   if (ast.type === 'text') {
     const dimension = parseDimension(ast.text);
-    return !!dimension && (
-      (min === undefined || dimension.number >= min) &&
-      (max === undefined || dimension.number <= max) &&
-      (min === undefined && max === undefined && dimension.number === 0 || (
-        units === undefined
-          ? !dimension.unit
-          : units.includes(dimension.unit)
-      ))
-    );
+    if (
+      !dimension ||
+      (min !== undefined && dimension.number < min) ||
+      (max !== undefined && dimension.number > max)
+    ) { return false; }
+    if (min === undefined && max === undefined && dimension.number === 0) {
+      return true;
+    }
+    if (typeof units === 'string') {
+      return dimension.unit === units;
+    }
+    return units ? units.has(dimension.unit) : !dimension.unit;
   }
 
   return false;

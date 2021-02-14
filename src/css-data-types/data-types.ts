@@ -4,7 +4,7 @@ import {
   DataTypeType,
   UNIVERSAL_KEYWORDS,
   AUTO_KEYWORD,
-  LENGTH_UNITS,
+  LENGTH_UNITS_MAP,
   CALC_FUNCTION,
   PERCENTAGE_UNIT,
   LENGTH_PERCENTAGE_UNITS,
@@ -37,7 +37,6 @@ import {
   OVERFLOW_KEYWORDS,
 } from './data-types-consts';
 import {
-  singleKeywordPredicate,
   unorderedListPredicate,
   functionPredicate,
   hexColorPredicate,
@@ -71,32 +70,32 @@ export const numberPredicate = dimensionPredicate();
 export const lengthDataType = createDataType(
   DataTypeType.Length,
   [
-    dimensionPredicate(LENGTH_UNITS),
-    functionPredicate([CALC_FUNCTION]),
+    dimensionPredicate({ units: LENGTH_UNITS_MAP }),
+    functionPredicate(CALC_FUNCTION),
   ],
 );
 
 // <percentage>
-export const percentagePredicate = dimensionPredicate([PERCENTAGE_UNIT]);
+export const percentagePredicate = dimensionPredicate({ units: PERCENTAGE_UNIT });
 
 // <length-percentage>
 export const lengthPercentageDataType = createDataType(
   DataTypeType.LengthPercentage,
   [
-    dimensionPredicate(LENGTH_PERCENTAGE_UNITS),
-    functionPredicate([CALC_FUNCTION]),
+    dimensionPredicate({ units: LENGTH_PERCENTAGE_UNITS }),
+    functionPredicate(CALC_FUNCTION),
   ],
 );
 
 // <angle>
-export const anglePredicate = dimensionPredicate(ANGLE_UNITS);
+export const anglePredicate = dimensionPredicate({ units: ANGLE_UNITS });
 
 // <width>
 export const widthDataType = createDataType(
   DataTypeType.Width,
   [
     lengthPercentageDataType.predicate,
-    singleKeywordPredicate(AUTO_KEYWORD),
+    unorderedListPredicate(AUTO_KEYWORD),
   ],
 );
 
@@ -112,7 +111,7 @@ export const lineStyleDataType = createDataType(
 export const outlineStyleDataType = createDataType(
   DataTypeType.OutlineStyle,
   [
-    singleKeywordPredicate(AUTO_KEYWORD),
+    unorderedListPredicate(AUTO_KEYWORD),
     lineStyleDataType.predicate,
   ],
 );
@@ -144,7 +143,7 @@ export const outlineColorDataType = createDataType(
   DataTypeType.OutlineColor,
   [
     colorDataType.predicate,
-    singleKeywordPredicate(OUTLINE_COLOR_INVERT_KEYWORD),
+    unorderedListPredicate(OUTLINE_COLOR_INVERT_KEYWORD),
   ],
 );
 
@@ -170,7 +169,7 @@ export const imageDataType = createDataType(
 export const bgImageDataType = createDataType(
   DataTypeType.BgImage,
   [
-    singleKeywordPredicate(BG_IMAGE_NONE_KEYWORD),
+    unorderedListPredicate(BG_IMAGE_NONE_KEYWORD),
     imageDataType.predicate,
   ],
 );
@@ -299,11 +298,10 @@ export const fontWeightDataType = createDataType(
   DataTypeType.FontWeight,
   [
     unorderedListPredicate(FONT_WEIGHT_KEYWORDS),
-    dimensionPredicate(
-      undefined,
-      FONT_WEIGHT_NUMBER_RANGE_MIN,
-      FONT_WEIGHT_NUMBER_RANGE_MAX,
-    ),
+    dimensionPredicate({
+      min: FONT_WEIGHT_NUMBER_RANGE_MIN,
+      max: FONT_WEIGHT_NUMBER_RANGE_MAX,
+    }),
   ],
 );
 
@@ -331,7 +329,7 @@ export const lineHeightDataType = createDataType(
   [
     numberPredicate,
     lengthPercentageDataType.predicate,
-    singleKeywordPredicate(LINE_HEIGHT_KEYWORD),
+    unorderedListPredicate(LINE_HEIGHT_KEYWORD),
   ],
   {
     dataType: DataTypeType.FontSize,
@@ -391,7 +389,7 @@ export const flexBasisDataType = createDataType(
   DataTypeType.FlexBasis,
   [
     widthDataType.predicate,
-    singleKeywordPredicate(FLEX_BASIS_CONTENT_KEYWORD),
+    unorderedListPredicate(FLEX_BASIS_CONTENT_KEYWORD),
     unorderedListPredicate(FLEX_BASIS_INTRINSIC_SIZING_KEYWORDS),
   ],
 );
