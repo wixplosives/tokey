@@ -1,6 +1,13 @@
 import { test } from "../test-kit/testing";
 import { tokenize, TokyOptions } from "../src/core";
-import { createToken, isWhitespace, isStringDelimiter } from "../src/helpers";
+import {
+  createToken,
+  isWhitespace,
+  isStringDelimiter,
+  getJSCommentStartType,
+  isCommentEnd,
+  getUnclosedComment,
+} from "../src/helpers";
 import type { Token } from "../src";
 
 const options: TokyOptions<Token> = {
@@ -20,7 +27,9 @@ const options: TokyOptions<Token> = {
   isStringDelimiter: isStringDelimiter,
   isWhitespace: isWhitespace,
   createToken: createToken,
-  parseLineComments: true,
+  getCommentStartType: getJSCommentStartType,
+  isCommentEnd: isCommentEnd,
+  getUnclosedComment: getUnclosedComment,
 };
 
 const defaultTokenizer = <T extends string>(input: T) =>

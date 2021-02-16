@@ -5,8 +5,20 @@ export interface TokyOptions<T extends Token<unknown>> {
   isStringDelimiter(char: string): boolean;
   isDelimiter(char: string): boolean;
   isWhitespace(char: string): boolean;
+  getCommentStartType(
+    ch: string,
+    source: string,
+    nextCharIndex: number
+  ): string;
+  isCommentEnd(
+    inComment: string,
+    ch: string,
+    source: string,
+    nextCharIndex: number,
+    previousChar: string
+  ): boolean;
+  getUnclosedComment(inComment: string): string;
   createToken(value: string, type: T["type"], start: number, end: number): T;
-  parseLineComments: boolean;
 }
 
 export function tokenize<T extends Token<unknown>>(
@@ -17,7 +29,9 @@ export function tokenize<T extends Token<unknown>>(
     isWhitespace,
     shouldAddToken,
     createToken,
-    parseLineComments,
+    getCommentStartType,
+    isCommentEnd,
+    getUnclosedComment,
   }: TokyOptions<T>
 ): T[] {
   const tokens: T[] = [];
@@ -32,34 +46,18 @@ export function tokenize<T extends Token<unknown>>(
     if (inString) {
       buffer += ch;
       if (ch === inString && previousChar !== "\\") {
-        inString = "";
         pushBuffer("string");
+        inString = "";
       }
     } else if (inComment) {
       buffer += ch;
-      if (inComment === "line-comment" && ch === "\n") {
+      if (isCommentEnd(inComment, ch, source, nextCharIndex, previousChar)) {
+        pushBuffer(inComment);
         inComment = "";
-        pushBuffer("line-comment");
-      } else if (
-        inComment === "multi-comment" &&
-        ch === "/" &&
-        previousChar === "*"
-      ) {
-        inComment = "";
-        pushBuffer("multi-comment");
       }
-    } else if (
-      parseLineComments &&
-      ch === "/" &&
-      source[nextCharIndex] === "/"
-    ) {
+    } else if ((inComment = getCommentStartType(ch, source, nextCharIndex))) {
       pushBuffer();
       buffer += ch;
-      inComment = "line-comment";
-    } else if (ch === "/" && source[nextCharIndex] === "*") {
-      pushBuffer();
-      buffer += ch;
-      inComment = "multi-comment";
     } else if (isStringDelimiter(ch)) {
       pushBuffer();
       buffer += ch;
@@ -81,11 +79,7 @@ export function tokenize<T extends Token<unknown>>(
   }
   if (buffer.length) {
     if (inComment) {
-      if (inComment === "line-comment") {
-        pushBuffer("line-comment");
-      } else {
-        pushBuffer("unclosed-comment");
-      }
+      pushBuffer(getUnclosedComment(inComment));
     } else if (inString) {
       pushBuffer("unclosed-string");
     } else {

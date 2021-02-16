@@ -2,8 +2,12 @@ import { tokenize } from "../core";
 import {
   isStringDelimiter,
   isWhitespace,
+  getJSCommentStartType,
+  getMultilineCommentStartType,
+  isCommentEnd,
   createToken,
   getText,
+  getUnclosedComment,
 } from "../helpers";
 import type { Token, Descriptors } from "../types";
 
@@ -50,7 +54,11 @@ export function createCssValueAST(
       isWhitespace,
       shouldAddToken,
       createToken,
-      parseLineComments,
+      getCommentStartType: parseLineComments
+        ? getJSCommentStartType
+        : getMultilineCommentStartType,
+      isCommentEnd,
+      getUnclosedComment,
     })
   ).ast;
 }
