@@ -1,4 +1,4 @@
-import type {DataTypePredicate, DataType, PredicatePrefix } from './data-types-types';
+import type { DataTypePredicate, DataType, PredicatePrefix, AstItem } from './data-types-types';
 import type { DataTypeType, KeywordsMap } from './data-types-consts';
 
 export interface Dimension {
@@ -12,15 +12,17 @@ export interface DimensionPredicateOptions {
   max?: number;
 }
 
-const NUMBER_REGEX = /^[+-]?(\d+|\d*\.\d+|\d*\.?\d+[eE][+-]?\d+)(\D*$)/;
+const DIMENSION_REGEX = /^[+-]?(\d+|\d*\.\d+|\d*\.?\d+[eE][+-]?\d+)(\D*$)/;
+const DIMENSION_REGEX_UNIT_INDEX = 2;
 const HEX_COLOR_REGEX = /^#([a-fA-F\d]{3}){1,2}$/;
+const EMPTY_UNIT = '';
 
 export const parseDimension = (text: string): Dimension | undefined => {
   const number = parseFloat(text);
   if (!isNaN(number)) {
-    const isValidNumberMatch = text.match(NUMBER_REGEX);
-    return isValidNumberMatch
-      ? { number, unit: isValidNumberMatch[2] || '' }
+    const dimensionMatch = text.match(DIMENSION_REGEX);
+    return dimensionMatch
+      ? { number, unit: dimensionMatch[DIMENSION_REGEX_UNIT_INDEX] || EMPTY_UNIT }
       : undefined;
   }
   return;
@@ -69,6 +71,35 @@ export const dimensionPredicate = (
   }
 
   return false;
+};
+
+export const curlyBracesPredicate = (
+  predicates: DataTypePredicate[],
+  min: number,
+  max: number,
+): DataTypePredicate => (_ast, index, items) => {
+  if (index === undefined || !items) {
+    return false;
+  }
+
+  let item: AstItem | undefined;
+  let i = index;
+  let matchAmount = 0;
+  while (item = items[i++]) {
+    let match: number | boolean | undefined = undefined;
+    for (const predicate of predicates) {
+      const predicateMatch = predicate(item.value, i - 1, items);
+      if (!!predicateMatch) {
+        match = predicateMatch;
+        break;
+      }
+    }
+    if (!match || ++matchAmount === max) {
+      break;
+    }
+  }
+
+  return matchAmount >= min ? matchAmount : false;
 };
 
 export const createDataType = (

@@ -1,4 +1,4 @@
-import type { DataType } from './data-types-types';
+import type { AstItem, DataType } from './data-types-types';
 
 import {
   DataTypeType,
@@ -19,10 +19,12 @@ import {
   BG_IMAGE_NONE_KEYWORD,
   BG_SIZE_KEYWORDS,
   REPEAT_STYLE_SINGLE_KEYWORDS,
+  REPEAT_STYLE_MULTIPLE_KEYWORDS,
   ATTACHMENT_KEYWORDS,
   BOX_KEYWORDS,
   FONT_SINGLE_VALUE_KEYWORDS,
   FONT_STYLE_KEYWORDS,
+  FONT_STYLE_OBLIQUE_KEYWORD,
   FONT_VARIANT_KEYWORDS,
   FONT_WEIGHT_KEYWORDS,
   FONT_WEIGHT_NUMBER_RANGE_MIN,
@@ -32,8 +34,7 @@ import {
   LINE_HEIGHT_KEYWORD,
   FONT_FAMILY_GENERIC_KEYWORDS,
   FLEX_SINGLE_VALUE_KEYWORDS,
-  FLEX_BASIS_CONTENT_KEYWORD,
-  FLEX_BASIS_INTRINSIC_SIZING_KEYWORDS,
+  FLEX_BASIS_KEYWORDS,
   OVERFLOW_KEYWORDS,
 } from './data-types-consts';
 import {
@@ -41,14 +42,12 @@ import {
   functionPredicate,
   hexColorPredicate,
   dimensionPredicate,
+  curlyBracesPredicate,
   createDataType,
 } from './data-types-utils';
 import {
   stateMachineDataTypeMatch,
   bgPositionStateMachine,
-  bgSizeStateMachine,
-  repeatStyleStateMachine,
-  fontStyleStateMachine,
 } from './data-types-state-machines';
 
 export const ALWAYS_DATA_TYPE: DataType = {
@@ -205,17 +204,10 @@ export const bgPositionDataType = createDataType(
 export const bgSizeDataType = createDataType(
   DataTypeType.BgSize,
   [
-    (_ast, index, items) => {
-      if (index === undefined || !items) {
-        return false;
-      }
-
-      return stateMachineDataTypeMatch(
-        items,
-        index,
-        bgSizeStateMachine(lengthPercentageDataType.predicate),
-      );
-    },
+    curlyBracesPredicate([
+      lengthPercentageDataType.predicate,
+      unorderedListPredicate(AUTO_KEYWORD),
+    ], 1, 2),
     unorderedListPredicate(BG_SIZE_KEYWORDS),
   ],
   {
@@ -230,17 +222,9 @@ export const repeatStyleDataType = createDataType(
   DataTypeType.RepeatStyle,
   [
     unorderedListPredicate(REPEAT_STYLE_SINGLE_KEYWORDS),
-    (ast, index, items) => {
-      if (ast.type !== 'text' || index === undefined || !items) {
-        return false;
-      }
-
-      return stateMachineDataTypeMatch(
-        items,
-        index,
-        repeatStyleStateMachine(),
-      );
-    },
+    curlyBracesPredicate([
+      unorderedListPredicate(REPEAT_STYLE_MULTIPLE_KEYWORDS)
+    ], 1, 2),
   ],
 );
 
@@ -272,15 +256,22 @@ export const fontStyleDataType = createDataType(
   [
     unorderedListPredicate(FONT_STYLE_KEYWORDS),
     (ast, index, items) => {
-      if (ast.type !== 'text' || index === undefined || !items) {
+      if (index === undefined || !items) {
         return false;
       }
 
-      return stateMachineDataTypeMatch(
-        items,
-        index,
-        fontStyleStateMachine(anglePredicate),
-      );
+      const obliquePredicate = unorderedListPredicate(FONT_STYLE_OBLIQUE_KEYWORD);
+
+      let matchAmount = 0;
+      if (obliquePredicate(ast)) {
+        matchAmount++;
+        const next = items[index + 1];
+        if (next && anglePredicate(next.value)) {
+          matchAmount++;
+        }
+      }
+
+      return matchAmount;
     },
   ],
 );
@@ -348,16 +339,18 @@ export const fontFamilyDataType = createDataType(
         return false;
       }
       
-      let returnItemsAmount = 0;
-      for (let i = index; i < items.length; i++) {
-        const node = items[i].value;
-        if (node.type !== 'text' && node.type !== 'string' && node.type !== ',') {
+      let item: AstItem | undefined;
+      let i = index;
+      let matchAmount = 0;
+      while (item = items[i++]) {
+        const itemType = item.value.type;
+        if (itemType !== 'text' && itemType !== 'string' && itemType !== ',') {
           break;
         }
-        returnItemsAmount++;
+        matchAmount++;
       }
 
-      return returnItemsAmount;
+      return matchAmount;
     },
   ],
 );
@@ -389,8 +382,7 @@ export const flexBasisDataType = createDataType(
   DataTypeType.FlexBasis,
   [
     widthDataType.predicate,
-    unorderedListPredicate(FLEX_BASIS_CONTENT_KEYWORD),
-    unorderedListPredicate(FLEX_BASIS_INTRINSIC_SIZING_KEYWORDS),
+    unorderedListPredicate(FLEX_BASIS_KEYWORDS),
   ],
 );
 

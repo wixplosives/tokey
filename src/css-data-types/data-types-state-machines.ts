@@ -1,13 +1,10 @@
 import type { AstItem, DataTypePredicate } from './data-types-types';
 
 import {
-  AUTO_KEYWORD,
   BG_POSITION_CENTER_KEYWORD,
   BG_POSITION_HORIZONTAL_KEYWORDS_MAP,
   BG_POSITION_VERTICAL_KEYWORDS_MAP,
   BG_POSITION_ALL_EDGES_KEYWORDS,
-  REPEAT_STYLE_MULTIPLE_KEYWORDS,
-  FONT_STYLE_OBLIQUE_KEYWORD,
 } from './data-types-consts';
 import { unorderedListPredicate } from './data-types-utils';
 
@@ -163,85 +160,6 @@ export const bgPositionStateMachine = (
         // [ left | right ] <length-percentage> [ top | bottom ] <length-percentage> $
         // [ top | bottom ] <length-percentage> [ left | right ] <length-percentage> $
         { predicate: lengthPercentagePredicate },
-      ],
-    },
-  ];
-};
-
-// <bg-size>
-type BgSizeStateMachineKey =
- | '2-value'
-;
-export const bgSizeStateMachine = (
-  lengthPercentagePredicate: DataTypePredicate,
-): StateMachine<BgSizeStateMachineKey> => {
-  const multipleValuesKeywordPredicate = unorderedListPredicate(AUTO_KEYWORD);
-
-  // syntax: [ <length-percentage> | auto ]{1,2}
-  return [
-    {
-      [PREDICATE_STATE_START]: [
-        // <length-percentage>
-        { predicate: lengthPercentagePredicate, nextKey: '2-value' },
-        // auto
-        { predicate: multipleValuesKeywordPredicate, nextKey: '2-value' },
-      ],
-    },
-    {
-      '2-value': [
-        // [ <length-percentage> | auto ]{2} $
-        { predicate: lengthPercentagePredicate },
-        { predicate: multipleValuesKeywordPredicate },
-      ],
-    },
-  ];
-};
-
-// <repeat-style>
-type RepeatStyleStateMachineKey =
- | '2-value'
-;
-export const repeatStyleStateMachine = (): StateMachine<RepeatStyleStateMachineKey> => {
-  const multipleValuesPredicate = unorderedListPredicate(REPEAT_STYLE_MULTIPLE_KEYWORDS);
-
-  // syntax: [ repeat | space | round | no-repeat ]{1,2}
-  return [
-    {
-      [PREDICATE_STATE_START]: [
-        // [ repeat | space | round | no-repeat ]{1}
-        { predicate: multipleValuesPredicate, nextKey: '2-value' },
-      ],
-    },
-    {
-      '2-value': [
-        // [ repeat | space | round | no-repeat ]{2} $
-        { predicate: multipleValuesPredicate },
-      ],
-    },
-  ];
-};
-
-// <font-style>
-type FontStyleStateMachineKey =
- | '2-value'
-;
-export const fontStyleStateMachine = (
-  anglePredicate: DataTypePredicate,
-): StateMachine<FontStyleStateMachineKey> => {
-  const obliquePredicate = unorderedListPredicate(FONT_STYLE_OBLIQUE_KEYWORD);
-
-  // syntax: oblique <angle>?
-  return [
-    {
-      [PREDICATE_STATE_START]: [
-        // oblique
-        { predicate: obliquePredicate, nextKey: '2-value' },
-      ],
-    },
-    {
-      '2-value': [
-        // oblique <angle> $
-        { predicate: anglePredicate },
       ],
     },
   ];

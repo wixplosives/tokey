@@ -40,8 +40,6 @@ export type KeywordsMap = Map<string, boolean>;
 const keywordsMap = (keywords: string[]): KeywordsMap =>
   new Map(keywords.map(keyword => ([keyword, true])));
 
-// export const DATA_TYPE_SYNTAX_SEPARATOR = ' | ';
-
 // <universal>
 export const UNIVERSAL_KEYWORDS = keywordsMap([
   'inherit',
@@ -505,13 +503,14 @@ export const DEFAULT_FLEX_SHRINK = '1';
 export const NONE_FLEX_SHRINK = '0';
 
 // <flex-basis>
-export const FLEX_BASIS_CONTENT_KEYWORD = 'content';
-export const FLEX_BASIS_INTRINSIC_SIZING_KEYWORDS = keywordsMap([
+const FLEX_BASIS_CONTENT_KEYWORD = 'content';
+const FLEX_BASIS_INTRINSIC_SIZING_KEYWORDS = [
   'fill',
   'max-content',
   'min-content',
   'fit-content',
-]);
+];
+export const FLEX_BASIS_KEYWORDS = keywordsMap(FLEX_BASIS_INTRINSIC_SIZING_KEYWORDS.concat(FLEX_BASIS_CONTENT_KEYWORD));
 export const INITIAL_FLEX_BASIS = 'auto';
 export const DEFAULT_FLEX_BASIS = '0';
 
