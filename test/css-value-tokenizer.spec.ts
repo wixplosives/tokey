@@ -1,8 +1,10 @@
-import { createCssValueAST } from "../src/parsers/css-value-tokenizer";
-import { expect } from "chai";
-import { describe, it } from "mocha";
-describe("css value tokenizer", () => {
-  const colorAndUrl = "red url(http://localhost/x.png)";
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+
+import { createCssValueAST } from '../src/parsers/css-value-tokenizer';
+
+describe('css value tokenizer', () => {
+  const colorAndUrl = 'red url(http://localhost/x.png)';
   it(`should parse "${colorAndUrl}"`, () => {
     const res = createCssValueAST(colorAndUrl);
     expect(res).to.eql([
@@ -42,7 +44,7 @@ describe("css value tokenizer", () => {
       },
     ]);
   });
-  const units = "10px 10px 10px";
+  const units = '10px 10px 10px';
 
   it(`should parse "${units}"`, () => {
     const res = createCssValueAST(units);
@@ -80,7 +82,7 @@ describe("css value tokenizer", () => {
       },
     ]);
   });
-  const unitsAndVar = "10px var( myColor ) 10px";
+  const unitsAndVar = '10px var( myColor ) 10px';
 
   it(`should parse "${unitsAndVar}"`, () => {
     const res = createCssValueAST(unitsAndVar);
@@ -143,7 +145,7 @@ describe("css value tokenizer", () => {
       },
     ]);
   });
-  const unitsAndDoubleVar = "10px var( var( myColor ) )";
+  const unitsAndDoubleVar = '10px var( var( myColor ) )';
 
   it(`should parse "${unitsAndDoubleVar}"`, () => {
     const res = createCssValueAST(unitsAndDoubleVar);
@@ -216,7 +218,7 @@ describe("css value tokenizer", () => {
       },
     ]);
   });
-  const multiArgCall = "var( a, b, c )";
+  const multiArgCall = 'var( a, b, c )';
   it(`should parse "${multiArgCall}"`, () => {
     const res = createCssValueAST(multiArgCall);
     expect(res).to.eql([
@@ -301,7 +303,7 @@ describe("css value tokenizer", () => {
       },
     ]);
   });
-  const callWithComment = "var( a,/*a comment*/ b)";
+  const callWithComment = 'var( a,/*a comment*/ b)';
   it(`should parse "${callWithComment}"`, () => {
     const res = createCssValueAST(callWithComment);
     expect(res).to.eql([
@@ -359,6 +361,32 @@ describe("css value tokenizer", () => {
             after: [],
           },
         ],
+        after: [],
+      },
+    ]);
+  });
+
+  const layers = '10px, 11px, 12px';
+  it(`should parse "${layers}"`, () => {
+    const res = createCssValueAST(layers);
+    expect(res).to.eql([
+      { text: "10px", type: "text", start: 0, end: 4, before: [], after: [] },
+      { text: ",", type: ",", start: 4, end: 5, before: [], after: [] },
+      {
+        text: "11px",
+        type: "text",
+        start: 6,
+        end: 10,
+        before: [{ type: "space", value: " ", start: 5, end: 6 }],
+        after: [],
+      },
+      { text: ",", type: ",", start: 10, end: 11, before: [], after: [] },
+      {
+        text: "12px",
+        type: "text",
+        start: 12,
+        end: 16,
+        before: [{ type: "space", value: " ", start: 11, end: 12 }],
         after: [],
       },
     ]);

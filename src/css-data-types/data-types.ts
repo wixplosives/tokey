@@ -2,7 +2,9 @@ import type { AstItem, DataType } from './data-types-types';
 
 import {
   DataTypeType,
+  DEFAULT_DIMENSION,
   UNIVERSAL_KEYWORDS,
+  DEFAULT_UNIVERSAL,
   AUTO_KEYWORD,
   LENGTH_UNITS_MAP,
   CALC_FUNCTION,
@@ -10,32 +12,54 @@ import {
   LENGTH_PERCENTAGE_UNITS,
   ANGLE_UNITS,
   LINE_STYLE_KEYWORDS,
+  DEFAULT_LINE_STYLE,
   LINE_WIDTH_KEYWORDS,
+  DEFAULT_LINE_WIDTH,
   COLOR_SPACE_FUNCTIONS,
   COLOR_KEYWORDS,
+  DEFAULT_COLOR,
+  DEFAULT_BACKGROUND_COLOR,
   OUTLINE_COLOR_INVERT_KEYWORD,
   GRADIENT_FUNCTIONS,
   IMAGE_FUNCTIONS,
   BG_IMAGE_NONE_KEYWORD,
+  DEFAULT_BG_IMAGE,
+  DEFAULT_BG_POSITION,
   BG_SIZE_KEYWORDS,
+  DEFAULT_BG_SIZE,
   REPEAT_STYLE_SINGLE_KEYWORDS,
   REPEAT_STYLE_MULTIPLE_KEYWORDS,
+  DEFAULT_REPEAT_STYLE,
   ATTACHMENT_KEYWORDS,
+  DEFAULT_ATTACHMENT,
   BOX_KEYWORDS,
+  DEFAULT_BACKGROUND_ORIGIN,
+  DEFAULT_BACKGROUND_CLIP,
   FONT_SINGLE_VALUE_KEYWORDS,
   FONT_STYLE_KEYWORDS,
   FONT_STYLE_OBLIQUE_KEYWORD,
+  DEFAULT_FONT_STYLE,
   FONT_VARIANT_KEYWORDS,
+  DEFAULT_FONT_VARIANT,
   FONT_WEIGHT_KEYWORDS,
   FONT_WEIGHT_NUMBER_RANGE_MIN,
   FONT_WEIGHT_NUMBER_RANGE_MAX,
+  DEFAULT_FONT_WEIGHT,
   FONT_STRETCH_KEYWORDS,
+  DEFAULT_FONT_STRETCH,
   FONT_SIZE_KEYWORDS,
+  DEFAULT_FONT_SIZE,
   LINE_HEIGHT_KEYWORD,
+  DEFAULT_LINE_HEIGHT,
   FONT_FAMILY_GENERIC_KEYWORDS,
+  DEFAULT_FONT_FAMILY,
   FLEX_SINGLE_VALUE_KEYWORDS,
+  DEFAULT_FLEX_GROW,
+  DEFAULT_FLEX_SHRINK,
   FLEX_BASIS_KEYWORDS,
+  DEFAULT_FLEX_BASIS,
   OVERFLOW_KEYWORDS,
+  DEFAULT_OVERFLOW,
 } from './data-types-consts';
 import {
   unorderedListPredicate,
@@ -53,6 +77,7 @@ import {
 export const ALWAYS_DATA_TYPE: DataType = {
   dataType: DataTypeType.Unknown,
   predicate: () => true,
+  defaultValue: DEFAULT_DIMENSION,
 };
 
 // <universal>
@@ -60,6 +85,7 @@ export const ALWAYS_DATA_TYPE: DataType = {
 export const universalDataType = createDataType(
   DataTypeType.Universal,
   [ unorderedListPredicate(UNIVERSAL_KEYWORDS) ],
+  DEFAULT_UNIVERSAL,
 );
 
 // <number>
@@ -72,6 +98,7 @@ export const lengthDataType = createDataType(
     dimensionPredicate({ units: LENGTH_UNITS_MAP }),
     functionPredicate(CALC_FUNCTION),
   ],
+  DEFAULT_DIMENSION,
 );
 
 // <percentage>
@@ -84,6 +111,7 @@ export const lengthPercentageDataType = createDataType(
     dimensionPredicate({ units: LENGTH_PERCENTAGE_UNITS }),
     functionPredicate(CALC_FUNCTION),
   ],
+  DEFAULT_DIMENSION,
 );
 
 // <angle>
@@ -96,6 +124,7 @@ export const widthDataType = createDataType(
     lengthPercentageDataType.predicate,
     unorderedListPredicate(AUTO_KEYWORD),
   ],
+  DEFAULT_DIMENSION,
 );
 
 // <line-style>
@@ -103,6 +132,7 @@ export const widthDataType = createDataType(
 export const lineStyleDataType = createDataType(
   DataTypeType.LineStyle,
   [ unorderedListPredicate(LINE_STYLE_KEYWORDS) ],
+  DEFAULT_LINE_STYLE,
 );
 
 // <'outline-style'>
@@ -113,6 +143,7 @@ export const outlineStyleDataType = createDataType(
     unorderedListPredicate(AUTO_KEYWORD),
     lineStyleDataType.predicate,
   ],
+  DEFAULT_LINE_STYLE,
 );
 
 // <line-width>
@@ -123,6 +154,7 @@ export const lineWidthDataType = createDataType(
     lengthDataType.predicate,
     unorderedListPredicate(LINE_WIDTH_KEYWORDS),
   ],
+  DEFAULT_LINE_WIDTH,
 );
 
 // <color>
@@ -134,7 +166,13 @@ export const colorDataType = createDataType(
     hexColorPredicate(),
     unorderedListPredicate(COLOR_KEYWORDS),
   ],
+  DEFAULT_COLOR,
 );
+
+export const backgroundColorDataType: DataType = {
+  ...colorDataType,
+  defaultValue: DEFAULT_BACKGROUND_COLOR,
+};
 
 // <'outline-color'>
 // syntax: <color> | invert
@@ -144,6 +182,7 @@ export const outlineColorDataType = createDataType(
     colorDataType.predicate,
     unorderedListPredicate(OUTLINE_COLOR_INVERT_KEYWORD),
   ],
+  DEFAULT_COLOR,
 );
 
 // <gradient>
@@ -151,6 +190,7 @@ export const outlineColorDataType = createDataType(
 export const gradientDataType = createDataType(
   DataTypeType.Gradient,
   [ functionPredicate(GRADIENT_FUNCTIONS) ],
+  DEFAULT_UNIVERSAL,
 );
 
 // <image>
@@ -161,6 +201,7 @@ export const imageDataType = createDataType(
     functionPredicate(IMAGE_FUNCTIONS),
     gradientDataType.predicate,
   ],
+  DEFAULT_UNIVERSAL,
 );
 
 // <bg-image>
@@ -171,6 +212,7 @@ export const bgImageDataType = createDataType(
     unorderedListPredicate(BG_IMAGE_NONE_KEYWORD),
     imageDataType.predicate,
   ],
+  DEFAULT_BG_IMAGE,
 );
 
 // <bg-position>
@@ -197,6 +239,7 @@ export const bgPositionDataType = createDataType(
       );
     },
   ],
+  DEFAULT_BG_POSITION,
 );
 
 // <bg-size>
@@ -210,6 +253,7 @@ export const bgSizeDataType = createDataType(
     ], 1, 2),
     unorderedListPredicate(BG_SIZE_KEYWORDS),
   ],
+  DEFAULT_BG_SIZE,
   {
     dataType: DataTypeType.BgPosition,
     prefixChar: '/',
@@ -226,6 +270,7 @@ export const repeatStyleDataType = createDataType(
       unorderedListPredicate(REPEAT_STYLE_MULTIPLE_KEYWORDS)
     ], 1, 2),
   ],
+  DEFAULT_REPEAT_STYLE,
 );
 
 // <attachment>
@@ -233,6 +278,7 @@ export const repeatStyleDataType = createDataType(
 export const attachmentDataType = createDataType(
   DataTypeType.Attachment,
   [ unorderedListPredicate(ATTACHMENT_KEYWORDS) ],
+  DEFAULT_ATTACHMENT,
 );
 
 // <box>
@@ -240,13 +286,25 @@ export const attachmentDataType = createDataType(
 export const boxDataType = createDataType(
   DataTypeType.Box,
   [ unorderedListPredicate(BOX_KEYWORDS) ],
+  DEFAULT_UNIVERSAL,
 );
+
+export const backgroundOriginDataType: DataType = {
+  ...boxDataType,
+  defaultValue: DEFAULT_BACKGROUND_ORIGIN,
+};
+
+export const backgroundClipDataType: DataType = {
+  ...boxDataType,
+  defaultValue: DEFAULT_BACKGROUND_CLIP,
+};
 
 // <font>
 // syntax: caption | icon | menu | message-box | small-caption | status-bar
 export const fontDataType = createDataType(
   DataTypeType.Font,
   [ unorderedListPredicate(FONT_SINGLE_VALUE_KEYWORDS) ],
+  DEFAULT_UNIVERSAL,
 );
 
 // <font-style>
@@ -274,6 +332,7 @@ export const fontStyleDataType = createDataType(
       return matchAmount;
     },
   ],
+  DEFAULT_FONT_STYLE,
 );
 
 // <font-variant>
@@ -281,6 +340,7 @@ export const fontStyleDataType = createDataType(
 export const fontVariantDataType = createDataType(
   DataTypeType.FontVariant,
   [ unorderedListPredicate(FONT_VARIANT_KEYWORDS) ],
+  DEFAULT_FONT_VARIANT,
 );
 
 // <font-weight>
@@ -294,6 +354,7 @@ export const fontWeightDataType = createDataType(
       max: FONT_WEIGHT_NUMBER_RANGE_MAX,
     }),
   ],
+  DEFAULT_FONT_WEIGHT,
 );
 
 // <font-stretch>
@@ -301,6 +362,7 @@ export const fontWeightDataType = createDataType(
 export const fontStretchDataType = createDataType(
   DataTypeType.FontStretch,
   [ unorderedListPredicate(FONT_STRETCH_KEYWORDS) ],
+  DEFAULT_FONT_STRETCH,
 );
 
 // <font-size>
@@ -311,6 +373,7 @@ export const fontSizeDataType = createDataType(
     lengthPercentageDataType.predicate,
     unorderedListPredicate(FONT_SIZE_KEYWORDS),
   ],
+  DEFAULT_FONT_SIZE,
 );
 
 // <line-height>
@@ -322,6 +385,7 @@ export const lineHeightDataType = createDataType(
     lengthPercentageDataType.predicate,
     unorderedListPredicate(LINE_HEIGHT_KEYWORD),
   ],
+  DEFAULT_LINE_HEIGHT,
   {
     dataType: DataTypeType.FontSize,
     prefixChar: '/',
@@ -353,6 +417,7 @@ export const fontFamilyDataType = createDataType(
       return matchAmount;
     },
   ],
+  DEFAULT_FONT_FAMILY,
 );
 
 // <flex>
@@ -360,6 +425,7 @@ export const fontFamilyDataType = createDataType(
 export const flexDataType = createDataType(
   DataTypeType.Flex,
   [ unorderedListPredicate(FLEX_SINGLE_VALUE_KEYWORDS) ],
+  DEFAULT_UNIVERSAL,
 );
 
 // <flex-grow>
@@ -367,6 +433,7 @@ export const flexDataType = createDataType(
 export const flexGrowDataType = createDataType(
   DataTypeType.FlexGrow,
   [ numberPredicate ],
+  DEFAULT_FLEX_GROW,
 );
 
 // <flex-shrink>
@@ -374,6 +441,7 @@ export const flexGrowDataType = createDataType(
 export const flexShrinkDataType = createDataType(
   DataTypeType.FlexShrink,
   [ numberPredicate ],
+  DEFAULT_FLEX_SHRINK,
 );
 
 // <flex-basis>
@@ -384,6 +452,7 @@ export const flexBasisDataType = createDataType(
     widthDataType.predicate,
     unorderedListPredicate(FLEX_BASIS_KEYWORDS),
   ],
+  DEFAULT_FLEX_BASIS,
 );
 
 // <overflow>
@@ -391,4 +460,5 @@ export const flexBasisDataType = createDataType(
 export const overflowDataType = createDataType(
   DataTypeType.Overflow,
   [ unorderedListPredicate(OVERFLOW_KEYWORDS) ],
+  DEFAULT_OVERFLOW,
 );

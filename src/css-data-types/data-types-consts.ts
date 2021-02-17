@@ -40,6 +40,9 @@ export type KeywordsMap = Map<string, boolean>;
 const keywordsMap = (keywords: string[]): KeywordsMap =>
   new Map(keywords.map(keyword => ([keyword, true])));
 
+// <length> / <length-percentage> / <width> / <margin> / <padding> / <border-radius>
+export const DEFAULT_DIMENSION = '0';
+
 // <universal>
 export const UNIVERSAL_KEYWORDS = keywordsMap([
   'inherit',
@@ -48,9 +51,6 @@ export const UNIVERSAL_KEYWORDS = keywordsMap([
 ]);
 export const DEFAULT_UNIVERSAL = 'initial';
 export const AUTO_KEYWORD = 'auto';
-
-// <margin> / <padding> / <border-radius>
-export const DEFAULT_EDGE = '0';
 
 // <length>
 const ABSOLUTE_LENGTH_UNITS = [

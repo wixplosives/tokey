@@ -20,5 +20,6 @@ export interface PredicatePrefix {
 export interface DataType {
   dataType: DataTypeType;
   predicate: DataTypePredicate;
+  defaultValue: string;
   prefix?: PredicatePrefix;
 }

@@ -105,9 +105,11 @@ export const curlyBracesPredicate = (
 export const createDataType = (
   dataType: DataTypeType,
   predicates: DataTypePredicate[],
+  defaultValue: string,
   prefix?: PredicatePrefix,
 ): DataType => ({
   dataType,
+  defaultValue,
   prefix,
   predicate: (ast, index, items, prev) => {
     let predicateIndex = index;
