@@ -176,7 +176,7 @@ export const singleKeywordShorthandOpener = <T extends string>(
 export const unorderedListShorthandOpener = <T extends string>(
   parts: ShorthandPart<string>[],
   {
-    shallowOpen,
+    shallow,
     commonValue,
   }: UnorderedListShorthandOptions = {},
 ): ShorthandOpenerInner<T> => (astNodes, api) => {
@@ -209,7 +209,7 @@ export const unorderedListShorthandOpener = <T extends string>(
         matchLength--;
       }
       const nodes = matchLength === 1 ? currNode : astNodes.slice(index, index + matchLength);
-      if (shallowOpen || !opener) {
+      if (shallow || !opener) {
         opened[prop] = multipleItems
           ? ((opened[prop] || []) as EvaluatedAst[]).concat(nodes)
           : nodes;
@@ -298,9 +298,8 @@ export const createShorthandOpener = <T extends string>(
     singleKeywordPart,
     parts,
     openShorthand,
-    shallow,
   }: ShorthandOpenerData<T>,
-): ShorthandOpener<T> => (shortHand, api) => {
+): ShorthandOpener<T> => (shortHand, api, shallow) => {
   let partProps: string[] = [];
   for (const part of parts) {
     partProps = partProps.concat(shallow || !part.openedProps ? part.prop : part.openedProps);
@@ -321,7 +320,7 @@ export const createShorthandOpener = <T extends string>(
     ? singleKeywordOpened
     : setDefaultOpenedProps(
       parts,
-      openShorthand(astNodes, api, parts),
+      openShorthand(astNodes, api, parts, shallow),
       shallow,
     );
 };
@@ -332,6 +331,8 @@ export const createShorthandOpenerFromPart = <T extends string>(
   return createShorthandOpener({
     prop: part.prop,
     parts: [part],
-    openShorthand: part.opener || (() => ({} as OpenedShorthand<T>)),
+    openShorthand: (astNodes, api, _parts, shallow) => part.opener
+      ? part.opener(astNodes, api, shallow)
+      : ({} as OpenedShorthand<T>),
   });
 };

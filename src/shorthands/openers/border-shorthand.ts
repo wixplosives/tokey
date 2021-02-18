@@ -10,7 +10,7 @@ import type {
   BordersLeft,
   CssEdge,
 } from '../shorthand-css-data';
-import type { ShorthandPart } from '../shorthand-types';
+import type { OpenedShorthand, ShorthandOpener, ShorthandPart } from '../shorthand-types';
 
 import {
   DataType,
@@ -36,7 +36,7 @@ const borderShorthandPart = <T extends string>(
   openedProps,
 });
 
-const borderStyleShorthand = borderShorthandPart<BorderStyles>(
+const borderStyleShorthandPart = borderShorthandPart<BorderStyles>(
   'border-style',
   lineStyleDataType,
   [
@@ -46,7 +46,7 @@ const borderStyleShorthand = borderShorthandPart<BorderStyles>(
     'border-left-style',
   ],
 );
-const borderWidthShorthand = borderShorthandPart<BorderWidths>(
+const borderWidthShorthandPart = borderShorthandPart<BorderWidths>(
   'border-width',
   lineWidthDataType,
   [
@@ -57,7 +57,7 @@ const borderWidthShorthand = borderShorthandPart<BorderWidths>(
   ],
 );
 
-const borderColorShorthand = borderShorthandPart<BorderColors>(
+const borderColorShorthandPart = borderShorthandPart<BorderColors>(
   'border-color',
   colorDataType,
   [
@@ -69,26 +69,22 @@ const borderColorShorthand = borderShorthandPart<BorderColors>(
 );
 
 const borderShorthandParts: ShorthandPart<string>[] = [
-  borderStyleShorthand,
-  borderWidthShorthand,
-  borderColorShorthand,
+  borderStyleShorthandPart,
+  borderWidthShorthandPart,
+  borderColorShorthandPart,
 ];
 
 // border
-export const openBorderShorthandShallow = createShorthandOpener<BordersShallow>({
-  prop: 'border',
-  parts: borderShorthandParts as ShorthandPart<BordersShallow>[],
-  openShorthand: (astNodes, api, parts) => unorderedListShorthandOpener(parts, { shallowOpen: true })(astNodes, api),
-  shallow: true,
-});
 export const openBorderShorthand = createShorthandOpener<Borders>({
   prop: 'border',
   parts: borderShorthandParts as ShorthandPart<Borders>[],
-  openShorthand: (astNodes, api, parts) => unorderedListShorthandOpener(parts)(astNodes, api),
+  openShorthand: (astNodes, api, parts, shallow) => unorderedListShorthandOpener(parts, { shallow })(astNodes, api),
 });
+export const openBorderShorthandShallow: ShorthandOpener<BordersShallow> =
+  (shortHand, api) => openBorderShorthand(shortHand, api, true) as unknown as OpenedShorthand<BordersShallow>;
 
 const borderEdgeProp = (edge: CssEdge, item: string) => `border-${edge}-${item}`;
-const borderEdgeShorthandParts = <T extends string>(
+const borderEdgeShorthandOpener = <T extends string>(
   edge: CssEdge,
 ) => createShorthandOpener<T>({
   prop: `border-${edge}`,
@@ -97,27 +93,26 @@ const borderEdgeShorthandParts = <T extends string>(
     borderShorthandPart<BorderWidths>(borderEdgeProp(edge, 'width'), lineWidthDataType),
     borderShorthandPart<BorderColors>(borderEdgeProp(edge, 'color'), colorDataType),
   ] as ShorthandPart<T>[],
-  openShorthand: (astNodes, api, parts) => unorderedListShorthandOpener(parts, { shallowOpen: true })(astNodes, api),
-  shallow: true,
+  openShorthand: (astNodes, api, parts) => unorderedListShorthandOpener(parts, { shallow: true })(astNodes, api),
 });
 
 // border-top
-export const openBorderTopShorthand = borderEdgeShorthandParts<BordersTop>('top');
+export const openBorderTopShorthand = borderEdgeShorthandOpener<BordersTop>('top');
 
 // border-right
-export const openBorderRightShorthand = borderEdgeShorthandParts<BordersRight>('right');
+export const openBorderRightShorthand = borderEdgeShorthandOpener<BordersRight>('right');
 
 // border-bottom
-export const openBorderBottomShorthand = borderEdgeShorthandParts<BordersBottom>('bottom');
+export const openBorderBottomShorthand = borderEdgeShorthandOpener<BordersBottom>('bottom');
 
 // border-left
-export const openBorderLeftShorthand = borderEdgeShorthandParts<BordersLeft>('left');
+export const openBorderLeftShorthand = borderEdgeShorthandOpener<BordersLeft>('left');
 
 // border-style
-export const openBorderStyleShorthand = createShorthandOpenerFromPart(borderStyleShorthand);
+export const openBorderStyleShorthand = createShorthandOpenerFromPart(borderStyleShorthandPart);
 
 // border-width
-export const openBorderWidthShorthand = createShorthandOpenerFromPart(borderWidthShorthand);
+export const openBorderWidthShorthand = createShorthandOpenerFromPart(borderWidthShorthandPart);
 
 // border-color
-export const openBorderColorShorthand = createShorthandOpenerFromPart(borderColorShorthand);
+export const openBorderColorShorthand = createShorthandOpenerFromPart(borderColorShorthandPart);

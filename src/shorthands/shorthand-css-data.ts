@@ -121,6 +121,25 @@ export type Overflows =
   | 'overflow-y'
 ;
 
+export type ShorthandsTypeMap = {
+  'background': Backgrounds,
+  'border-radius': BorderRadiuses,
+  'border': Borders,
+  'border-top': BordersTop,
+  'border-right': BordersRight,
+  'border-bottom': BordersBottom,
+  'border-left': BordersLeft,
+  'border-style': BorderStyles,
+  'border-width': BorderWidths,
+  'border-color': BorderColors,
+  'outline': Outlines,
+  'flex': Flexes,
+  'font': Fonts,
+  'margin': Margins,
+  'padding': Paddings,
+  'overflow': Overflows,
+};
+
 export type CssEdge = 'top' | 'right' | 'bottom' | 'left';
 export type CssCorner = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
 export const CSS_PROPERTY_DELIMITER = '-';

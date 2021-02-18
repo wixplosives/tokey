@@ -3,3 +3,4 @@ export * from './core';
 export * from './helpers';
 export * from './seeker';
 export * from './parsers';
+export * from './shorthands'

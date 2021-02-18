@@ -22,13 +22,14 @@ export type OpenedShorthand<T extends string> = Record<T, EvaluatedAst | Evaluat
 type GenericShorthandOpener<S, T extends string> = (
   shortHand: S[],
   api: ParseShorthandAPI,
+  shallow?: boolean,
 ) => OpenedShorthand<T>;
 
 export type ShorthandOpener<T extends string> = GenericShorthandOpener<CSSCodeAst, T>;
 export type ShorthandOpenerInner<T extends string> = GenericShorthandOpener<EvaluatedAst, T>;
 
 export interface UnorderedListShorthandOptions {
-  shallowOpen?: boolean;
+  shallow?: boolean;
   commonValue?: string;
 }
 
@@ -50,6 +51,6 @@ export interface ShorthandOpenerData<T extends string> {
     astNodes: EvaluatedAst[],
     api: ParseShorthandAPI,
     parts: ShorthandPart<T>[],
+    shallow?: boolean,
   ) => OpenedShorthand<T>;
-  shallow?: boolean;
 }
