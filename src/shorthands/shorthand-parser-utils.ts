@@ -26,6 +26,11 @@ import {
   CORNER_SHORTHAND_CORNERS,
   EDGE_SHORTHAND_INDICES_BY_LENGTH,
 } from './shorthand-css-data';
+import {
+  InvalidEdgesInputLengthError,
+  NoDataTypeMatchError,
+  NoMandatoryPartMatchError,
+} from './shorthand-parser-errors';
 
 const createEvaluateAst = <T>(
   handleExpression: (node: CSSCodeAst, api: ParseShorthandAPI) => T[],
@@ -85,6 +90,7 @@ const getDefaultAst = (value: string): EvaluatedAst => ({
 });
 
 const setDefaultOpenedProps = <T extends string>(
+  shorthandProp: string,
   parts: ShorthandPart<string>[],
   opened: OpenedShorthand<string>,
   shallow?: boolean,
@@ -97,8 +103,7 @@ const setDefaultOpenedProps = <T extends string>(
           const defaultAst = getDefaultAst(part.dataType.defaultValue);
           opened[prop] = !part.multipleItems ? defaultAst : [defaultAst];
         } else {
-          // TODO: Better error + Test error
-          throw new Error('Invalid input! No mandatory item match');
+          throw new NoMandatoryPartMatchError(shorthandProp, prop);
         }
       }
     };
@@ -129,9 +134,9 @@ export const edgesShorthandOpener = <T extends string>(
   prop: string,
   corners?: boolean,
 ): ShorthandOpenerInner<T> => astNodes => {
-  // TODO: Better error + Test error + Validate values?
+  // TODO: Validate values?
   if (astNodes.length < 1 || astNodes.length > 4) {
-    throw new Error('Invalid input length!');
+    throw new InvalidEdgesInputLengthError(prop, astNodes.length);
   }
 
   const [ propPrefix, propSuffix ] = prop.split(CSS_PROPERTY_DELIMITER);
@@ -227,8 +232,8 @@ export const unorderedListShorthandOpener = <T extends string>(
       prevDataType = dataType.dataType;
       index += matchLength;
     } else {
-      // TODO: Better error + Test error
-      throw new Error('Invalid input! No data-type match');
+      // TODO: throwOnNoMatch?
+      throw new NoDataTypeMatchError(currNode.value.text);
     }
   }
 
@@ -320,6 +325,7 @@ export const createShorthandOpener = <T extends string>(
   return Object.keys(singleKeywordOpened).length > 0
     ? singleKeywordOpened
     : setDefaultOpenedProps(
+      prop,
       parts,
       openShorthand(astNodes, api, parts, shallow),
       shallow,

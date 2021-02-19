@@ -13,6 +13,7 @@ import {
   COMMON_FONT_PREFIX_NORMAL,
 } from '../../css-data-types';
 import { unorderedListShorthandOpener, createShorthandOpener } from '../shorthand-parser-utils';
+import { NoMandatoryPartMatchError } from '../shorthand-parser-errors';
 
 const fontPrefixShorthandParts: ShorthandPart<string>[] = [
   { prop: 'font-style',   dataType: fontStyleDataType, multipleItems: true },
@@ -68,8 +69,7 @@ export const openFontShorthand = createShorthandOpener<Fonts>({
         ) as Record<FontSuffixes, EvaluatedAst>,
       };
     } else {
-      // TODO: Better error + Test error
-      throw new Error('Invalid input! No mandatory item match');
+      throw new NoMandatoryPartMatchError('font', prefixEndPart.prop);
     }
 
     return opened;

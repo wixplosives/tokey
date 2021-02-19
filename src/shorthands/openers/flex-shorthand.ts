@@ -8,6 +8,7 @@ import {
   flexBasisDataType,
 } from '../../css-data-types';
 import { singleKeywordShorthandOpener, createShorthandOpener } from '../shorthand-parser-utils';
+import { NoMandatoryPartMatchError } from '../shorthand-parser-errors';
 
 // flex
 export const openFlexShorthand = createShorthandOpener<Flexes>({
@@ -36,22 +37,21 @@ export const openFlexShorthand = createShorthandOpener<Flexes>({
             if (parts[2].dataType.predicate(astNodes[2].value)) {
               opened[parts[2].prop] = astNodes[2];
             } else {
-              // TODO: Better error + Test error
-              throw new Error('Invalid input! TODO ERROR');
+              throw new NoMandatoryPartMatchError('flex', parts[2].prop);
             }
           }
         } else if (parts[2].dataType.predicate(secondValue)) {
           if (astNodes.length < 3) {
             opened[parts[2].prop] = astNodes[1];
           } else {
-            // TODO: Better error + Test error
-            throw new Error('Invalid input! TODO ERROR');
+            throw new NoMandatoryPartMatchError('flex', parts[1].prop);
           }
         } else {
-          // TODO: Better error + Test error
-          throw new Error('Invalid input! TODO ERROR');
+          throw new NoMandatoryPartMatchError('flex', `${parts[1].prop}, ${parts[2].prop}`);
         }
       }
+    } else {
+      throw new NoMandatoryPartMatchError('flex', parts[0].prop);
     }
 
     return opened;

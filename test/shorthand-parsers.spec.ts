@@ -13,6 +13,9 @@ import {
   getShorthandOpener,
   openBackgroundShorthandLayerInner,
   openBackgroundShorthandFinalLayerInner,
+  NoMandatoryPartMatchError,
+  InvalidEdgesInputLengthError,
+  NoDataTypeMatchError,
 } from '../src/shorthands';
 import {
   DEFAULT_COLOR,
@@ -154,9 +157,9 @@ describe('Edges Shorthand Parser', () => {
     'border-left-color',
   ]);
 
-  describe('variables', () => {
-    const openPaddingAstInner = createInnerOpenPropAst(edgesShorthandOpener<Paddings>('padding'));
+  const openPaddingAstInner = createInnerOpenPropAst(edgesShorthandOpener<Paddings>('padding'));
 
+  describe('variables', () => {
     it('should include usages for variable with one item that is used once', () => {
       const edgeValueWithVar = '10px $var 13px';
       const varValue = '11px';
@@ -214,6 +217,14 @@ describe('Edges Shorthand Parser', () => {
         'padding-bottom': { value: varAst[2], origin: ast[0] },
         'padding-left':   { value: varAst[3], origin: ast[0] },
       });
+    });
+  });
+
+  describe('errors', () => {
+    it('should not open edges shorthand for invalid lengths', () => {
+      const ast = createCssValueAST('1px 2px 3px 4px 5px');
+
+      expect(() => openPaddingAstInner(ast)).to.throw(InvalidEdgesInputLengthError, /\[padding\].*5/);
     });
   });
 });
@@ -316,8 +327,7 @@ describe('Border/Outline Shorthand Parser', () => {
       it('should error on double data-type match, for single-appearance data-type', () => {
         const ast = createCssValueAST('1px red black');
     
-        // TODO: Better error testing
-        expect(() => openBorderAstShallow(ast, undefined, true)).to.throw();
+        expect(() => openBorderAstShallow(ast, undefined, true)).to.throw(NoDataTypeMatchError, 'black');
       });
     
       it('should open partial border shorthand', () => {
@@ -491,22 +501,19 @@ describe('Background Shorthand Parser', () => {
       it('should not open background shorthand layer for optional values appearing after the wrong value', () => {
         const ast = createCssValueAST('border-box fixed linear-gradient(red 0%, blue 100%) padding-box repeat-x / contain center');
 
-        // TODO: Better error testing
-        expect(() => openBackgroundLayerAst(ast)).to.throw();
+        expect(() => openBackgroundLayerAst(ast)).to.throw(NoDataTypeMatchError, '/');
       });
 
       it('should not open background shorthand layer for optional values appearing without the right delimiter', () => {
         const ast = createCssValueAST('border-box fixed linear-gradient(red 0%, blue 100%) padding-box repeat-x center contain');
 
-        // TODO: Better error testing
-        expect(() => openBackgroundLayerAst(ast)).to.throw();
+        expect(() => openBackgroundLayerAst(ast)).to.throw(NoDataTypeMatchError, 'contain');
       });
 
       it('should not open background shorthand non-final layer with final layer values', () => {
         const ast = createCssValueAST('border-box fixed linear-gradient(red 0%, blue 100%) padding-box repeat-x center / contain orange');
 
-        // TODO: Better error testing
-        expect(() => openBackgroundLayerAst(ast)).to.throw();
+        expect(() => openBackgroundLayerAst(ast)).to.throw(NoDataTypeMatchError, 'orange');
       });
     });
   });
@@ -650,13 +657,11 @@ describe('Font Shorthand Parser', () => {
     it('should not open font shorthand for values without mandatory items', () => {
       const noSizeAst = createCssValueAST('italic small-caps bold condensed "Font 1", fallback');
 
-      // TODO: Better error testing
-      expect(() => openFontAst(noSizeAst)).to.throw();
+      expect(() => openFontAst(noSizeAst)).to.throw(NoMandatoryPartMatchError, /\[font\].*font-size/);
 
       const noFamilyAst = createCssValueAST('italic small-caps bold condensed 10px / 1.2');
 
-      // TODO: Better error testing
-      expect(() => openFontAst(noFamilyAst)).to.throw();
+      expect(() => openFontAst(noFamilyAst)).to.throw(NoMandatoryPartMatchError, /\[font\].*font-family/);
     });
   });
 });
@@ -745,44 +750,37 @@ describe('Flex Shorthand Parser', () => {
     it('should not open flex shorthand with invalid 1-value syntax', () => {
       const ast = createCssValueAST('10px');
 
-      // TODO: Better error testing
-      expect(() => openFlexAst(ast)).to.throw();
+      expect(() => openFlexAst(ast)).to.throw(NoMandatoryPartMatchError, /\[flex\].*flex-grow/);
     });
 
     it('should not open flex shorthand with invalid 2-value syntax', () => {
       const invalidGrowAst = createCssValueAST('10px 3');
 
-      // TODO: Better error testing
-      expect(() => openFlexAst(invalidGrowAst)).to.throw();
+      expect(() => openFlexAst(invalidGrowAst)).to.throw(NoMandatoryPartMatchError, /\[flex\].*flex-grow/);
       
       const invalidShrinkBasisAst = createCssValueAST('2 italic');
 
-      // TODO: Better error testing
-      expect(() => openFlexAst(invalidShrinkBasisAst)).to.throw();
+      expect(() => openFlexAst(invalidShrinkBasisAst)).to.throw(NoMandatoryPartMatchError, /\[flex\].*flex-shrink, flex-basis/);
 
     });
 
     it('should not open flex shorthand with invalid 3-value syntax', () => {
       const invalidGrowAst = createCssValueAST('10px 3 auto');
 
-      // TODO: Better error testing
-      expect(() => openFlexAst(invalidGrowAst)).to.throw();
+      expect(() => openFlexAst(invalidGrowAst)).to.throw(NoMandatoryPartMatchError, /\[flex\].*flex-grow/);
 
-      const invalidShrinBasiskAst = createCssValueAST('2 10px 3');
+      const invalidShrinkBasisAst = createCssValueAST('2 10px 3');
 
-      // TODO: Better error testing
-      expect(() => openFlexAst(invalidShrinBasiskAst)).to.throw();
+      expect(() => openFlexAst(invalidShrinkBasisAst)).to.throw(NoMandatoryPartMatchError, /\[flex\].*flex-shrink/);
 
       const invalidShrinkAst = createCssValueAST('2 italic auto');
 
-      // TODO: Better error testing
-      expect(() => openFlexAst(invalidShrinkAst)).to.throw();
+      expect(() => openFlexAst(invalidShrinkAst)).to.throw(NoMandatoryPartMatchError, /\[flex\].*flex-shrink, flex-basis/);
 
 
       const invalidBasisAst = createCssValueAST('2 3 italic');
 
-      // TODO: Better error testing
-      expect(() => openFlexAst(invalidBasisAst)).to.throw();
+      expect(() => openFlexAst(invalidBasisAst)).to.throw(NoMandatoryPartMatchError, /\[flex\].*flex-basis/);
     });
   });
 });
