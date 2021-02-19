@@ -24,7 +24,6 @@ const fontSizeShorthandPart: ShorthandPart<string> = {
   prop: 'font-size',
   dataType: fontSizeDataType,
   mandatory: true,
-  divider: true,
 };
 const fontSuffixShorthandParts: ShorthandPart<string>[] = [
   fontSizeShorthandPart,

@@ -40,7 +40,6 @@ export interface ShorthandPart<T extends string> {
   openedProps?: T[],
   multipleItems?: boolean;
   mandatory?: boolean;
-  divider?: boolean;
 }
 
 export interface ShorthandOpenerData<T extends string> {

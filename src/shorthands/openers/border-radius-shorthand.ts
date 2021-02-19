@@ -1,7 +1,7 @@
 import type { BorderRadiuses } from '../shorthand-css-data';
 import type { EvaluatedAst, OpenedShorthand } from '../shorthand-types';
 
-import { ALWAYS_DATA_TYPE } from '../../css-data-types';
+import { ALWAYS_DATA_TYPE, INTERNAL_VALUE_SEPERATOR } from '../../css-data-types';
 import {
   edgesShorthandOpener,
   getShorthandLayers,
@@ -24,7 +24,7 @@ export const openBorderRadiusShorthand = createShorthandOpener<BorderRadiuses>({
     ],
   }],
   openShorthand: (astNodes, api) => {
-    const [ firstLayer, secondLayer ] = getShorthandLayers(astNodes, '/');
+    const [ firstLayer, secondLayer ] = getShorthandLayers(astNodes, INTERNAL_VALUE_SEPERATOR);
     const firstOpened = singleBorderRadiusShorthandOpenerInner(firstLayer, api);
     const secondOpened = secondLayer && secondLayer.length > 0
       ? singleBorderRadiusShorthandOpenerInner(secondLayer, api)

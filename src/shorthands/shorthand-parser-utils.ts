@@ -16,6 +16,7 @@ import {
   DataTypeType,
   unorderedListPredicate,
   universalDataType,
+  DEFAULT_LAYER_SEPERATOR,
 } from '../css-data-types';
 import {
   CssEdge,
@@ -240,7 +241,7 @@ export const unorderedListShorthandOpener = <T extends string>(
 
 export const getShorthandLayers = (
   astNodes: EvaluatedAst[],
-  seperator = ',',
+  seperator = DEFAULT_LAYER_SEPERATOR,
 ) => {
   let layers: EvaluatedAst[][] = [];
   let layerIndex = 0;

@@ -2,6 +2,7 @@ import type { AstItem, DataType } from './data-types-types';
 
 import {
   DataTypeType,
+  INTERNAL_VALUE_SEPERATOR,
   DEFAULT_DIMENSION,
   UNIVERSAL_KEYWORDS,
   DEFAULT_UNIVERSAL,
@@ -256,7 +257,7 @@ export const bgSizeDataType = createDataType(
   DEFAULT_BG_SIZE,
   {
     dataType: DataTypeType.BgPosition,
-    prefixChar: '/',
+    prefixChar: INTERNAL_VALUE_SEPERATOR,
   },
 );
 
@@ -388,7 +389,7 @@ export const lineHeightDataType = createDataType(
   DEFAULT_LINE_HEIGHT,
   {
     dataType: DataTypeType.FontSize,
-    prefixChar: '/',
+    prefixChar: INTERNAL_VALUE_SEPERATOR,
   },
 );
 

@@ -40,6 +40,9 @@ export type KeywordsMap = Map<string, boolean>;
 const keywordsMap = (keywords: string[]): KeywordsMap =>
   new Map(keywords.map(keyword => ([keyword, true])));
 
+export const DEFAULT_LAYER_SEPERATOR = ',';
+export const INTERNAL_VALUE_SEPERATOR = '/';
+
 // <length> / <length-percentage> / <width> / <margin> / <padding> / <border-radius>
 export const DEFAULT_DIMENSION = '0';
 
