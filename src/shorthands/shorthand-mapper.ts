@@ -20,7 +20,11 @@ import {
   openOverflowShorthand,
 } from './openers';
 
-type ShorthandMap = { [ K in keyof ShorthandsTypeMap ]: ShorthandOpener<ShorthandsTypeMap[K]> };
+type ShorthandMapToOpener<T extends Record<string, string>> = {
+  [ K in keyof T ]: ShorthandOpener<T[K]>
+};
+
+type ShorthandMap = ShorthandMapToOpener<ShorthandsTypeMap>;
 
 const shorthandMap: ShorthandMap = {
   'background':    openBackgroundShorthand,

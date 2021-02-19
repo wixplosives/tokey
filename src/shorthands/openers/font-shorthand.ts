@@ -1,5 +1,5 @@
 import type { FontPrefixes, FontSuffixes, Fonts } from '../shorthand-css-data';
-import type { EvaluatedAst, OpenedShorthand, ShorthandPart } from '../shorthand-types';
+import type { OpenedShorthand, ShorthandPart } from '../shorthand-types';
 
 import {
   fontDataType,
@@ -62,11 +62,11 @@ export const openFontShorthand = createShorthandOpener<Fonts>({
         ...openFontShorthandPrefixInner(
           astNodes.slice(0, prefixEndIndex),
           api,
-        ) as Record<FontPrefixes, EvaluatedAst>,
+        ),
         ...openFontShorthandSuffixInner(
           astNodes.slice(prefixEndIndex),
           api,
-        ) as Record<FontSuffixes, EvaluatedAst>,
+        ),
       };
     } else {
       throw new NoMandatoryPartMatchError('font', prefixEndPart.prop);

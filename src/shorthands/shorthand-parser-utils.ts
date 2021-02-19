@@ -174,7 +174,7 @@ export const singleKeywordShorthandOpener = <T extends string>(
   const keywordValues = keywordValueMap[astNodes[0].value.text];
   const props = Object.keys(keywordValues) as T[];
   for (const prop of props) {
-    opened[prop] = getDefaultAst(keywordValues[prop as T]);
+    opened[prop] = getDefaultAst(keywordValues[prop]);
   }
   return opened;
 };
@@ -200,7 +200,7 @@ export const unorderedListShorthandOpener = <T extends string>(
       commonNodes.push(astNodes[index++]);
       continue;
     }
-    const { matchAmount, matchIndex} = getDataTypeMatch(
+    const { matchAmount, matchIndex } = getDataTypeMatch(
       astNodes,
       index,
       unfoundParts,

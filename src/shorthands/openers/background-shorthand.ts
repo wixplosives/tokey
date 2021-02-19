@@ -34,8 +34,7 @@ const bgLayerShorthandParts: ShorthandPart<string>[] = [
 const finalBgLayerShorthandParts: ShorthandPart<string>[] = [{
   prop: 'background-color',
   dataType: backgroundColorDataType,
-} as ShorthandPart<string>].concat(bgLayerShorthandParts);
-
+}].concat(bgLayerShorthandParts);
 export const openBackgroundShorthandLayerInner = unorderedListShorthandOpener<Backgrounds>(bgLayerShorthandParts);
 export const openBackgroundShorthandFinalLayerInner = unorderedListShorthandOpener<Backgrounds>(finalBgLayerShorthandParts);
 
