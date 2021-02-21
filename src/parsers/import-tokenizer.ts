@@ -157,7 +157,7 @@ function findImports(
               isImportBlockEndError
             );
             if (block) {
-              const res = processNamedBlock(block, errors);
+              const res = processNamedBlock(block, errors, taggedImportSupport);
               named = res.named;
               tagged = res.tagged;
             } else {
