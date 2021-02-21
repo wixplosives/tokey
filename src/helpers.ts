@@ -41,6 +41,66 @@ export const createToken = <Type extends string>(
 };
 
 /**
+ * Get JS type of comments for a specific set of start chars when no comment is detected empty string is used
+ */
+export function getJSCommentStartType(
+  ch: string,
+  source: string,
+  nextCharIndex: number
+): "" | "line-comment" | "multi-comment" {
+  if (ch === "/" && source[nextCharIndex] === "/") {
+    return "line-comment";
+  } else {
+    return ch === "/" && source[nextCharIndex] === "*" ? "multi-comment" : "";
+  }
+}
+
+/**
+ * Get CSS type of comments for a specific set of start chars when no comment is detected empty string is used
+ */
+export function getMultilineCommentStartType(
+  ch: string,
+  source: string,
+  nextCharIndex: number
+): "" | "multi-comment" {
+  return ch === "/" && source[nextCharIndex] === "*" ? "multi-comment" : "";
+}
+
+/**
+ * Given a JS comment type determine if this is the end of the comment
+ */
+export function isCommentEnd(
+  commentType: string,
+  ch: string,
+  _source: string,
+  _nextCharIndex: number,
+  previousChar: string
+): boolean {
+  if (commentType === "line-comment" && ch === "\n") {
+    return true;
+  } else if (
+    commentType === "multi-comment" &&
+    ch === "/" &&
+    previousChar === "*"
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Get the type of unclosed comment
+ */
+export function getUnclosedComment(
+  commentType: string
+): "line-comment" | "unclosed-comment" {
+  if (commentType === "line-comment") {
+    return commentType;
+  } else {
+    return "unclosed-comment";
+  }
+}
+/**
  * Get the text between two token indexes
  * if source is provided it will slice the text from original source
  * otherwise the value of the tokens will be concatenated

@@ -1,5 +1,13 @@
 import { tokenize } from "../core";
-import { isStringDelimiter, isWhitespace, createToken } from "../helpers";
+import {
+  isStringDelimiter,
+  isWhitespace,
+  createToken,
+  getJSCommentStartType,
+  getMultilineCommentStartType,
+  isCommentEnd,
+  getUnclosedComment,
+} from "../helpers";
 import type { Token, Descriptors } from "../types";
 
 type Delimiters = "(" | ")" | "," | ";" | ":";
@@ -20,7 +28,11 @@ export function tokenizeCSSUrls(source: string, parseLineComments = false) {
       isWhitespace,
       shouldAddToken,
       createToken,
-      parseLineComments,
+      getCommentStartType: parseLineComments
+        ? getJSCommentStartType
+        : getMultilineCommentStartType,
+      isCommentEnd,
+      getUnclosedComment,
     })
   );
 }

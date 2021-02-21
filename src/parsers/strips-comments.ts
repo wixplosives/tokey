@@ -5,6 +5,10 @@ import {
   createToken,
   getText,
   isComment,
+  getJSCommentStartType,
+  getMultilineCommentStartType,
+  isCommentEnd,
+  getUnclosedComment,
 } from "../helpers";
 import type { Token, Descriptors } from "../types";
 
@@ -18,7 +22,11 @@ export function stripComments(source: string, parseLineComments = true) {
     isWhitespace,
     shouldAddToken,
     createToken,
-    parseLineComments,
+    getCommentStartType: parseLineComments
+      ? getJSCommentStartType
+      : getMultilineCommentStartType,
+    isCommentEnd,
+    getUnclosedComment,
   });
 
   return getText(tokens);

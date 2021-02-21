@@ -6,6 +6,10 @@ import {
   groupTokens,
   trimTokens,
   isComment,
+  getJSCommentStartType,
+  getMultilineCommentStartType,
+  isCommentEnd,
+  getUnclosedComment,
 } from "../helpers";
 import type { Token, Descriptors, TokenGroup } from "../types";
 
@@ -23,7 +27,11 @@ export function getListItems<T extends string>(
       isWhitespace,
       shouldAddToken,
       createToken,
-      parseLineComments,
+      getCommentStartType: parseLineComments
+        ? getJSCommentStartType
+        : getMultilineCommentStartType,
+      isCommentEnd,
+      getUnclosedComment,
     }),
     isDelimiter
   );

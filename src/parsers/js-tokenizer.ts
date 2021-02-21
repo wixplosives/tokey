@@ -5,6 +5,9 @@ import {
   isStringDelimiter,
   isWhitespace,
   createToken,
+  getJSCommentStartType,
+  isCommentEnd,
+  getUnclosedComment,
 } from "../helpers";
 import type { Token, Descriptors } from "../types";
 
@@ -43,7 +46,9 @@ export function tokenizeJS(source: string) {
     isWhitespace,
     shouldAddToken,
     createToken,
-    parseLineComments: true,
+    getCommentStartType: getJSCommentStartType,
+    isCommentEnd,
+    getUnclosedComment,
   });
 }
 
