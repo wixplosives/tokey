@@ -11,14 +11,15 @@ import {
 } from "../helpers";
 import type { Token, Descriptors } from "../types";
 
-type Delimiters = "," | ";" | ":" | "{" | "}" | "[" | "]" | "*";
+type Delimiters = "," | ";" | ":" | "{" | "}" | "[" | "]" | "(" | ")" | "*";
 
 export type CodeToken = Token<Descriptors | Delimiters>;
 
 export function tokenizeImports(
   source: string,
   blockStart = "{",
-  blockEnd = "}"
+  blockEnd = "}",
+  taggedImportSupport = false
 ) {
   return findImports(
     tokenize<CodeToken>(source, {
@@ -32,7 +33,8 @@ export function tokenizeImports(
       getUnclosedComment,
     }),
     blockStart,
-    blockEnd
+    blockEnd,
+    taggedImportSupport
   );
 }
 
@@ -41,6 +43,8 @@ const isDelimiter = (char: string) =>
   char === "}" ||
   char === "[" ||
   char === "]" ||
+  char === "(" ||
+  char === ")" ||
   char === "," ||
   char === ";" ||
   char === ":" ||
@@ -53,6 +57,7 @@ export interface ImportValue {
   star: boolean;
   defaultName: string | undefined;
   named: Record<string, string> | undefined;
+  tagged: Record<string, Record<string, string>> | undefined;
   from: string | undefined;
   errors: string[];
   start: number;
@@ -65,7 +70,8 @@ const isImportBlockEndError = (token: CodeToken) =>
 function findImports(
   tokens: CodeToken[],
   blockStart: string,
-  blockEnd: string
+  blockEnd: string,
+  taggedImportSupport: boolean = false
 ) {
   const imports: ImportValue[] = [];
   const s = new Seeker<CodeToken>(tokens);
@@ -81,6 +87,7 @@ function findImports(
       let defaultName;
       let star = false;
       let named = undefined;
+      let tagged = undefined;
       let from;
       t = s.next();
       if (t.type === "string") {
@@ -123,7 +130,9 @@ function findImports(
             isImportBlockEndError
           );
           if (block) {
-            named = processNamedBlock(block);
+            const res = processNamedBlock(block, errors, taggedImportSupport);
+            named = res.named;
+            tagged = res.tagged;
           } else {
             errors.push("unclosed block");
           }
@@ -148,7 +157,9 @@ function findImports(
               isImportBlockEndError
             );
             if (block) {
-              named = processNamedBlock(block);
+              const res = processNamedBlock(block, errors);
+              named = res.named;
+              tagged = res.tagged;
             } else {
               errors.push("unclosed block");
             }
@@ -178,6 +189,7 @@ function findImports(
         star,
         defaultName,
         named,
+        tagged: tagged,
         from,
         errors,
         start: s.tokens[startTokenIndex].start,
@@ -188,12 +200,37 @@ function findImports(
   return imports;
 }
 
-function processNamedBlock(block: CodeToken[]) {
+function processNamedBlock(
+  block: CodeToken[],
+  errors: string[],
+  taggedImportSupport: boolean
+) {
   const named: Record<string, string> = {};
+  const tagged: Record<string, Record<string, string>> = {};
   const tokens: CodeToken[] = [];
+
   for (let i = 0; i < block.length; i++) {
     const token = block[i];
-    if (token.type === ",") {
+    if (block[i + 1]?.type === "(" && taggedImportSupport) {
+      const tagTokens = [];
+      const tagName = block[i];
+      let hasEnded;
+      for (let j = i + 2; j < block.length; j++) {
+        i = j;
+        if (block[j].type === ")") {
+          hasEnded = true;
+          break;
+        }
+        tagTokens.push(block[j]);
+      }
+      tagged[tagName.value] = processNamedBlock(tagTokens, errors, false).named;
+      if (tagName.type !== "text") {
+        errors.push(`invalid tag name: ${tagName.value}`);
+      }
+      if (!hasEnded) {
+        errors.push(`unclosed tagged import "${tagName.value}"`);
+      }
+    } else if (token.type === ",") {
       pushToken();
     } else {
       tokens.push(token);
@@ -203,7 +240,7 @@ function processNamedBlock(block: CodeToken[]) {
     pushToken();
   }
 
-  return named;
+  return { named, tagged };
 
   function pushToken() {
     if (tokens.length === 1) {
