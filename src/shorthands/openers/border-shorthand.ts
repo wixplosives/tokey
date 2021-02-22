@@ -68,16 +68,14 @@ const borderColorShorthandPart = borderShorthandPart<BorderColors>(
   ],
 );
 
-const borderShorthandParts: ShorthandPart<string>[] = [
-  borderStyleShorthandPart,
-  borderWidthShorthandPart,
-  borderColorShorthandPart,
-];
-
 // border
 export const openBorderShorthand = createShorthandOpener<Borders>({
   prop: 'border',
-  parts: borderShorthandParts as ShorthandPart<Borders>[],
+  parts: [
+    borderStyleShorthandPart,
+    borderWidthShorthandPart,
+    borderColorShorthandPart,
+  ] as ShorthandPart<Borders>[],
   openShorthand: (astNodes, api, parts, shallow) => unorderedListShorthandOpener(parts, { shallow })(astNodes, api),
 });
 export const openBorderShorthandShallow: ShorthandOpener<BordersShallow> =

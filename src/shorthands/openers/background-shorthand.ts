@@ -1,5 +1,5 @@
 import type { Backgrounds } from '../shorthand-css-data';
-import type { EvaluatedAst, OpenedShorthand, ShorthandPart } from '../shorthand-types';
+import type { ShorthandPart } from '../shorthand-types';
 
 import {
   bgImageDataType,
@@ -14,7 +14,7 @@ import {
 import {
   splitShorthandOpener,
   unorderedListShorthandOpener,
-  getShorthandLayers,
+  layersShorthandOpener,
   createShorthandOpener,
 } from '../shorthand-parser-utils';
 
@@ -31,36 +31,22 @@ const bgLayerShorthandParts: ShorthandPart<string>[] = [
   },
   { prop: 'background-clip',       dataType: backgroundClipDataType },
 ];
-const finalBgLayerShorthandParts: ShorthandPart<string>[] = [{
+const lastBgLayerShorthandParts: ShorthandPart<string>[] = [{
   prop: 'background-color',
   dataType: backgroundColorDataType,
 }].concat(bgLayerShorthandParts);
 export const openBackgroundShorthandLayerInner = unorderedListShorthandOpener<Backgrounds>(bgLayerShorthandParts);
-export const openBackgroundShorthandFinalLayerInner = unorderedListShorthandOpener<Backgrounds>(finalBgLayerShorthandParts);
+export const openBackgroundShorthandLastLayerInner = unorderedListShorthandOpener<Backgrounds>(lastBgLayerShorthandParts);
 
 // background
 export const openBackgroundShorthand = createShorthandOpener<Backgrounds>({
   prop: 'background',
-  parts: finalBgLayerShorthandParts as ShorthandPart<Backgrounds>[],
-  openShorthand: (astNodes, api) => {
-    const layers = getShorthandLayers(astNodes);
-    const openedLayers = layers
-      .slice(0, -1)
-      .map(layer => openBackgroundShorthandLayerInner(layer, api))
-      .concat([openBackgroundShorthandFinalLayerInner(layers[layers.length - 1], api)]);
-    
-    if (layers.length === 1) {
-      return openedLayers[0];
-    }
-    let opened: OpenedShorthand<string> = {};
-    for (const layer of openedLayers) {
-      const layerProps = Object.keys(layer) as Backgrounds[];
-      for (const prop of layerProps) {
-        const existingValue = opened[prop] as EvaluatedAst;
-        const propValue = layer[prop] as EvaluatedAst;
-        opened[prop] = !existingValue ? propValue : [existingValue, propValue];
-      }
-    }
-    return opened;
-  },
+  parts: lastBgLayerShorthandParts as ShorthandPart<Backgrounds>[],
+  openShorthand: (astNodes, api) => layersShorthandOpener(
+    'background',
+    openBackgroundShorthandLayerInner,
+    bgLayerShorthandParts,
+    openBackgroundShorthandLastLayerInner,
+    lastBgLayerShorthandParts,
+  )(astNodes, api),
 });

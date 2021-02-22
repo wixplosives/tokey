@@ -12,13 +12,18 @@ import {
   edgesShorthandOpener,
   getShorthandOpener,
   openBackgroundShorthandLayerInner,
-  openBackgroundShorthandFinalLayerInner,
+  openBackgroundShorthandLastLayerInner,
   NoMandatoryPartMatchError,
   InvalidEdgesInputLengthError,
   NoDataTypeMatchError,
 } from '../src/shorthands';
 import {
   DEFAULT_COLOR,
+  DEFAULT_BACKGROUND_COLOR,
+  DEFAULT_BG_IMAGE,
+  DEFAULT_BG_SIZE,
+  DEFAULT_REPEAT_STYLE,
+  DEFAULT_ATTACHMENT,
   DEFAULT_LINE_HEIGHT,
   DEFAULT_FLEX_GROW,
   DEFAULT_FLEX_SHRINK,
@@ -33,7 +38,7 @@ type OpenPropAst<T extends string> = (
   ast: CSSCodeAst[],
   map?: CSSCodeAstMap,
   shallow?: boolean,
-) => OpenedShorthand<T>
+) => OpenedShorthand<T>;
 
 const createSimpleApi: (map: CSSCodeAstMap) => ParseShorthandAPI = map => ({
   isExpression: node => map.has(node),
@@ -439,11 +444,11 @@ describe('Background Shorthand Parser', () => {
       });
     });
 
-    it('should open final background shorthand layer', () => {
-      const openBackgroundFinalLayerAst = createInnerOpenPropAst(openBackgroundShorthandFinalLayerInner);
+    it('should open last background shorthand layer', () => {
+      const openBackgroundLastLayerAst = createInnerOpenPropAst(openBackgroundShorthandLastLayerInner);
       const ast = createCssValueAST('border-box fixed linear-gradient(red 0%, blue 100%) padding-box repeat-x center / contain orange');
 
-      expect(openBackgroundFinalLayerAst(ast)).to.eql({
+      expect(openBackgroundLastLayerAst(ast)).to.eql({
         'background-attachment': { value: ast[1] },
         'background-clip':       { value: ast[3] },
         'background-color':      { value: ast[8] },
@@ -510,7 +515,7 @@ describe('Background Shorthand Parser', () => {
         expect(() => openBackgroundLayerAst(ast)).to.throw(NoDataTypeMatchError, 'contain');
       });
 
-      it('should not open background shorthand non-final layer with final layer values', () => {
+      it('should not open background shorthand non-last layer with last layer values', () => {
         const ast = createCssValueAST('border-box fixed linear-gradient(red 0%, blue 100%) padding-box repeat-x center / contain orange');
 
         expect(() => openBackgroundLayerAst(ast)).to.throw(NoDataTypeMatchError, 'orange');
@@ -565,7 +570,25 @@ describe('Background Shorthand Parser', () => {
       });
     });
 
-    // TODO: More with defaults
+    describe('defaults', () => {
+      it('should open background shorthand with multiple layers and default values', () => {
+        const ast = createCssValueAST([
+          'border-box linear-gradient(red 0%, blue 100%) padding-box center / contain',
+          '40% 30% border-box fixed padding-box repeat-x',
+        ].join(', '));
+  
+        expect(openBackgroundAst(ast)).to.eql({
+          'background-attachment': [ defaultNode(DEFAULT_ATTACHMENT), { value: ast[10] } ],
+          'background-clip':       [ { value: ast[2] }, { value: ast[11] } ],
+          'background-image':      [ { value: ast[1] }, defaultNode(DEFAULT_BG_IMAGE) ],
+          'background-origin':     [ { value: ast[0] }, { value: ast[9] } ],
+          'background-position':   [ [ { value: ast[3] } ], [ { value: ast[7] }, { value: ast[8] } ] ],
+          'background-repeat':     [ [ defaultNode(DEFAULT_REPEAT_STYLE) ], [ { value: ast[12] } ] ],
+          'background-size':       [ [ { value: ast[5] } ], [ defaultNode(DEFAULT_BG_SIZE) ] ],
+          'background-color':      defaultNode(DEFAULT_BACKGROUND_COLOR),
+        });
+      });
+    });
   });
 });
 

@@ -232,7 +232,6 @@ export const unorderedListShorthandOpener = <T extends string>(
       prevDataType = dataType.dataType;
       index += matchLength;
     } else {
-      // TODO: throwOnNoMatch?
       throw new NoDataTypeMatchError(currNode.value.text);
     }
   }
@@ -263,7 +262,57 @@ export const getShorthandLayers = (
   return layers;
 };
 
-export const openSingleKeywordShorthand = <T extends string>(
+export const layersShorthandOpener = <T extends string>(
+  prop: string,
+  singleLayerOpener: ShorthandOpenerInner<T>,
+  singleLayerParts: ShorthandPart<string>[],
+  lastLayerOpener?: ShorthandOpenerInner<T>,
+  lastLayerParts?: ShorthandPart<string>[],
+): ShorthandOpenerInner<T> => (astNodes, api) => {
+  const layers = getShorthandLayers(astNodes);
+  let openedLayers = (!lastLayerOpener ? layers : layers.slice(0, -1))
+    .map(layer => setDefaultOpenedProps(
+      prop,
+      singleLayerParts,
+      singleLayerOpener(layer, api)
+    ));
+  if (lastLayerOpener) {
+    openedLayers = openedLayers.concat([
+      setDefaultOpenedProps(
+        prop,
+        lastLayerParts || [],
+        lastLayerOpener(layers[layers.length - 1], api)
+      )
+    ]);
+  }
+  
+  if (layers.length === 1) {
+    return openedLayers[0];
+  }
+  let opened: OpenedShorthand<string> = {};
+  for (const layer of openedLayers) {
+    const layerProps = Object.keys(layer) as T[];
+    for (const prop of layerProps) {
+      const existingValue = opened[prop] as EvaluatedAst;
+      const propValue = layer[prop] as EvaluatedAst;
+      opened[prop] = !existingValue ? propValue : [existingValue, propValue];
+    }
+  }
+  return opened;
+};
+
+const getShorthandPartsProps = <T extends string>(
+  parts: ShorthandPart<T>[],
+  shallow?: boolean,
+) => {
+  let partsProps: string[] = [];
+  for (const part of parts) {
+    partsProps = partsProps.concat(shallow || !part.openedProps ? part.prop : part.openedProps);
+  }
+  return partsProps;
+};
+
+const openSingleKeywordShorthand = <T extends string>(
   shorthandProp: string,
   partProps: string[],
   astNodes: EvaluatedAst[],
@@ -272,7 +321,6 @@ export const openSingleKeywordShorthand = <T extends string>(
 ): OpenedShorthand<T> => {
   let opened: OpenedShorthand<string> = {};
 
-  /* Identify shorthand single-keyword with predicate */
   if (astNodes.length === 1) {
     const node = astNodes[0];
     const universalPart: ShorthandPart<string> = {
@@ -280,6 +328,7 @@ export const openSingleKeywordShorthand = <T extends string>(
       dataType: universalDataType,
       opener: splitShorthandOpener(partProps),
     };
+    /* Identify shorthand single-keyword with predicate */
     const matchingPart = part && part.dataType.predicate(node.value)
       ? part : (
         universalPart.dataType.predicate(node.value)
@@ -306,30 +355,28 @@ export const createShorthandOpener = <T extends string>(
     openShorthand,
   }: ShorthandOpenerData<T>,
 ): ShorthandOpener<T> => (shortHand, api, shallow) => {
-  let partProps: string[] = [];
-  for (const part of parts) {
-    partProps = partProps.concat(shallow || !part.openedProps ? part.prop : part.openedProps);
-  }
+  /* Evaluate the full input AST */
   const astNodes = evaluateAst(shortHand, api);
 
+  /* Try opening the shorthand as a single keyword and return it if so */
   const singleKeywordOpened = openSingleKeywordShorthand(
     prop,
-    partProps,
+    getShorthandPartsProps(parts, shallow),
     astNodes,
     api,
     singleKeywordPart,
   );
+  if (Object.keys(singleKeywordOpened).length > 0) {
+    return singleKeywordOpened;
+  }
 
   // TODO: Catch errors and return some value on error?
 
-  return Object.keys(singleKeywordOpened).length > 0
-    ? singleKeywordOpened
-    : setDefaultOpenedProps(
-      prop,
-      parts,
-      openShorthand(astNodes, api, parts, shallow),
-      shallow,
-    );
+  /* Open the shorthand using the provided method */
+  const opened = openShorthand(astNodes, api, parts, shallow);
+
+  /* Return the opened shorthand, after setting missing default values */
+  return setDefaultOpenedProps(prop, parts, opened, shallow);
 };
 
 export const createShorthandOpenerFromPart = <T extends string>(

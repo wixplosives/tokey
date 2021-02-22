@@ -17,7 +17,8 @@ export interface DataTypeMatch {
   matchIndex: number;
 }
 
-export type OpenedShorthand<T extends string> = Record<T, EvaluatedAst | EvaluatedAst[] | EvaluatedAst[][]>;
+export type OpenedShorthandValue = EvaluatedAst | EvaluatedAst[] | EvaluatedAst[][];
+export type OpenedShorthand<T extends string> = Record<T, OpenedShorthandValue>;
 
 type GenericShorthandOpener<S, T extends string> = (
   shortHand: S[],

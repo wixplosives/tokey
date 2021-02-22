@@ -363,7 +363,7 @@ export const BG_SIZE_KEYWORDS = keywordsMap([
   'cover',
   'contain',
 ]);
-export const DEFAULT_BG_SIZE = 'auto auto';
+export const DEFAULT_BG_SIZE = 'auto';
 
 // <repeat-style>
 export const REPEAT_STYLE_SINGLE_KEYWORDS = keywordsMap([
