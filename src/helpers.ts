@@ -12,6 +12,13 @@ export function isComment(type: string) {
 }
 
 /**
+ * Checks if a token type is string
+ */
+export function isString(type: string) {
+  return type === "string" || type === "unclosed-string";
+}
+
+/**
  * Checks for a set of JS strings
  */
 export const isStringDelimiter = (char: string) =>
