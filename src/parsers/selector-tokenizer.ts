@@ -67,122 +67,128 @@ export function tokenizeSelector(source: string, parseLineComments = false) {
   );
 }
 
-export interface SelectorNode
-  extends Token<
-    | "class"
-    | "id"
-    | "combinator"
-    | "element"
-    | "attribute"
-    | "pseudo-class"
-    | "pseudo-element"
-    | "star"
-    | "invalid"
-    | "selector"
-  > {}
-
-export interface Selector extends Omit<SelectorNode, "value"> {
-  type: "selector";
+export interface Selector extends Omit<Token<"selector">, "value"> {
   subTree: SelectorNodes;
+  before: string;
+  after: string;
 }
 
-export interface Invalid extends SelectorNode {
-  type: "invalid";
-}
-
-export interface PseudoClass extends SelectorNode {
-  type: "pseudo-class";
+export interface PseudoClass extends Token<"pseudo-class"> {
   subTree?: SelectorNodes;
 }
 
-export interface PseudoElement extends SelectorNode {
-  type: "pseudo-element";
+export interface PseudoElement extends Token<"pseudo-element"> {
   subTree?: SelectorNodes;
 }
 
-export interface Class extends SelectorNode {
-  type: "class";
+export interface Class extends Token<"class"> {
   subTree?: SelectorNodes;
 }
 
-export interface Id extends SelectorNode {
-  type: "id";
+export interface Id extends Token<"id"> {
   subTree?: SelectorNodes;
 }
 
-export interface Combinator extends SelectorNode {
-  type: "combinator";
+export interface Attribute extends Token<"attribute"> {
+  value: string;
+  // left: string;
+  // right: string;
+  // op: "" | "=" | "~=" | "|=" | "^=" | "$=" | "*=";
+  // quotes: "'" | '"' | "";
+  subTree?: SelectorNodes;
+}
+export interface Element extends Token<"element"> {
+  namespace?: string;
+  subTree?: SelectorNodes;
+}
+
+export interface Star extends Token<"star"> {
+  namespace?: string;
+  subTree?: SelectorNodes;
+}
+
+export interface Combinator extends Token<"combinator"> {
   combinator: "space" | "+" | "~" | ">";
   before: string;
   after: string;
 }
 
-export interface Element extends SelectorNode {
-  type: "element";
-  namespace?: string;
-  subTree?: SelectorNodes;
-}
+export interface Invalid extends Token<"invalid"> {}
 
-export interface Star extends SelectorNode {
-  type: "star";
-  namespace?: string;
-  subTree?: SelectorNodes;
-}
+export type NamespacedNodes = Element | Star;
 
-export interface Attribute extends SelectorNode {
-  type: "attribute";
-  value: string;
-  // left: string;
-  // right: string;
-  // op: "" | "=" | "~=" | "|=" | "^=" | "$=" | "*=";
-  // quotes: "'" | '"';
-  subTree?: SelectorNodes;
-}
-
-type AnySelectorNode =
-  | Combinator
+export type SubTreeNodes =
+  | NamespacedNodes
   | Attribute
-  | Element
-  | Star
   | Id
   | Class
   | PseudoClass
-  | PseudoElement
-  | Invalid;
+  | PseudoElement;
 
-type SelectorNodes = AnySelectorNode[];
+export type SelectorNode = SubTreeNodes | Combinator | Invalid;
+export type SelectorNodes = SelectorNode[];
+export type SelectorList = Selector[];
 
-function parseTokens(source: string, tokens: CSSSelectorToken[]): Selector[] {
+function parseTokens(source: string, tokens: CSSSelectorToken[]): SelectorList {
   let subTree: SelectorNodes = [];
-  return new Seeker(tokens).run<Selector[]>(
+  return new Seeker(tokens).run<SelectorList>(
     (token, selectors, source, s) => {
       if (token.type === ",") {
-        selectors.push({
-          type: "selector",
-          start: subTree[0].start,
-          end: subTree[subTree.length - 1].end,
-          subTree,
-        });
+        selectors.push(createSelector(subTree, s.peekBack()));
         subTree = [];
       } else {
         handleToken(token, subTree, source, s);
       }
       if (s.done()) {
-        if (subTree.length) {
-          selectors.push({
-            type: "selector",
-            start: subTree[0].start,
-            end: subTree[subTree.length - 1].end,
-            subTree,
-          });
-        }
+        selectors.push(createSelector(subTree, s.peek(0)));
       }
     },
     [],
     source
   );
+}
 
-  // return new Seeker(tokens).run<SelectorAst>(handleToken, [], source);
+function createSelector(
+  subTree: SelectorNodes,
+  endToken: CSSSelectorToken
+): Selector {
+  const { before, after, nodes } = trimCombs(subTree);
+  return {
+    type: "selector",
+    start: subTree[0]?.start ?? endToken.end,
+    end: subTree[subTree.length - 1]?.end ?? endToken.end,
+    before,
+    after,
+    subTree: nodes,
+  };
+}
+
+function trimCombs(nodes: SelectorNodes) {
+  // hacky way to trim
+  const first = nodes[0];
+  const last = nodes[nodes.length - 1];
+  let before = "";
+  let after = "";
+  let start = 0;
+  let end = nodes.length;
+  if (first?.type === "combinator" && first.combinator === "space") {
+    start = 1;
+    before = first.before + first.value + first.after;
+  }
+  if (
+    last !== first &&
+    last?.type === "combinator" &&
+    last.combinator === "space"
+  ) {
+    end = -1;
+    after = last.before + last.value + last.after;
+  }
+  return {
+    nodes:
+      start === 0 && end === nodes.length ? nodes : nodes.slice(start, end),
+    before,
+    after,
+  };
 }
 
 function handleToken(
