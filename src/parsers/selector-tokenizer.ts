@@ -31,42 +31,7 @@ type Delimiters =
   | "{"
   | "}";
 
-const isDelimiter = (char: string) =>
-  char === "[" ||
-  char === "]" ||
-  char === "(" ||
-  char === ")" ||
-  char === "," ||
-  char === "*" ||
-  char === "|" ||
-  char === ":" ||
-  char === "." ||
-  char === "#" ||
-  char === ">" ||
-  char === "~" ||
-  char === "+" ||
-  char === "{" ||
-  char === "}";
-
 export type CSSSelectorToken = Token<Descriptors | Delimiters>;
-
-export function tokenizeSelector(source: string, parseLineComments = false) {
-  return parseTokens(
-    source,
-    tokenize<CSSSelectorToken>(source, {
-      isDelimiter,
-      isStringDelimiter,
-      isWhitespace,
-      shouldAddToken,
-      createToken,
-      getCommentStartType: parseLineComments
-        ? getJSCommentStartType
-        : getMultilineCommentStartType,
-      isCommentEnd,
-      getUnclosedComment,
-    })
-  );
-}
 
 export interface Selector extends Omit<Token<"selector">, "value"> {
   nodes: SelectorNodes;
@@ -120,6 +85,7 @@ export type NamespacedNodes = Element | Star;
 
 export type Containers =
   | NamespacedNodes
+  | Selector
   | Attribute
   | Id
   | Class
@@ -130,32 +96,54 @@ export type SelectorNode = Containers | Combinator | Invalid;
 export type SelectorNodes = SelectorNode[];
 export type SelectorList = Selector[];
 
-function parseTokens(source: string, tokens: CSSSelectorToken[]): SelectorList {
-  let nodes: SelectorNodes = [];
-  return new Seeker(tokens).run<SelectorList>(
-    (token, selectors, source, s) => {
-      if (token.type === ",") {
-        selectors.push(createSelector(nodes, s.peekBack()));
-        nodes = [];
-      } else {
-        handleToken(token, nodes, source, s);
-      }
-      if (s.done()) {
-        selectors.push(createSelector(nodes, s.peek(0)));
-      }
-    },
-    [],
-    source
+export function tokenizeSelector(source: string, parseLineComments = false) {
+  return parseTokens(
+    source,
+    tokenize<CSSSelectorToken>(source, {
+      isDelimiter,
+      isStringDelimiter,
+      isWhitespace,
+      shouldAddToken,
+      createToken,
+      getCommentStartType: parseLineComments
+        ? getJSCommentStartType
+        : getMultilineCommentStartType,
+      isCommentEnd,
+      getUnclosedComment,
+    })
   );
 }
 
+function parseTokens(source: string, tokens: CSSSelectorToken[]): SelectorList {
+  return new Seeker(tokens).run<SelectorList>(handleToken, [], source);
+}
+
+const isDelimiter = (char: string) =>
+  char === "[" ||
+  char === "]" ||
+  char === "(" ||
+  char === ")" ||
+  char === "," ||
+  char === "*" ||
+  char === "|" ||
+  char === ":" ||
+  char === "." ||
+  char === "#" ||
+  char === ">" ||
+  char === "~" ||
+  char === "+" ||
+  char === "{" ||
+  char === "}";
+
 function handleToken(
   token: CSSSelectorToken,
-  ast: SelectorNodes,
+  selectors: SelectorList,
   source: string,
   s: Seeker<CSSSelectorToken>
 ): void {
   let t;
+  const currentSelector = ensureSelector(selectors, token);
+  const ast = currentSelector.nodes;
   if (token.type === ".") {
     t = s.take("text");
     ast.push({
@@ -280,12 +268,17 @@ function handleToken(
       });
     }
   } else if (token.type === "(") {
-    const res = s.run<SelectorNodes>(
-      (token, ast) => {
+    const res = s.run<SelectorList>(
+      (token, selectors) => {
         if (token.type === ")") {
+          const currentSelector = last(selectors);
+          if (currentSelector) {
+            currentSelector.end =
+              last(currentSelector.nodes)?.end ?? currentSelector.start;
+          }
           return false;
         }
-        return handleToken(token, ast, source, s);
+        return handleToken(token, selectors, source, s);
       },
       [],
       source
@@ -314,6 +307,17 @@ function handleToken(
     }
   } else if (isComment(token.type)) {
   } else if (token.type === ",") {
+    const selector = last(selectors);
+    selector.end = token.start;
+    Object.assign(selector, trimCombs(selector.nodes));
+    const newSelector = createEmptySelector();
+    if (s.done()) {
+      newSelector.start = token.end;
+      newSelector.end = token.end;
+    } else {
+      newSelector.start = s.peek().start;
+    }
+    selectors.push(newSelector);
   } else {
     ast.push({
       type: "invalid",
@@ -322,20 +326,31 @@ function handleToken(
       end: token.end,
     });
   }
+  if (s.done()) {
+    currentSelector.end =
+      last(currentSelector.nodes)?.end ?? currentSelector.start;
+    Object.assign(currentSelector, trimCombs(currentSelector.nodes));
+  }
 }
 
-function createSelector(
-  initialNodes: SelectorNodes,
-  endToken: CSSSelectorToken
-): Selector {
-  const { before, after, nodes } = trimCombs(initialNodes);
+function ensureSelector(selectors: SelectorList, startToken: CSSSelectorToken) {
+  let lastSelector = last(selectors);
+  if (!lastSelector) {
+    lastSelector = createEmptySelector();
+    lastSelector.start = startToken.start;
+    selectors.push(lastSelector);
+  }
+  return lastSelector;
+}
+
+function createEmptySelector(): Selector {
   return {
     type: "selector",
-    start: initialNodes[0]?.start ?? endToken.end,
-    end: last(initialNodes)?.end ?? endToken.end,
-    before,
-    after,
-    nodes: nodes,
+    start: -1,
+    end: -1,
+    before: "",
+    after: "",
+    nodes: [],
   };
 }
 
