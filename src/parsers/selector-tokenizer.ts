@@ -69,25 +69,25 @@ export function tokenizeSelector(source: string, parseLineComments = false) {
 }
 
 export interface Selector extends Omit<Token<"selector">, "value"> {
-  subTree: SelectorNodes;
+  nodes: SelectorNodes;
   before: string;
   after: string;
 }
 
 export interface PseudoClass extends Token<"pseudo-class"> {
-  subTree?: SelectorNodes;
+  nodes?: SelectorNodes;
 }
 
 export interface PseudoElement extends Token<"pseudo-element"> {
-  subTree?: SelectorNodes;
+  nodes?: SelectorNodes;
 }
 
 export interface Class extends Token<"class"> {
-  subTree?: SelectorNodes;
+  nodes?: SelectorNodes;
 }
 
 export interface Id extends Token<"id"> {
-  subTree?: SelectorNodes;
+  nodes?: SelectorNodes;
 }
 
 export interface Attribute extends Token<"attribute"> {
@@ -96,16 +96,16 @@ export interface Attribute extends Token<"attribute"> {
   // right: string;
   // op: "" | "=" | "~=" | "|=" | "^=" | "$=" | "*=";
   // quotes: "'" | '"' | "";
-  subTree?: SelectorNodes;
+  nodes?: SelectorNodes;
 }
 export interface Element extends Token<"element"> {
   namespace?: string;
-  subTree?: SelectorNodes;
+  nodes?: SelectorNodes;
 }
 
 export interface Star extends Token<"star"> {
   namespace?: string;
-  subTree?: SelectorNodes;
+  nodes?: SelectorNodes;
 }
 
 export interface Combinator extends Token<"combinator"> {
@@ -118,7 +118,7 @@ export interface Invalid extends Token<"invalid"> {}
 
 export type NamespacedNodes = Element | Star;
 
-export type SubTreeNodes =
+export type Containers =
   | NamespacedNodes
   | Attribute
   | Id
@@ -126,22 +126,22 @@ export type SubTreeNodes =
   | PseudoClass
   | PseudoElement;
 
-export type SelectorNode = SubTreeNodes | Combinator | Invalid;
+export type SelectorNode = Containers | Combinator | Invalid;
 export type SelectorNodes = SelectorNode[];
 export type SelectorList = Selector[];
 
 function parseTokens(source: string, tokens: CSSSelectorToken[]): SelectorList {
-  let subTree: SelectorNodes = [];
+  let nodes: SelectorNodes = [];
   return new Seeker(tokens).run<SelectorList>(
     (token, selectors, source, s) => {
       if (token.type === ",") {
-        selectors.push(createSelector(subTree, s.peekBack()));
-        subTree = [];
+        selectors.push(createSelector(nodes, s.peekBack()));
+        nodes = [];
       } else {
-        handleToken(token, subTree, source, s);
+        handleToken(token, nodes, source, s);
       }
       if (s.done()) {
-        selectors.push(createSelector(subTree, s.peek(0)));
+        selectors.push(createSelector(nodes, s.peek(0)));
       }
     },
     [],
@@ -297,7 +297,7 @@ function handleToken(
     const ended = s.peek(0);
     if (
       !prev ||
-      "subTree" in prev ||
+      "nodes" in prev ||
       prev.type === "invalid" ||
       prev.type === "combinator" ||
       s.peek(0).type !== ")"
@@ -309,7 +309,7 @@ function handleToken(
         end: ended?.end ?? s.peekBack().end,
       });
     } else {
-      prev.subTree = res;
+      prev.nodes = res;
       prev.end = ended.end;
     }
   } else if (isComment(token.type)) {
@@ -325,17 +325,17 @@ function handleToken(
 }
 
 function createSelector(
-  subTree: SelectorNodes,
+  initialNodes: SelectorNodes,
   endToken: CSSSelectorToken
 ): Selector {
-  const { before, after, nodes } = trimCombs(subTree);
+  const { before, after, nodes } = trimCombs(initialNodes);
   return {
     type: "selector",
-    start: subTree[0]?.start ?? endToken.end,
-    end: last(subTree)?.end ?? endToken.end,
+    start: initialNodes[0]?.start ?? endToken.end,
+    end: last(initialNodes)?.end ?? endToken.end,
     before,
     after,
-    subTree: nodes,
+    nodes: nodes,
   };
 }
 
