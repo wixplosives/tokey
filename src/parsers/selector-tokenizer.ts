@@ -9,6 +9,7 @@ import {
   getUnclosedComment,
   isComment,
   getText,
+  last,
 } from "../helpers";
 import { Seeker } from "../seeker";
 import type { Token, Descriptors } from "../types";
@@ -148,49 +149,6 @@ function parseTokens(source: string, tokens: CSSSelectorToken[]): SelectorList {
   );
 }
 
-function createSelector(
-  subTree: SelectorNodes,
-  endToken: CSSSelectorToken
-): Selector {
-  const { before, after, nodes } = trimCombs(subTree);
-  return {
-    type: "selector",
-    start: subTree[0]?.start ?? endToken.end,
-    end: subTree[subTree.length - 1]?.end ?? endToken.end,
-    before,
-    after,
-    subTree: nodes,
-  };
-}
-
-function trimCombs(nodes: SelectorNodes) {
-  // hacky way to trim
-  const first = nodes[0];
-  const last = nodes[nodes.length - 1];
-  let before = "";
-  let after = "";
-  let start = 0;
-  let end = nodes.length;
-  if (first?.type === "combinator" && first.combinator === "space") {
-    start = 1;
-    before = first.before + first.value + first.after;
-  }
-  if (
-    last !== first &&
-    last?.type === "combinator" &&
-    last.combinator === "space"
-  ) {
-    end = -1;
-    after = last.before + last.value + last.after;
-  }
-  return {
-    nodes:
-      start === 0 && end === nodes.length ? nodes : nodes.slice(start, end),
-    before,
-    after,
-  };
-}
-
 function handleToken(
   token: CSSSelectorToken,
   ast: SelectorNodes,
@@ -226,7 +184,7 @@ function handleToken(
       type: type.length === 1 ? "pseudo-class" : "pseudo-element",
       value: name?.value ?? "",
       start: type[0].start,
-      end: name?.end ?? type[type.length - 1].end,
+      end: name?.end ?? last(type).end,
     });
   } else if (token.type === "[") {
     const block = s.run(
@@ -242,7 +200,7 @@ function handleToken(
       type: "attribute",
       value: getText(block, undefined, undefined, source),
       start: token.start,
-      end: block[block.length - 1]?.end ?? token.end,
+      end: last(block)?.end ?? token.end,
       // left: "TODO",
       // right: "TODO",
       // op: "",
@@ -303,7 +261,7 @@ function handleToken(
     });
   } else if (token.type === "|") {
     let name;
-    const prev = ast[ast.length - 1];
+    const prev = last(ast);
     t = s.next();
     if (t.type === "text") {
       name = t;
@@ -335,7 +293,7 @@ function handleToken(
 
     //TODO: if last or first is space combinator remove and add before and after
 
-    const prev = ast[ast.length - 1];
+    const prev = last(ast);
     const ended = s.peek(0);
     if (
       !prev ||
@@ -364,6 +322,50 @@ function handleToken(
       end: token.end,
     });
   }
+}
+
+function createSelector(
+  subTree: SelectorNodes,
+  endToken: CSSSelectorToken
+): Selector {
+  const { before, after, nodes } = trimCombs(subTree);
+  return {
+    type: "selector",
+    start: subTree[0]?.start ?? endToken.end,
+    end: last(subTree)?.end ?? endToken.end,
+    before,
+    after,
+    subTree: nodes,
+  };
+}
+
+function trimCombs(nodes: SelectorNodes) {
+  // costly way to turn combinators to before and after.
+  // this can be inlined in the handle token process
+  const firstNode = nodes[0];
+  const lastNode = last(nodes);
+  let before = "";
+  let after = "";
+  let start = 0;
+  let end = nodes.length;
+  if (firstNode?.type === "combinator" && firstNode.combinator === "space") {
+    start = 1;
+    before = firstNode.before + firstNode.value + firstNode.after;
+  }
+  if (
+    lastNode !== firstNode &&
+    lastNode?.type === "combinator" &&
+    lastNode.combinator === "space"
+  ) {
+    end = -1;
+    after = lastNode.before + lastNode.value + lastNode.after;
+  }
+  return {
+    nodes:
+      start === 0 && end === nodes.length ? nodes : nodes.slice(start, end),
+    before,
+    after,
+  };
 }
 
 const shouldAddToken = () => true;

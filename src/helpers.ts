@@ -176,3 +176,10 @@ export function trimTokens<Tokens extends Token<any>[]>(
   }
   return tokens.slice(start, end);
 }
+
+/**
+ * get last item in array
+ */
+export function last<T>(arr: T[]): T {
+  return arr[arr.length - 1];
+}
