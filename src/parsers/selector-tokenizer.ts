@@ -306,6 +306,7 @@ function handleToken(
       prev.end = ended.end;
     }
   } else if (isComment(token.type)) {
+    // TODO: handle comments all over!
   } else if (token.type === ",") {
     const selector = last(selectors);
     selector.end = token.start;
