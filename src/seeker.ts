@@ -54,6 +54,9 @@ export class Seeker<T extends Token<unknown>> {
     }
     return [];
   }
+  done() {
+    return this.index >= this.tokens.length - 1;
+  }
   run<A>(
     handleToken: (
       token: T,

@@ -78,7 +78,13 @@ export interface SelectorNode
     | "pseudo-element"
     | "star"
     | "invalid"
+    | "selector"
   > {}
+
+export interface Selector extends Omit<SelectorNode, "value"> {
+  type: "selector";
+  subTree: SelectorNodes;
+}
 
 export interface Invalid extends SelectorNode {
   type: "invalid";
@@ -86,22 +92,22 @@ export interface Invalid extends SelectorNode {
 
 export interface PseudoClass extends SelectorNode {
   type: "pseudo-class";
-  subTree?: SelectorAst;
+  subTree?: SelectorNodes;
 }
 
 export interface PseudoElement extends SelectorNode {
   type: "pseudo-element";
-  subTree?: SelectorAst;
+  subTree?: SelectorNodes;
 }
 
 export interface Class extends SelectorNode {
   type: "class";
-  subTree?: SelectorAst;
+  subTree?: SelectorNodes;
 }
 
 export interface Id extends SelectorNode {
   type: "id";
-  subTree?: SelectorAst;
+  subTree?: SelectorNodes;
 }
 
 export interface Combinator extends SelectorNode {
@@ -114,13 +120,13 @@ export interface Combinator extends SelectorNode {
 export interface Element extends SelectorNode {
   type: "element";
   namespace?: string;
-  subTree?: SelectorAst;
+  subTree?: SelectorNodes;
 }
 
 export interface Star extends SelectorNode {
   type: "star";
   namespace?: string;
-  subTree?: SelectorAst;
+  subTree?: SelectorNodes;
 }
 
 export interface Attribute extends SelectorNode {
@@ -130,7 +136,7 @@ export interface Attribute extends SelectorNode {
   // right: string;
   // op: "" | "=" | "~=" | "|=" | "^=" | "$=" | "*=";
   // quotes: "'" | '"';
-  subTree?: SelectorAst;
+  subTree?: SelectorNodes;
 }
 
 type AnySelectorNode =
@@ -144,18 +150,47 @@ type AnySelectorNode =
   | PseudoElement
   | Invalid;
 
-type SelectorAst = AnySelectorNode[];
+type SelectorNodes = AnySelectorNode[];
 
-function parseTokens(source: string, tokens: CSSSelectorToken[]): SelectorAst {
-  return new Seeker(tokens).run<SelectorAst>(handleToken, [], source);
+function parseTokens(source: string, tokens: CSSSelectorToken[]): Selector[] {
+  let subTree: SelectorNodes = [];
+  return new Seeker(tokens).run<Selector[]>(
+    (token, selectors, source, s) => {
+      if (token.type === ",") {
+        selectors.push({
+          type: "selector",
+          start: subTree[0].start,
+          end: subTree[subTree.length - 1].end,
+          subTree,
+        });
+        subTree = [];
+      } else {
+        handleToken(token, subTree, source, s);
+      }
+      if (s.done()) {
+        if (subTree.length) {
+          selectors.push({
+            type: "selector",
+            start: subTree[0].start,
+            end: subTree[subTree.length - 1].end,
+            subTree,
+          });
+        }
+      }
+    },
+    [],
+    source
+  );
+
+  // return new Seeker(tokens).run<SelectorAst>(handleToken, [], source);
 }
 
 function handleToken(
   token: CSSSelectorToken,
-  ast: SelectorAst,
+  ast: SelectorNodes,
   source: string,
   s: Seeker<CSSSelectorToken>
-) {
+): void {
   let t;
   if (token.type === ".") {
     t = s.take("text");
@@ -281,7 +316,7 @@ function handleToken(
       });
     }
   } else if (token.type === "(") {
-    const res = s.run<SelectorAst>(
+    const res = s.run<SelectorNodes>(
       (token, ast) => {
         if (token.type === ")") {
           return false;
@@ -314,6 +349,7 @@ function handleToken(
       prev.end = ended.end;
     }
   } else if (isComment(token.type)) {
+  } else if (token.type === ",") {
   } else {
     ast.push({
       type: "invalid",
