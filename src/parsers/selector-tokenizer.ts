@@ -39,12 +39,12 @@ export interface Selector extends Omit<Token<"selector">, "value"> {
   after: string;
 }
 
-export interface PseudoClass extends Token<"pseudo-class"> {
+export interface PseudoClass extends Token<"pseudo_class"> {
   nodes?: SelectorList;
   colonComments: Comment[];
 }
 
-export interface PseudoElement extends Token<"pseudo-element"> {
+export interface PseudoElement extends Token<"pseudo_element"> {
   nodes?: SelectorList;
   colonComments: { first: Comment[]; second: Comment[] };
 }
@@ -59,11 +59,11 @@ export interface Id extends Token<"id"> {
 }
 
 export interface Attribute extends Token<"attribute"> {
-  value: string;
   // left: string;
   // right: string;
   // op: "" | "=" | "~=" | "|=" | "^=" | "$=" | "*=";
   // quotes: "'" | '"' | "";
+  closed: boolean;
   nodes?: SelectorList;
 }
 export interface Element extends Token<"element"> {
@@ -173,7 +173,7 @@ function handleToken(
       const name = s.take("text");
       const endToken = name || last(firstComments) || type;
       ast.push({
-        type: "pseudo-class",
+        type: "pseudo_class",
         value: name?.value ?? "",
         start: token.start,
         end: name?.end ?? endToken.end,
@@ -185,7 +185,7 @@ function handleToken(
       const endToken = name || last(secondComments) || type;
 
       ast.push({
-        type: "pseudo-element",
+        type: "pseudo_element",
         value: name?.value ?? "",
         start: token.start,
         end: name?.end ?? endToken.end,
@@ -201,16 +201,16 @@ function handleToken(
       [token],
       source
     );
-
+    const closed = last(block)?.type === "]";
     ast.push({
       type: "attribute",
-      value: getText(block, undefined, undefined, source),
+      value:
+        block.length >= 2
+          ? getText(block, 1, block.length - Number(closed), source)
+          : "",
       start: token.start,
       end: last(block)?.end ?? token.end,
-      // left: "TODO",
-      // right: "TODO",
-      // op: "",
-      // quotes: "'",
+      closed: last(block)?.type === "]",
     });
   } else if (isCombinatorToken(token)) {
     // TODO: handle comments here!
@@ -230,7 +230,6 @@ function handleToken(
     } else {
       s.back();
     }
-
     ast.push({
       type: "combinator",
       combinator: current.type,
@@ -238,9 +237,8 @@ function handleToken(
       start: before?.start ?? current.start,
       end: after?.end ?? current.end,
       before:
-        (before?.value ?? "") + current.type === "space"
-          ? current.value.slice(0, -1)
-          : "",
+        (before?.value ?? "") +
+        (current.type === "space" ? current.value.slice(0, -1) : ""),
       after: after?.value ?? "",
     });
   } else if (token.type === "text") {
@@ -438,45 +436,43 @@ export function traverse(
   }
 }
 
-export function stringifyNode(node: SelectorNode): string {
-  if (node.type === "id") {
-    return `#${node.value}${stringifyNested(node)}`;
-  } else if (node.type === "class") {
-    return `.${node.dotComments.map(stringifyNode).join("")}${
+type R = { [K in SelectorNode as K["type"]]: (node: K) => string };
+
+export const printers: R = {
+  id: (node: Id) => `#${node.value}${stringifyNested(node)}`,
+  class: (node: Class) =>
+    `.${node.dotComments.map(stringifyNode).join("")}${
       node.value
-    }${stringifyNested(node)}`;
-  } else if (node.type === "element") {
-    return `${node.value}${
+    }${stringifyNested(node)}`,
+  element: (node: Element) =>
+    `${node.value}${
       node.namespace !== undefined ? `|${node.namespace}` : ""
-    }${stringifyNested(node)}`;
-  } else if (node.type === "combinator") {
-    return `${node.before}${node.value}${node.after}`;
-  } else if (node.type === "attribute") {
-    return `[${node.value}]${stringifyNested(node)}`;
-  } else if (node.type === "pseudo-class") {
-    return `:${node.colonComments.map(stringifyNode).join("")}${
+    }${stringifyNested(node)}`,
+  combinator: (node: Combinator) => `${node.before}${node.value}${node.after}`,
+  attribute: (node: Attribute) =>
+    `[${node.value}${node.closed ? `]${stringifyNested(node)}` : ""}`,
+  pseudo_class: (node: PseudoClass) =>
+    `:${node.colonComments.map(stringifyNode).join("")}${
       node.value
-    }${stringifyNested(node)}`;
-  } else if (node.type === "pseudo-element") {
-    const { first, second } = node.colonComments;
-    return `:${first.map(stringifyNode).join("")}:${second
+    }${stringifyNested(node)}`,
+  pseudo_element: (node: PseudoElement) =>
+    `:${node.colonComments.first
       .map(stringifyNode)
-      .join("")}${node.value}${stringifyNested(node)}`;
-  } else if (node.type === "comment") {
-    return `${node.value}`;
-  } else if (node.type === "star") {
-    return `${node.value}${
+      .join("")}:${node.colonComments.second.map(stringifyNode).join("")}${
+      node.value
+    }${stringifyNested(node)}`,
+  comment: (node: Comment) => node.value,
+  star: (node: Star) =>
+    `${node.value}${
       node.namespace !== undefined ? `|${node.namespace}` : ""
-    }${stringifyNested(node)}`;
-  } else if (node.type === "selector") {
-    return `${node.before}${node.nodes.map(stringifyNode).join("")}${
-      node.after
-    }`;
-  } else if (node.type === "invalid") {
-    return node.value;
-  } else {
-    return "";
-  }
+    }${stringifyNested(node)}`,
+  selector: (node: Selector) =>
+    `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
+  invalid: (node: Invalid) => node.value,
+};
+
+export function stringifyNode(node: SelectorNode): string {
+  return printers[node.type]?.(node as never) ?? "";
 }
 
 export function stringifySelectors(selectors: SelectorList) {
@@ -485,7 +481,7 @@ export function stringifySelectors(selectors: SelectorList) {
 
 function stringifyNested(node: Containers): string {
   if ("nodes" in node) {
-    if (node.nodes) {
+    if (node.nodes?.length) {
       return `(${stringifySelectors(node.nodes)})`;
     } else {
       return `()`;
@@ -493,3 +489,59 @@ function stringifyNested(node: Containers): string {
   }
   return "";
 }
+
+// import { tokenize as ptokenize } from "https://projects.verou.me/parsel/parsel.js";
+// setTimeout(() => {
+//   const inp = `#foo > .bar + div.k1.k2 [id='baz']:hello(2):not(:where(#yolo))::before`;
+
+//   var i = 10000;
+//   console.time("S1");
+//   while (i--) {
+//     ptokenize(inp);
+//   }
+//   console.timeEnd("S1");
+
+//   var i = 10000;
+//   console.time("S0");
+//   while (i--) {
+//     tokenizeSelector(inp);
+//   }
+//   console.timeEnd("S0");
+// }, 1000);
+
+// setTimeout(() => {
+//   const inp = `#foo > .bar + div.k1.k2 [id='baz']:hello(2):not(:where(#yolo))::before`;
+//   const s = tokenizeSelector(inp)[0];
+//   var i = 10000;
+//   console.time("S0");
+//   while (i--) {
+//     stringifyNode(s);
+//   }
+//   console.timeEnd("S0");
+//   var i = 10000;
+//   console.time("S1");
+//   while (i--) {
+//     stringifyNode2(s);
+//   }
+//   console.timeEnd("S1");
+// }, 1000);
+
+// const s = r[0];
+// console.time("1");
+// stringifyNode(s);
+// stringifyNode(s);
+// stringifyNode(s);
+// stringifyNode(s);
+// const rx1 = stringifyNode(s);
+// console.timeEnd("1");
+// console.time("2");
+// stringifyNode2(s);
+// stringifyNode2(s);
+// stringifyNode2(s);
+// stringifyNode2(s);
+// const rx2 = stringifyNode2(s);
+// console.timeEnd("2");
+
+// console.log("match", rx1 === inp && rx2 === inp);
+// console.log("rx1", rx1);
+// console.log("rx2", rx2);
