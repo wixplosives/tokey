@@ -40,22 +40,22 @@ export interface Selector extends Omit<Token<"selector">, "value"> {
 }
 
 export interface PseudoClass extends Token<"pseudo-class"> {
-  nodes?: SelectorNodes;
+  nodes?: SelectorList;
   colonComments: Comment[];
 }
 
 export interface PseudoElement extends Token<"pseudo-element"> {
-  nodes?: SelectorNodes;
+  nodes?: SelectorList;
   colonComments: { first: Comment[]; second: Comment[] };
 }
 
 export interface Class extends Token<"class"> {
-  nodes?: SelectorNodes;
+  nodes?: SelectorList;
   dotComments: SelectorNodes;
 }
 
 export interface Id extends Token<"id"> {
-  nodes?: SelectorNodes;
+  nodes?: SelectorList;
 }
 
 export interface Attribute extends Token<"attribute"> {
@@ -64,16 +64,16 @@ export interface Attribute extends Token<"attribute"> {
   // right: string;
   // op: "" | "=" | "~=" | "|=" | "^=" | "$=" | "*=";
   // quotes: "'" | '"' | "";
-  nodes?: SelectorNodes;
+  nodes?: SelectorList;
 }
 export interface Element extends Token<"element"> {
   namespace?: string;
-  nodes?: SelectorNodes;
+  nodes?: SelectorList;
 }
 
 export interface Star extends Token<"star"> {
   namespace?: string;
-  nodes?: SelectorNodes;
+  nodes?: SelectorList;
 }
 
 export interface Combinator extends Token<"combinator"> {
@@ -89,14 +89,18 @@ export type NamespacedNodes = Element | Star;
 
 export type Containers =
   | NamespacedNodes
-  | Selector
   | Attribute
   | Id
   | Class
   | PseudoClass
   | PseudoElement;
 
-export type SelectorNode = Containers | Combinator | Comment | Invalid;
+export type SelectorNode =
+  | Containers
+  | Selector
+  | Combinator
+  | Comment
+  | Invalid;
 export type SelectorNodes = SelectorNode[];
 export type SelectorList = Selector[];
 
@@ -434,6 +438,58 @@ export function traverse(
   }
 }
 
-export function stringify(node: SelectorNode) {
-  /* TODO */ node;
+export function stringifyNode(node: SelectorNode): string {
+  if (node.type === "id") {
+    return `#${node.value}${stringifyNested(node)}`;
+  } else if (node.type === "class") {
+    return `.${node.dotComments.map(stringifyNode).join("")}${
+      node.value
+    }${stringifyNested(node)}`;
+  } else if (node.type === "element") {
+    return `${node.value}${
+      node.namespace !== undefined ? `|${node.namespace}` : ""
+    }${stringifyNested(node)}`;
+  } else if (node.type === "combinator") {
+    return `${node.before}${node.value}${node.after}`;
+  } else if (node.type === "attribute") {
+    return `[${node.value}]${stringifyNested(node)}`;
+  } else if (node.type === "pseudo-class") {
+    return `:${node.colonComments.map(stringifyNode).join("")}${
+      node.value
+    }${stringifyNested(node)}`;
+  } else if (node.type === "pseudo-element") {
+    const { first, second } = node.colonComments;
+    return `:${first.map(stringifyNode).join("")}:${second
+      .map(stringifyNode)
+      .join("")}${node.value}${stringifyNested(node)}`;
+  } else if (node.type === "comment") {
+    return `${node.value}`;
+  } else if (node.type === "star") {
+    return `${node.value}${
+      node.namespace !== undefined ? `|${node.namespace}` : ""
+    }${stringifyNested(node)}`;
+  } else if (node.type === "selector") {
+    return `${node.before}${node.nodes.map(stringifyNode).join("")}${
+      node.after
+    }`;
+  } else if (node.type === "invalid") {
+    return node.value;
+  } else {
+    return "";
+  }
+}
+
+export function stringifySelectors(selectors: SelectorList) {
+  return selectors.map(stringifyNode).join(",");
+}
+
+function stringifyNested(node: Containers): string {
+  if ("nodes" in node) {
+    if (node.nodes) {
+      return `(${stringifySelectors(node.nodes)})`;
+    } else {
+      return `()`;
+    }
+  }
+  return "";
 }
