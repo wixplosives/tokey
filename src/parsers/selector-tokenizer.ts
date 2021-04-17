@@ -63,7 +63,6 @@ export interface Attribute extends Token<"attribute"> {
   // right: string;
   // op: "" | "=" | "~=" | "|=" | "^=" | "$=" | "*=";
   // quotes: "'" | '"' | "";
-  closed: boolean;
   nodes?: SelectorList;
 }
 export interface Element extends Token<"element"> {
@@ -202,16 +201,22 @@ function handleToken(
       source
     );
     const closed = last(block)?.type === "]";
-    ast.push({
-      type: "attribute",
-      value:
-        block.length >= 2
-          ? getText(block, 1, block.length - Number(closed), source)
-          : "",
-      start: token.start,
-      end: last(block)?.end ?? token.end,
-      closed: last(block)?.type === "]",
-    });
+    if (closed) {
+      ast.push({
+        type: "attribute",
+        value:
+          block.length > 2 ? getText(block, 1, block.length - 1, source) : "",
+        start: token.start,
+        end: last(block)?.end ?? token.end,
+      });
+    } else {
+      ast.push({
+        type: "invalid",
+        value: getText(block, undefined, undefined, source),
+        start: token.start,
+        end: last(block)?.end ?? token.end,
+      });
+    }
   } else if (isCombinatorToken(token)) {
     // TODO: handle comments here!
     t = s.next();
@@ -449,8 +454,7 @@ export const printers: R = {
       node.namespace !== undefined ? `|${node.namespace}` : ""
     }${stringifyNested(node)}`,
   combinator: (node: Combinator) => `${node.before}${node.value}${node.after}`,
-  attribute: (node: Attribute) =>
-    `[${node.value}${node.closed ? `]${stringifyNested(node)}` : ""}`,
+  attribute: (node: Attribute) => `[${node.value}]${stringifyNested(node)}`,
   pseudo_class: (node: PseudoClass) =>
     `:${node.colonComments.map(stringifyNode).join("")}${
       node.value
