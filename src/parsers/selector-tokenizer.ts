@@ -295,8 +295,6 @@ function handleToken(
       source
     );
 
-    //TODO: if last or first is space combinator remove and add before and after
-
     const prev = last(ast);
     const ended = s.peek(0);
     if (
@@ -314,7 +312,7 @@ function handleToken(
         end: ended?.end ?? s.peekBack().end,
       });
     } else {
-      prev.nodes = res;
+      prev.nodes = res.map((s) => Object.assign(s, trimCombs(s.nodes)));
       prev.end = ended.end;
     }
   } else if (isComment(token.type)) {
