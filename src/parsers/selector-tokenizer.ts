@@ -139,6 +139,8 @@ const isDelimiter = (char: string) =>
   char === "{" ||
   char === "}";
 
+// TODO: handle more comments!
+
 function handleToken(
   token: CSSSelectorToken,
   selectors: SelectorList,
@@ -207,6 +209,7 @@ function handleToken(
       // quotes: "'",
     });
   } else if (isCombinatorToken(token)) {
+    // TODO: handle comments here!
     t = s.next();
     let before;
     let after;
@@ -316,7 +319,6 @@ function handleToken(
       prev.end = ended.end;
     }
   } else if (isComment(token.type)) {
-    // TODO: handle comments all over!
     ast.push({
       type: "comment",
       value: token.value,
@@ -414,4 +416,24 @@ function isCombinatorToken(
     token.type === ">" ||
     token.type === "~"
   );
+}
+
+interface TraverseContext {}
+
+export function traverse(
+  node: SelectorNode,
+  visit: (node: SelectorNode, ctx: TraverseContext) => boolean | void,
+  ctx?: TraverseContext
+) {
+  ctx = ctx || {};
+  const r = visit(node, ctx) ?? 3;
+  if (r !== false && "nodes" in node && node.nodes) {
+    for (const child of node.nodes) {
+      traverse(child, visit, ctx);
+    }
+  }
+}
+
+export function stringify(node: SelectorNode) {
+  /* TODO */ node;
 }
