@@ -118,6 +118,9 @@ export function getText(
   upToIndex = -1,
   source?: string
 ) {
+  if (tokens.length === 0) {
+    return "";
+  }
   if (upToIndex === -1) {
     upToIndex = tokens.length;
   }

@@ -41,14 +41,17 @@ export interface Selector extends Omit<Token<"selector">, "value"> {
 
 export interface PseudoClass extends Token<"pseudo-class"> {
   nodes?: SelectorNodes;
+  colonComments: Comment[];
 }
 
 export interface PseudoElement extends Token<"pseudo-element"> {
   nodes?: SelectorNodes;
+  colonComments: { first: Comment[]; second: Comment[] };
 }
 
 export interface Class extends Token<"class"> {
   nodes?: SelectorNodes;
+  dotComments: SelectorNodes;
 }
 
 export interface Id extends Token<"id"> {
@@ -80,6 +83,7 @@ export interface Combinator extends Token<"combinator"> {
 }
 
 export interface Invalid extends Token<"invalid"> {}
+export interface Comment extends Token<"comment"> {}
 
 export type NamespacedNodes = Element | Star;
 
@@ -92,7 +96,7 @@ export type Containers =
   | PseudoClass
   | PseudoElement;
 
-export type SelectorNode = Containers | Combinator | Invalid;
+export type SelectorNode = Containers | Combinator | Comment | Invalid;
 export type SelectorNodes = SelectorNode[];
 export type SelectorList = Selector[];
 
@@ -145,35 +149,43 @@ function handleToken(
   const currentSelector = ensureSelector(selectors, token);
   const ast = currentSelector.nodes;
   if (token.type === ".") {
-    t = s.take("text");
+    const comments = s.takeMany("multi-comment").map(toComment);
+    const name = s.take("text");
     ast.push({
       type: "class",
-      value: t?.value ?? "",
+      value: name?.value ?? "",
       start: token.start,
-      end: t?.end ?? token.end,
+      end: name?.end ?? last(comments)?.end ?? token.end,
+      dotComments: comments,
     });
   } else if (token.type === ":") {
-    let name;
-    let type = [token];
+    const firstComments = s.takeMany("multi-comment").map(toComment);
+    const type = s.take(":") || token;
+    const isClass = token === type;
 
-    t = s.next();
-    if (t.type === ":") {
-      type.push(t);
-      t = s.next();
-    }
-
-    if (t.type === "text") {
-      name = t;
+    if (isClass) {
+      const name = s.take("text");
+      const endToken = name || last(firstComments) || type;
+      ast.push({
+        type: "pseudo-class",
+        value: name?.value ?? "",
+        start: token.start,
+        end: name?.end ?? endToken.end,
+        colonComments: firstComments,
+      });
     } else {
-      s.back();
-    }
+      const secondComments = s.takeMany("multi-comment").map(toComment);
+      const name = s.take("text");
+      const endToken = name || last(secondComments) || type;
 
-    ast.push({
-      type: type.length === 1 ? "pseudo-class" : "pseudo-element",
-      value: name?.value ?? "",
-      start: type[0].start,
-      end: name?.end ?? last(type).end,
-    });
+      ast.push({
+        type: "pseudo-element",
+        value: name?.value ?? "",
+        start: token.start,
+        end: name?.end ?? endToken.end,
+        colonComments: { first: firstComments, second: secondComments },
+      });
+    }
   } else if (token.type === "[") {
     const block = s.run(
       (token, ast) => {
@@ -211,7 +223,6 @@ function handleToken(
     } else {
       s.back();
     }
-    // TODO: handle two combinator one after the other
 
     ast.push({
       type: "combinator",
@@ -293,7 +304,8 @@ function handleToken(
       "nodes" in prev ||
       prev.type === "invalid" ||
       prev.type === "combinator" ||
-      s.peek(0).type !== ")"
+      prev.type === "comment" ||
+      ended.type !== ")"
     ) {
       ast.push({
         type: "invalid",
@@ -307,6 +319,12 @@ function handleToken(
     }
   } else if (isComment(token.type)) {
     // TODO: handle comments all over!
+    ast.push({
+      type: "comment",
+      value: token.value,
+      start: token.start,
+      end: token.end,
+    });
   } else if (token.type === ",") {
     const selector = last(selectors);
     selector.end = token.start;
@@ -344,6 +362,9 @@ function ensureSelector(selectors: SelectorList, startToken: CSSSelectorToken) {
   return lastSelector;
 }
 
+function toComment(token: CSSSelectorToken) {
+  return { ...token, type: "comment" as const };
+}
 function createEmptySelector(): Selector {
   return {
     type: "selector",

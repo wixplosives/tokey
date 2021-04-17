@@ -25,6 +25,13 @@ export class Seeker<T extends Token<unknown>> {
     }
     return undefined;
   }
+  takeMany(type: T["type"]) {
+    const tokens = [];
+    while (this.peek().type === type) {
+      tokens.push(this.next());
+    }
+    return tokens;
+  }
   flatBlock(
     start: string,
     end: string,
