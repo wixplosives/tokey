@@ -278,7 +278,9 @@ function handleToken(
       s.back();
     }
     if (name && (prev?.type === "element" || prev?.type === "star")) {
-      prev.namespace = name.value;
+      prev.type = "element";
+      prev.namespace = prev.value;
+      prev.value = name.value;
       prev.end = name.end;
     } else {
       ast.push({
@@ -323,8 +325,8 @@ function handleToken(
       });
     } else {
       if (res.length) {
-        const lastSelector = last(res)
-        Object.assign(lastSelector, trimCombs(lastSelector.nodes))
+        const lastSelector = last(res);
+        Object.assign(lastSelector, trimCombs(lastSelector.nodes));
       }
       prev.nodes = res;
       prev.end = ended.end;
@@ -454,8 +456,8 @@ export const printers: R = {
       node.value
     }${stringifyNested(node)}`,
   element: (node: Element) =>
-    `${node.value}${
-      node.namespace !== undefined ? `|${node.namespace}` : ""
+    `${node.namespace !== undefined ? `${node.namespace}|` : ""}${
+      node.value
     }${stringifyNested(node)}`,
   combinator: (node: Combinator) => `${node.before}${node.value}${node.after}`,
   attribute: (node: Attribute) => `[${node.value}]${stringifyNested(node)}`,

@@ -86,18 +86,35 @@ test(`*`, tokenizeSelector, [
   }),
 ]);
 
-test(`*|ns-x`, tokenizeSelector, [
+test(`ns|div`, tokenizeSelector, [
   createNode({
     type: `selector`,
     start: 0,
     end: 6,
     nodes: [
       createNode({
-        type: `star`,
-        value: `*`,
+        type: `element`,
+        value: `div`,
         start: 0,
         end: 6,
-        namespace: `ns-x`,
+        namespace: `ns`,
+      }),
+    ],
+  }),
+]);
+
+test(`*|div`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 5,
+    nodes: [
+      createNode({
+        type: `element`,
+        value: `div`,
+        start: 0,
+        end: 5,
+        namespace: `*`,
       }),
     ],
   }),
@@ -130,23 +147,6 @@ test(`someelement`, tokenizeSelector, [
         value: `someelement`,
         start: 0,
         end: 11,
-      }),
-    ],
-  }),
-]);
-
-test(`some-element|ns-y`, tokenizeSelector, [
-  createNode({
-    type: `selector`,
-    start: 0,
-    end: 17,
-    nodes: [
-      createNode({
-        type: `element`,
-        value: `some-element`,
-        start: 0,
-        end: 17,
-        namespace: `ns-y`,
       }),
     ],
   }),
