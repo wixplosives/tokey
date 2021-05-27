@@ -322,7 +322,11 @@ function handleToken(
         end: ended?.end ?? s.peekBack().end,
       });
     } else {
-      prev.nodes = res.map((s) => Object.assign(s, trimCombs(s.nodes)));
+      if (res.length) {
+        const lastSelector = last(res)
+        Object.assign(lastSelector, trimCombs(lastSelector.nodes))
+      }
+      prev.nodes = res;
       prev.end = ended.end;
     }
   } else if (isComment(token.type)) {
