@@ -5,3 +5,4 @@ import "./css-value-tokenizer.spec";
 import "./strip-comments.spec";
 import "./separated-shallow-list.spec";
 import "./helpers.trim-tokens.spec";
+import "./selector-tokenizer.spec";
