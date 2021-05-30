@@ -7,11 +7,16 @@ import type {
   SelectorNode,
   Selector,
   SelectorList,
+  Comment
 } from "../src/parsers/selector-tokenizer";
 
 function createNode<TYPE extends SelectorNode["type"]>(
   expected: Partial<SelectorNode> & { type: TYPE }
-): TYPE extends "selector" ? Selector : SelectorNode {
+): TYPE extends "selector" 
+  ? Selector
+  : TYPE extends "comment"
+    ? Comment
+  : SelectorNode {
   const defaults: SelectorNode = {
     type: expected.type,
     start: 0,
@@ -41,7 +46,7 @@ function createNode<TYPE extends SelectorNode["type"]>(
   if (defaults.type === `pseudo_element`) {
     defaults.colonComments = { first: [], second: [] };
   }
-  if (defaults.type === `selector` || defaults.type === `combinator`) {
+  if (defaults.type === `selector` || defaults.type === `combinator` || defaults.type === `comment`) {
     defaults.before = ``;
     defaults.after = ``;
   }
@@ -467,18 +472,18 @@ test(`./*comment1???*//*???comment2*/classX`, tokenizeSelector, [
         start: 0,
         end: 37,
         dotComments: [
-          {
+          createNode({
             type: `comment`,
             value: `/*comment1???*/`,
             start: 1,
             end: 16,
-          },
-          {
+          }),
+          createNode({
             type: `comment`,
             value: `/*???comment2*/`,
             start: 16,
             end: 31,
-          },
+          }),
         ],
       }),
     ],
@@ -497,18 +502,18 @@ test(`:/*comment1???*//*???comment2*/pseudo-class`, tokenizeSelector, [
         start: 0,
         end: 43,
         colonComments: [
-          {
+          createNode({
             type: `comment`,
             value: `/*comment1???*/`,
             start: 1,
             end: 16,
-          },
-          {
+          }),
+          createNode({
             type: `comment`,
             value: `/*???comment2*/`,
             start: 16,
             end: 31,
-          },
+          }),
         ],
       }),
     ],
@@ -528,34 +533,157 @@ test(`:/*c1*//*c2*/:/*c3*//*c4*/pseudo-element`, tokenizeSelector, [
         end: 40,
         colonComments: {
           first: [
-            {
+            createNode({
               type: `comment`,
               value: `/*c1*/`,
               start: 1,
               end: 7,
-            },
-            {
+            }),
+            createNode({
               type: `comment`,
               value: `/*c2*/`,
               start: 7,
               end: 13,
-            },
+            }),
           ],
           second: [
-            {
+            createNode({
               type: `comment`,
               value: `/*c3*/`,
               start: 14,
               end: 20,
-            },
-            {
+            }),
+            createNode({
               type: `comment`,
               value: `/*c4*/`,
               start: 20,
               end: 26,
-            },
+            }),
           ],
         },
+      }),
+    ],
+  }),
+]);
+
+test(`*+/*c1*/+*`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 10,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 1,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 1,
+        end: 2,
+      }),
+      createNode({
+        type: `comment`,
+        value:`/*c1*/`,
+        start: 2,
+        end: 8,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 8,
+        end: 9,
+        invalid: true,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 9,
+        end: 10,
+      }),
+    ],
+  }),
+]);
+
+test(`*+/*c1*/  *`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 11,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 1,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 1,
+        end: 2,
+      }),
+      createNode({
+        type: `comment`,
+        value:`/*c1*/`,
+        start: 2,
+        end: 10,
+        after: `  `,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 10,
+        end: 11,
+      }),
+    ],
+  }),
+]);
+
+test(`*+ /*c1*/ /*c2*/ *`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 18,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 1,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 1,
+        end: 3,
+        after: ` `,
+      }),
+      createNode({
+        type: `comment`,
+        value:`/*c1*/`,
+        start: 3,
+        end: 10,
+        after: ` `,
+      }),
+      createNode({
+        type: `comment`,
+        value:`/*c2*/`,
+        start: 10,
+        end: 17,
+        after: ` `,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 17,
+        end: 18,
       }),
     ],
   }),

@@ -83,7 +83,10 @@ export interface Combinator extends Token<"combinator"> {
 }
 
 export interface Invalid extends Token<"invalid"> {}
-export interface Comment extends Token<"comment"> {}
+export interface Comment extends Token<"comment"> {
+  before: string;
+  after: string;
+}
 
 export type NamespacedNodes = Element | Star;
 
@@ -155,7 +158,7 @@ function handleToken(
   const currentSelector = ensureSelector(selectors, token);
   const ast = currentSelector.nodes;
   if (token.type === ".") {
-    const comments = s.takeMany("multi-comment").map(toComment);
+    const comments = s.takeMany("multi-comment").map(createCommentAst);
     const name = s.take("text");
     ast.push({
       type: "class",
@@ -165,7 +168,7 @@ function handleToken(
       dotComments: comments,
     });
   } else if (token.type === ":") {
-    const firstComments = s.takeMany("multi-comment").map(toComment);
+    const firstComments = s.takeMany("multi-comment").map(createCommentAst);
     const type = s.take(":") || token;
     const isClass = token === type;
 
@@ -180,7 +183,7 @@ function handleToken(
         colonComments: firstComments,
       });
     } else {
-      const secondComments = s.takeMany("multi-comment").map(toComment);
+      const secondComments = s.takeMany("multi-comment").map(createCommentAst);
       const name = s.take("text");
       const endToken = name || last(secondComments) || type;
 
@@ -220,7 +223,7 @@ function handleToken(
     }
   } else if (isCombinatorToken(token)) {
     let lastCombinatorAst = createCombinatorAst(token);
-    let lastAst = lastCombinatorAst;
+    let lastAst: Combinator | Comment = lastCombinatorAst;
     ast.push(lastCombinatorAst);
     let next = s.next();
     while (next) {
@@ -248,8 +251,10 @@ function handleToken(
           lastAst = lastCombinatorAst;
           ast.push(lastCombinatorAst);
         }
+      } else if (isComment(next.type)) {
+        lastAst = createCommentAst(next);
+        ast.push(lastAst);
       } else {
-        // TODO: handle comments here!
         break;
       }
       next = s.next();
@@ -344,12 +349,7 @@ function handleToken(
       prev.end = ended.end;
     }
   } else if (isComment(token.type)) {
-    ast.push({
-      type: "comment",
-      value: token.value,
-      start: token.start,
-      end: token.end,
-    });
+    ast.push(createCommentAst(token));
   } else if (token.type === ",") {
     const selector = last(selectors);
     selector.end = token.start;
@@ -387,9 +387,6 @@ function ensureSelector(selectors: SelectorList, startToken: CSSSelectorToken) {
   return lastSelector;
 }
 
-function toComment(token: CSSSelectorToken) {
-  return { ...token, type: "comment" as const };
-}
 function createEmptySelector(): Selector {
   return {
     type: "selector",
@@ -415,6 +412,16 @@ function createCombinatorAst({
     before: ``,
     after: type === `space` ? value.slice(1) : ``,
     invalid: false,
+  };
+}
+function createCommentAst({ value, start, end }: CSSSelectorToken): Comment {
+  return {
+    type: `comment`,
+    value,
+    start,
+    end,
+    before: ``,
+    after: ``,
   };
 }
 
@@ -500,7 +507,7 @@ export const printers: R = {
       .join("")}:${node.colonComments.second.map(stringifyNode).join("")}${
       node.value
     }${stringifyNested(node)}`,
-  comment: (node: Comment) => node.value,
+  comment: ({ before, value, after }: Comment) => `${before}${value}${after}`,
   star: (node: Star) =>
     `${node.value}${
       node.namespace !== undefined ? `|${node.namespace}` : ""
