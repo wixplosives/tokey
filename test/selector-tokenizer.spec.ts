@@ -45,6 +45,9 @@ function createNode<TYPE extends SelectorNode["type"]>(
     defaults.before = ``;
     defaults.after = ``;
   }
+  if (defaults.type === `combinator`) {
+    defaults.invalid = false;
+  }
   return {
     ...defaults,
     ...(expected as any),
@@ -676,6 +679,192 @@ test(`*>.direct-child-class`, tokenizeSelector, [
   }),
 ]);
 
+test(`*++*`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 4,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 1,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 1,
+        end: 2,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 2,
+        end: 3,
+        invalid: true,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 3,
+        end: 4,
+      }),
+    ],
+  }),
+]);
+
+test(`*+*+*`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 5,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 1,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 1,
+        end: 2,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 2,
+        end: 3,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 3,
+        end: 4,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 4,
+        end: 5,
+      }),
+    ],
+  }),
+]);
+
+test(`*   *`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 5,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 1,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `space`,
+        value: ` `,
+        start: 1,
+        end: 4,
+        after: `  `,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 4,
+        end: 5,
+      }),
+    ],
+  }),
+]);
+
+test(`* + *`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 5,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 1,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 1,
+        end: 4,
+        before: ` `,
+        after: ` `,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 4,
+        end: 5,
+      }),
+    ],
+  }),
+]);
+
+test(`*+~> *`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 6,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 1,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 1,
+        end: 2,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `~`,
+        value: `~`,
+        start: 2,
+        end: 3,
+        invalid: true,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `>`,
+        value: `>`,
+        start: 3,
+        end: 5,
+        after: ` `,
+        invalid: true,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 5,
+        end: 6,
+      }),
+    ],
+  }),
+]);
+
 // invalid
 
 test(`:pseudo(`, tokenizeSelector, [
@@ -836,8 +1025,7 @@ test(`*    .a  + .b`, tokenizeSelector, [
         type: `combinator`,
         combinator: `space`,
         value: ` `,
-        before: `   `,
-        after: ``,
+        after: `   `,
         start: 1,
         end: 5,
       }),

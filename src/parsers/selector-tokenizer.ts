@@ -79,6 +79,7 @@ export interface Combinator extends Token<"combinator"> {
   combinator: "space" | "+" | "~" | ">";
   before: string;
   after: string;
+  invalid: boolean;
 }
 
 export interface Invalid extends Token<"invalid"> {}
@@ -218,34 +219,45 @@ function handleToken(
       });
     }
   } else if (isCombinatorToken(token)) {
-    // TODO: handle comments here!
-    t = s.next();
-    let before;
-    let after;
-    let current = token;
-    if (current.type === "space" && isCombinatorToken(t)) {
-      before = current;
-      current = t;
-      t = s.next();
-      if (t.type === "space") {
-        after = t;
+    let lastCombinatorAst = createCombinatorAst(token);
+    let lastAst = lastCombinatorAst;
+    ast.push(lastCombinatorAst);
+    let next = s.next();
+    while (next) {
+      if (isCombinatorToken(next)) {
+        if (next.type === `space`) {
+          // add space to the last ast node
+          lastAst.after += next.value;
+          lastAst.end += next.value.length;
+        } else if (
+          lastAst === lastCombinatorAst &&
+          lastAst.combinator === "space"
+        ) {
+          // combine next combinator into previous (space)
+          const nextCombinator = createCombinatorAst(next);
+          lastCombinatorAst.combinator = nextCombinator.combinator;
+          lastCombinatorAst.value = nextCombinator.value;
+          lastCombinatorAst.before +=
+            ` ` + lastCombinatorAst.after + nextCombinator.before;
+          lastCombinatorAst.after = nextCombinator.after;
+          lastCombinatorAst.end = nextCombinator.end;
+        } else {
+          // add invalid combinator
+          lastCombinatorAst = createCombinatorAst(next);
+          lastCombinatorAst.invalid = true;
+          lastAst = lastCombinatorAst;
+          ast.push(lastCombinatorAst);
+        }
       } else {
-        s.back();
+        // TODO: handle comments here!
+        break;
       }
-    } else {
+      next = s.next();
+    }
+    // put back any unrelated token
+    if (next && !isCombinatorToken(next)) {
       s.back();
     }
-    ast.push({
-      type: "combinator",
-      combinator: current.type,
-      value: current.type === "space" ? current.value.slice(-1) : current.value,
-      start: before?.start ?? current.start,
-      end: after?.end ?? current.end,
-      before:
-        (before?.value ?? "") +
-        (current.type === "space" ? current.value.slice(0, -1) : ""),
-      after: after?.value ?? "",
-    });
   } else if (token.type === "text") {
     ast.push({
       type: "element",
@@ -386,6 +398,23 @@ function createEmptySelector(): Selector {
     before: "",
     after: "",
     nodes: [],
+  };
+}
+function createCombinatorAst({
+  value,
+  type,
+  start,
+  end,
+}: CSSSelectorToken & Token<"space" | "+" | ">" | "~">): Combinator {
+  return {
+    type: `combinator`,
+    combinator: type,
+    value: type === `space` ? ` ` : value,
+    start,
+    end,
+    before: ``,
+    after: type === `space` ? value.slice(1) : ``,
+    invalid: false,
   };
 }
 
