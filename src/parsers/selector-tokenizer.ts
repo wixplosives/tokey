@@ -65,13 +65,21 @@ export interface Attribute extends Token<"attribute"> {
   // quotes: "'" | '"' | "";
   nodes?: SelectorList;
 }
+
+interface Namespace {
+  value: string;
+  beforeComments: Comment[];
+  afterComments: Comment[];
+  invalid?: "namespace" | "target" | "namespace,target" | "";
+}
+
 export interface Element extends Token<"element"> {
-  namespace?: string;
+  namespace?: Namespace;
   nodes?: SelectorList;
 }
 
 export interface Star extends Token<"star"> {
-  namespace?: string;
+  namespace?: Namespace;
   nodes?: SelectorList;
 }
 
@@ -286,26 +294,92 @@ function handleToken(
       end: token.end,
     });
   } else if (token.type === "|") {
-    let name;
-    const prev = last(ast);
-    t = s.next();
-    if (t.type === "text") {
-      name = t;
-    } else {
-      s.back();
+    // search backwards compatible namespace in ast
+    let prevAst: NamespacedNodes | undefined;
+    let prevInvalidAst: SelectorNode | undefined;
+    const beforeComments: Comment[] = [];
+    for (let i = ast.length - 1; i >= 0; --i) {
+      const current = ast[i];
+      if (isNamespacedAst(current)) {
+        if (current.namespace) {
+          // already namespaced
+          prevInvalidAst = current;
+        } else {
+          // merge with previous
+          prevAst = current;
+        }
+        break;
+      } else if (
+        current.type === `comment` &&
+        current.before === `` &&
+        current.after === ``
+      ) {
+        beforeComments.unshift(current);
+      } else {
+        prevInvalidAst = current;
+        break;
+      }
     }
-    if (name && (prev?.type === "element" || prev?.type === "star")) {
-      prev.type = "element";
-      prev.namespace = prev.value;
-      prev.value = name.value;
-      prev.end = name.end;
+    // search forward target token
+    let target: CSSSelectorToken | undefined;
+    let searchIndex = 1;
+    const potentialAfterComments: CSSSelectorToken[] = [];
+    while (true) {
+      let nextToken = s.peek(searchIndex);
+      if (isComment(nextToken.type)) {
+        potentialAfterComments.push(nextToken);
+      } else if (isNamespacedToken(nextToken)) {
+        target = nextToken;
+        break;
+      } else {
+        // space or end of tokens
+        break;
+      }
+      searchIndex++;
+    }
+    // create/update ast
+    const validNamespace = !prevInvalidAst;
+    const validTarget = !!target;
+    const type = target?.type === `*` ? `star` : `element`;
+    let invalid: NonNullable<Namespace["invalid"]> = ``;
+    // remove before/after pipe comments
+    if (validNamespace) {
+      ast.splice(ast.length - beforeComments.length, beforeComments.length);
     } else {
-      ast.push({
-        type: "invalid",
-        value: token.value + (name?.value ?? ""),
+      invalid = `namespace`;
+    }
+    if (validTarget) {
+      potentialAfterComments.forEach(() => s.next());
+      s.next();
+    } else {
+      invalid = invalid ? `namespace,target` : `target`;
+    }
+    // create new ast or modify the prev
+    const nsAst: NamespacedNodes =
+      prevAst ||
+      ({
+        type,
+        value: ``,
         start: token.start,
-        end: name?.end ?? token.end,
-      });
+        end: target?.end || token.end,
+      } as NamespacedNodes);
+    nsAst.type = type;
+    nsAst.namespace = {
+      value: prevAst?.value || ``,
+      beforeComments: validNamespace ? beforeComments : [],
+      afterComments: validTarget
+        ? potentialAfterComments.map(createCommentAst)
+        : [],
+    };
+    nsAst.value = target?.value || ``;
+    nsAst.end = target?.end || token.end;
+    // set invalid
+    if (invalid) {
+      nsAst.namespace!.invalid = invalid;
+    }
+    // add ast if not modified
+    if (!prevAst) {
+      ast.push(nsAst);
     }
   } else if (token.type === "(") {
     const res = s.run<SelectorList>(
@@ -467,6 +541,15 @@ function isCombinatorToken(
   );
 }
 
+function isNamespacedToken(
+  token: CSSSelectorToken
+): token is Token<"text" | "*"> {
+  return token.type === `*` || token.type === `text`;
+}
+function isNamespacedAst(token: SelectorNode): token is NamespacedNodes {
+  return token.type === `star` || token.type === `element`;
+}
+
 interface TraverseContext {}
 
 export function traverse(
@@ -492,9 +575,7 @@ export const printers: R = {
       node.value
     }${stringifyNested(node)}`,
   element: (node: Element) =>
-    `${node.namespace !== undefined ? `${node.namespace}|` : ""}${
-      node.value
-    }${stringifyNested(node)}`,
+    `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
   combinator: (node: Combinator) => `${node.before}${node.value}${node.after}`,
   attribute: (node: Attribute) => `[${node.value}]${stringifyNested(node)}`,
   pseudo_class: (node: PseudoClass) =>
@@ -509,9 +590,7 @@ export const printers: R = {
     }${stringifyNested(node)}`,
   comment: ({ before, value, after }: Comment) => `${before}${value}${after}`,
   star: (node: Star) =>
-    `${node.value}${
-      node.namespace !== undefined ? `|${node.namespace}` : ""
-    }${stringifyNested(node)}`,
+    `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
   selector: (node: Selector) =>
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
   invalid: (node: Invalid) => node.value,
@@ -534,6 +613,20 @@ function stringifyNested(node: Containers): string {
     }
   }
   return "";
+}
+function stringifyNamespace({ namespace }: NamespacedNodes): string {
+  let ns = ``;
+  if (namespace) {
+    ns += namespace.value;
+    for (const comment of namespace.beforeComments) {
+      ns += printers.comment(comment);
+    }
+    ns += `|`;
+    for (const comment of namespace.afterComments) {
+      ns += printers.comment(comment);
+    }
+  }
+  return ns;
 }
 
 // import { tokenize as ptokenize } from "https://projects.verou.me/parsel/parsel.js";

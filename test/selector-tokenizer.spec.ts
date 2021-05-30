@@ -7,15 +7,15 @@ import type {
   SelectorNode,
   Selector,
   SelectorList,
-  Comment
+  Comment,
 } from "../src/parsers/selector-tokenizer";
 
 function createNode<TYPE extends SelectorNode["type"]>(
   expected: Partial<SelectorNode> & { type: TYPE }
-): TYPE extends "selector" 
+): TYPE extends "selector"
   ? Selector
   : TYPE extends "comment"
-    ? Comment
+  ? Comment
   : SelectorNode {
   const defaults: SelectorNode = {
     type: expected.type,
@@ -37,8 +37,8 @@ function createNode<TYPE extends SelectorNode["type"]>(
   if (defaults.type === `class`) {
     defaults.dotComments = [];
   }
-  if (defaults.type === `star`) {
-    // defaults.namespace = ``;
+  if (defaults.type === `star` || defaults.type === `element`) {
+    // defaults.namespace = { value: ``, beforeComments: [], afterComments: [] };
   }
   if (defaults.type === `pseudo_class`) {
     defaults.colonComments = [];
@@ -46,7 +46,11 @@ function createNode<TYPE extends SelectorNode["type"]>(
   if (defaults.type === `pseudo_element`) {
     defaults.colonComments = { first: [], second: [] };
   }
-  if (defaults.type === `selector` || defaults.type === `combinator` || defaults.type === `comment`) {
+  if (
+    defaults.type === `selector` ||
+    defaults.type === `combinator` ||
+    defaults.type === `comment`
+  ) {
     defaults.before = ``;
     defaults.after = ``;
   }
@@ -89,40 +93,6 @@ test(`*`, tokenizeSelector, [
         value: `*`, // is this necessary?
         start: 0,
         end: 1,
-      }),
-    ],
-  }),
-]);
-
-test(`ns|div`, tokenizeSelector, [
-  createNode({
-    type: `selector`,
-    start: 0,
-    end: 6,
-    nodes: [
-      createNode({
-        type: `element`,
-        value: `div`,
-        start: 0,
-        end: 6,
-        namespace: `ns`,
-      }),
-    ],
-  }),
-]);
-
-test(`*|div`, tokenizeSelector, [
-  createNode({
-    type: `selector`,
-    start: 0,
-    end: 5,
-    nodes: [
-      createNode({
-        type: `element`,
-        value: `div`,
-        start: 0,
-        end: 5,
-        namespace: `*`,
       }),
     ],
   }),
@@ -442,6 +412,92 @@ test(`[attr-x="attr-value"]`, tokenizeSelector, [
   }),
 ]);
 
+// namespace
+
+test(`ns|div`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 6,
+    nodes: [
+      createNode({
+        type: `element`,
+        value: `div`,
+        start: 0,
+        end: 6,
+        namespace: {
+          value: `ns`,
+          beforeComments: [],
+          afterComments: [],
+        },
+      }),
+    ],
+  }),
+]);
+
+test(`*|div`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 5,
+    nodes: [
+      createNode({
+        type: `element`,
+        value: `div`,
+        start: 0,
+        end: 5,
+        namespace: {
+          value: `*`,
+          beforeComments: [],
+          afterComments: [],
+        },
+      }),
+    ],
+  }),
+]);
+
+test(`|div`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 4,
+    nodes: [
+      createNode({
+        type: `element`,
+        value: `div`,
+        start: 0,
+        end: 4,
+        namespace: {
+          value: ``,
+          beforeComments: [],
+          afterComments: [],
+        },
+      }),
+    ],
+  }),
+]);
+
+test(`ns|*`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 4,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 4,
+        namespace: {
+          value: `ns`,
+          beforeComments: [],
+          afterComments: [],
+        },
+      }),
+    ],
+  }),
+]);
+
 // comments
 
 test(`/* comment  */`, tokenizeSelector, [
@@ -587,7 +643,7 @@ test(`*+/*c1*/+*`, tokenizeSelector, [
       }),
       createNode({
         type: `comment`,
-        value:`/*c1*/`,
+        value: `/*c1*/`,
         start: 2,
         end: 8,
       }),
@@ -630,7 +686,7 @@ test(`*+/*c1*/  *`, tokenizeSelector, [
       }),
       createNode({
         type: `comment`,
-        value:`/*c1*/`,
+        value: `/*c1*/`,
         start: 2,
         end: 10,
         after: `  `,
@@ -667,14 +723,14 @@ test(`*+ /*c1*/ /*c2*/ *`, tokenizeSelector, [
       }),
       createNode({
         type: `comment`,
-        value:`/*c1*/`,
+        value: `/*c1*/`,
         start: 3,
         end: 10,
         after: ` `,
       }),
       createNode({
         type: `comment`,
-        value:`/*c2*/`,
+        value: `/*c2*/`,
         start: 10,
         end: 17,
         after: ` `,
@@ -684,6 +740,53 @@ test(`*+ /*c1*/ /*c2*/ *`, tokenizeSelector, [
         value: `*`,
         start: 17,
         end: 18,
+      }),
+    ],
+  }),
+]);
+
+test(`*/*c1*//*c2*/|/*c3*//*c4*/div`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 29,
+    nodes: [
+      createNode({
+        type: `element`,
+        value: `div`,
+        start: 0,
+        end: 29,
+        namespace: {
+          value: `*`,
+          beforeComments: [
+            createNode({
+              type: `comment`,
+              value: `/*c1*/`,
+              start: 1,
+              end: 7,
+            }),
+            createNode({
+              type: `comment`,
+              value: `/*c2*/`,
+              start: 7,
+              end: 13,
+            }),
+          ],
+          afterComments: [
+            createNode({
+              type: `comment`,
+              value: `/*c3*/`,
+              start: 14,
+              end: 20,
+            }),
+            createNode({
+              type: `comment`,
+              value: `/*c4*/`,
+              start: 20,
+              end: 26,
+            }),
+          ],
+        },
       }),
     ],
   }),
@@ -1034,6 +1137,130 @@ test(`::pseudo(`, tokenizeSelector, [
         value: `(`,
         start: 8,
         end: 9,
+      }),
+    ],
+  }),
+]);
+
+test(`.ns|*`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 5,
+    nodes: [
+      createNode({
+        type: `class`,
+        value: `ns`,
+        start: 0,
+        end: 3,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 3,
+        end: 5,
+        namespace: {
+          value: ``,
+          beforeComments: [],
+          afterComments: [],
+          invalid: `namespace`,
+        },
+      }),
+    ],
+  }),
+]);
+
+test(`ns|`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 3,
+    nodes: [
+      createNode({
+        type: `element`,
+        value: ``,
+        start: 0,
+        end: 3,
+        namespace: {
+          value: `ns`,
+          beforeComments: [],
+          afterComments: [],
+          invalid: `target`,
+        },
+      }),
+    ],
+  }),
+]);
+
+test(`:x|`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 3,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `x`,
+        start: 0,
+        end: 2,
+      }),
+      createNode({
+        type: `element`,
+        value: ``,
+        start: 2,
+        end: 3,
+        namespace: {
+          value: ``,
+          beforeComments: [],
+          afterComments: [],
+          invalid: `namespace,target`,
+        },
+      }),
+    ],
+  }),
+]);
+
+test(`ns|||div`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 8,
+    nodes: [
+      createNode({
+        type: `element`,
+        value: ``,
+        start: 0,
+        end: 3,
+        namespace: {
+          value: `ns`,
+          beforeComments: [],
+          afterComments: [],
+          invalid: `target`,
+        },
+      }),
+      createNode({
+        type: `element`,
+        value: ``,
+        start: 3,
+        end: 4,
+        namespace: {
+          value: ``,
+          beforeComments: [],
+          afterComments: [],
+          invalid: `namespace,target`,
+        },
+      }),
+      createNode({
+        type: `element`,
+        value: `div`,
+        start: 4,
+        end: 8,
+        namespace: {
+          value: ``,
+          beforeComments: [],
+          afterComments: [],
+          invalid: `namespace`,
+        },
       }),
     ],
   }),
