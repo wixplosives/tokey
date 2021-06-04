@@ -11,11 +11,16 @@ import {
 } from "../helpers";
 import type { Token, Descriptors } from "../types";
 
-type Delimiters = "(" | ")" | ",";
+export type Delimiters = "(" | ")" | "," | "/";
 export type SeparatorTokens = "line-comment" | "multi-comment" | "space";
 export type CSSValueCodeToken = Token<Descriptors | Delimiters>;
 export type CSSSeparatorTokens = Token<SeparatorTokens>;
-export type CSSCodeAst = StringNode | MethodCall | TextNode | CommaNode;
+export type CSSCodeAst =
+  | StringNode
+  | MethodCall
+  | TextNode
+  | CommaNode
+  | SlashNode;
 export interface ASTNode<Types = Descriptors> {
   type: Types;
   text: string;
@@ -32,6 +37,9 @@ export interface MethodCall extends ASTNode<"call"> {
 export interface StringNode extends ASTNode<"string"> {}
 export interface TextNode extends ASTNode<"text"> {}
 export interface CommaNode extends ASTNode<","> {}
+export interface SlashNode extends ASTNode<"/"> {}
+
+export const URL_CALL_TOKEN = "url";
 
 export const isSeparatorToken = (
   token: CSSValueCodeToken
@@ -64,7 +72,7 @@ export function createCssValueAST(
 }
 
 const isDelimiter = (char: string) =>
-  char === "(" || char === ")" || char === ",";
+  char === "(" || char === ")" || char === "," || char === "/";
 
 const shouldAddToken = () => true;
 
@@ -93,6 +101,7 @@ function parseDeclValueTokens(
       const res = parseDeclValueTokens(source, tokens, i + 2);
       const methodText = getText(tokens, i, res.stoppedAtIdx + 1, source);
       i = res.stoppedAtIdx;
+      res.ast = getUrlTokensAst(token, res.ast);
       ast.push({
         type: "call",
         text: methodText,
@@ -121,4 +130,46 @@ function parseDeclValueTokens(
     ast,
     stoppedAtIdx: tokens.length,
   };
+}
+
+function getUrlTokensAst(
+  token: CSSValueCodeToken,
+  ast: CSSCodeAst[]
+): CSSCodeAst[] {
+  if (token.value !== URL_CALL_TOKEN || ast.length === 0) {
+    return ast;
+  }
+
+  const pushFixedTextNodeToFixedAst = () => {
+    if (fixedTextNode) {
+      fixedTextNode.end = fixedTextNode.start + fixedTextNode.text.length;
+      fixedAst.push(fixedTextNode);
+      fixedTextNode = null;
+    }
+  };
+
+  let fixedTextNode: TextNode | null = null;
+  const fixedAst: CSSCodeAst[] = [];
+  for (const node of ast) {
+    if (node.type === "/" || node.type === "text") {
+      if (!fixedTextNode) {
+        fixedTextNode = {
+          type: "text",
+          text: "",
+          before: node.before,
+          after: [],
+          start: node.start,
+          end: -1,
+        };
+      }
+      fixedTextNode.text += node.text;
+    } else {
+      pushFixedTextNodeToFixedAst();
+      fixedAst.push(node);
+    }
+  }
+
+  pushFixedTextNodeToFixedAst();
+
+  return fixedAst;
 }

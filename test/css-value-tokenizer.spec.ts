@@ -380,3 +380,40 @@ test("var( a,/*a comment*/ b)", createCssValueAST, [
     after: [],
   },
 ]);
+
+
+test("0% 0%/auto auto", createCssValueAST, [
+  { text: "0%", type: "text", start: 0, end: 2, before: [], after: [] },
+  {
+    text: "0%",
+    type: "text",
+    start: 3,
+    end: 5,
+    before: [
+      {
+        type: "space",
+        value: " ",
+        start: 2,
+        end: 3,
+      },
+    ],
+    after: [],
+  },
+  { text: "/", type: "/", start: 5, end: 6, before: [], after: [] },
+  { text: "auto", type: "text", start: 6, end: 10, before: [], after: [] },
+  {
+    text: "auto",
+    type: "text",
+    start: 11,
+    end: 15,
+    before: [
+      {
+        type: "space",
+        value: " ",
+        start: 10,
+        end: 11,
+      },
+    ],
+    after: [],
+  },
+]);
