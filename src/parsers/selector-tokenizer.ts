@@ -96,6 +96,13 @@ export interface Comment extends Token<"comment"> {
   after: string;
 }
 
+export interface NthPart extends Token<"nth_part"> {
+  subtype: "step" | "offset" | "dash" | "of";
+  before: string;
+  after: string;
+  invalid?: boolean;
+}
+
 export type NamespacedNodes = Element | Star;
 
 export type Containers =
@@ -111,7 +118,8 @@ export type SelectorNode =
   | Selector
   | Combinator
   | Comment
-  | Invalid;
+  | Invalid
+  | NthPart;
 export type SelectorNodes = SelectorNode[];
 export type SelectorList = Selector[];
 
@@ -154,6 +162,12 @@ const isDelimiter = (char: string) =>
   char === "{" ||
   char === "}";
 
+const nthPseudoClasses = new Set([
+  `nth-child`,
+  `nth-last-child`,
+  `nth-of-type`,
+  `nth-last-of-type`,
+]);
 // TODO: handle more comments!
 
 function handleToken(
@@ -382,7 +396,41 @@ function handleToken(
       ast.push(nsAst);
     }
   } else if (token.type === "(") {
-    const res = s.run<SelectorList>(
+    const prev = last(ast);
+    const res: SelectorList = [];
+    // handle nth selector
+    if (
+      prev &&
+      prev.type === `pseudo_class` &&
+      nthPseudoClasses.has(prev.value) &&
+      s.peek().type !== `)`
+    ) {
+      // collect "An+B of" expression
+      const nthSelector = ensureSelector(res, s.peek());
+      const nthParser = new NthHandler(nthSelector, s);
+      s.run(
+        (token) => {
+          if (nthParser.state === `selector`) {
+            // got to selector, push back and stop
+            s.back();
+            return false;
+          }
+          return nthParser.handleToken(token);
+        },
+        nthSelector,
+        source
+      );
+      // setup next selector
+      if (s.peek().type !== `)`) {
+        nthSelector.end = last(nthSelector.nodes)?.end || nthSelector.start;
+        // add "of" selector
+        const newSelector = createEmptySelector();
+        newSelector.start = nthSelector.end;
+        res.push(newSelector);
+      }
+    }
+    // get all tokens until closed
+    s.run(
       (token, selectors) => {
         if (token.type === ")") {
           const currentSelector = last(selectors);
@@ -394,11 +442,10 @@ function handleToken(
         }
         return handleToken(token, selectors, source, s);
       },
-      [],
+      res,
       source
     );
 
-    const prev = last(ast);
     const ended = s.peek(0);
     if (
       !prev ||
@@ -406,6 +453,7 @@ function handleToken(
       prev.type === "invalid" ||
       prev.type === "combinator" ||
       prev.type === "comment" ||
+      prev.type === "nth_part" ||
       ended.type !== ")"
     ) {
       ast.push({
@@ -417,7 +465,7 @@ function handleToken(
     } else {
       if (res.length) {
         const lastSelector = last(res);
-        Object.assign(lastSelector, trimCombs(lastSelector.nodes));
+        trimCombs(lastSelector);
       }
       prev.nodes = res;
       prev.end = ended.end;
@@ -427,7 +475,7 @@ function handleToken(
   } else if (token.type === ",") {
     const selector = last(selectors);
     selector.end = token.start;
-    Object.assign(selector, trimCombs(selector.nodes));
+    trimCombs(selector);
     const newSelector = createEmptySelector();
     if (s.done()) {
       newSelector.start = token.end;
@@ -447,7 +495,261 @@ function handleToken(
   if (s.done()) {
     currentSelector.end =
       last(currentSelector.nodes)?.end ?? currentSelector.start;
-    Object.assign(currentSelector, trimCombs(currentSelector.nodes));
+    trimCombs(currentSelector);
+  }
+}
+
+class NthHandler {
+  /**
+   * check (case insensitive) and returns 2 groups:
+   * 1. plus/minus sign (invalid step value)
+   * 2. odd/even string
+   * [
+   *  `+`|`-`|undefined,
+   *  `odd`|`even`
+   * ]
+   */
+  static oddEvenStep = /([-+]?)(odd|even)/i;
+  /**
+   * check for valid step
+   * starts with optional minus or plus,
+   * ends with 0 or more digits following a `n`/`N` character
+   */
+  static validStep = /^[-+]?\d*n$/i;
+  /**
+   * check for valid offset
+   * starts with optional minus or plus,
+   * ends with 1 or more digits
+   */
+  static validOffset = /^[-+]?\d+$/;
+  /**
+   * check for valid start of nth expression
+   * and returns 2 groups:
+   * 1. An: optional minus or plus, 0 or more digits, `n`/`N` character
+   * 2. anything after that
+   */
+  static nthStartExp = /([-+]?\d*[nN]?)(.*)/;
+
+  public state: "step" | `dash` | `offset` | `of` | `selector` = `step`;
+  private standaloneDash = false;
+  private ast: SelectorNodes;
+  constructor(
+    private selectorNode: Selector,
+    private s: Seeker<CSSSelectorToken>
+  ) {
+    this.ast = selectorNode.nodes;
+
+    // while (this.state !== `selector` && this.handleToken()) {}
+  }
+  public handleToken(token: CSSSelectorToken): boolean {
+    const type = token.type;
+    if (type === `text` || type === `+`) {
+      switch (this.state) {
+        case `step`: {
+          // pickup 1 or more tokens for `5n` / `+5n` / `+5n-4` / `5`
+          const nextToken =
+            type === `+` && this.s.peek().type === `text`
+              ? this.s.next()
+              : undefined;
+          this.breakFirstChunk({
+            type: `text`,
+            value: token.value + (nextToken?.value || ``),
+            start: token.start,
+            end: nextToken?.end || token.end,
+          });
+          return true;
+        }
+        case `dash`: {
+          const nextToken =
+            type === `+` && this.s.peek().type === `text`
+              ? this.s.next()
+              : undefined;
+          this.pushDash({
+            type: `text`,
+            value: token.value + (nextToken?.value || ``),
+            start: token.start,
+            end: nextToken?.end || token.end,
+          });
+          return true;
+        }
+        case `offset`: {
+          const nextToken =
+            type === `+` && this.s.peek().type === `text`
+              ? this.s.next()
+              : undefined;
+          this.pushOffset({
+            type: `text`,
+            value: token.value + (nextToken?.value || ``),
+            start: token.start,
+            end: nextToken?.end || token.end,
+          });
+          return true;
+        }
+        case `of`: {
+          this.pushOf(token);
+          return false;
+        }
+      }
+    } else if (type === `space`) {
+      // improve typing
+      const lastNode = last(this.ast) as NthPart | Comment | undefined;
+      if (lastNode) {
+        lastNode.after += token.value;
+        lastNode.end += token.value.length;
+      } else {
+        // add initial space to top selector
+        this.selectorNode.before += token.value;
+      }
+      return true;
+    } else if (isComment(type)) {
+      this.ast.push(createCommentAst(token));
+      return true;
+    }
+    // not part of `An+b of`: bail out
+    this.s.back();
+    return false;
+  }
+  /**
+   * first token can only be (minus contained in text):
+   * step: `5n`/`+5n`/`-5n`
+   * step & offset: `5n`/`5n-5
+   */
+  private breakFirstChunk(token: CSSSelectorToken) {
+    const value = token.value;
+    // find odd/even
+    const oddEventMatch = value.match(NthHandler.oddEvenStep);
+    if (oddEventMatch) {
+      const isInvalid = !!oddEventMatch[1];
+      this.pushStep(token, isInvalid);
+      return;
+    }
+    // separate valid step start from rest: `-5n-4` / `-5n` / `-4` / `5n-4`
+    const matchValidStart = value.match(NthHandler.nthStartExp);
+    if (!matchValidStart) {
+      // invalid step
+      this.pushStep(token);
+    } else {
+      const step = matchValidStart[1];
+      const offset = matchValidStart[2];
+      if (
+        !offset &&
+        !step.match(/[nN]+$/) &&
+        step.match(NthHandler.validOffset)
+      ) {
+        // no `n` - just offset
+        this.pushOffset(token);
+      } else if (offset === `-`) {
+        // connected dash: `5n-`
+        this.pushStep({
+          type: `text`,
+          value: step,
+          start: token.start,
+          end: token.start + step.length,
+        });
+        this.pushDash({
+          type: `text`,
+          value: `-`,
+          start: token.end - 1,
+          end: token.end,
+        });
+      } else if (offset && !offset.match(/-\d+/)) {
+        // invalid step: `-3x`
+        this.pushStep(token);
+      } else {
+        // step with potential minus offset: `5n-4`
+        this.pushStep({
+          type: `text`,
+          value: step,
+          start: token.start,
+          end: token.start + step.length,
+        });
+        if (offset) {
+          this.pushOffset({
+            type: `text`,
+            value: offset,
+            start: token.end - offset.length,
+            end: token.end,
+          });
+        }
+      }
+    }
+  }
+  private pushStep(token: CSSSelectorToken, isInvalid?: boolean) {
+    const value = token.value;
+    const stepNode: NthPart = {
+      type: `nth_part`,
+      subtype: `step`,
+      value,
+      before: ``,
+      after: ``,
+      start: token.start,
+      end: token.end,
+    };
+    isInvalid =
+      isInvalid !== undefined ? isInvalid : !value.match(NthHandler.validStep);
+    if (isInvalid) {
+      stepNode.invalid = true;
+    }
+    this.state = `dash`;
+    this.ast.push(stepNode);
+  }
+  private pushDash(token: CSSSelectorToken) {
+    const value = token.value;
+    if (value === `+` || value === `-`) {
+      this.ast.push({
+        type: `nth_part`,
+        subtype: `dash`,
+        value: token.value,
+        start: token.start,
+        end: token.end,
+        before: ``,
+        after: ``,
+      });
+      this.standaloneDash = true;
+      this.state = `offset`;
+    } else {
+      this.pushOffset(token);
+    }
+  }
+  private pushOffset(token: CSSSelectorToken) {
+    if (token.value === `of`) {
+      this.pushOf(token);
+    } else {
+      const value = token.value;
+      const offsetNode: NthPart = {
+        type: `nth_part`,
+        subtype: `offset`,
+        value,
+        before: ``,
+        after: ``,
+        start: token.start,
+        end: token.end,
+      };
+      if (
+        !value.match(NthHandler.validOffset) ||
+        (this.standaloneDash && value.match(/^[-+]/))
+      ) {
+        offsetNode.invalid = true;
+      }
+      this.state = `of`;
+      this.ast.push(offsetNode);
+    }
+  }
+  private pushOf(token: CSSSelectorToken) {
+    const ofNode: NthPart = {
+      type: `nth_part`,
+      subtype: `of`,
+      value: token.value,
+      before: ``,
+      after: ``,
+      start: token.start,
+      end: token.end,
+    };
+    if (token.value !== `of`) {
+      ofNode.invalid = true;
+    }
+    this.ast.push(ofNode);
+    this.state = `selector`;
   }
 }
 
@@ -499,33 +801,24 @@ function createCommentAst({ value, start, end }: CSSSelectorToken): Comment {
   };
 }
 
-function trimCombs(nodes: SelectorNodes) {
+function trimCombs(selector: Selector) {
   // costly way to turn combinators to before and after.
   // this can be inlined in the handle token process
+  const nodes = selector.nodes;
   const firstNode = nodes[0];
   const lastNode = last(nodes);
-  let before = "";
-  let after = "";
-  let start = 0;
-  let end = nodes.length;
   if (firstNode?.type === "combinator" && firstNode.combinator === "space") {
-    start = 1;
-    before = firstNode.before + firstNode.value + firstNode.after;
+    selector.nodes.shift();
+    selector.before += firstNode.before + firstNode.value + firstNode.after;
   }
   if (
     lastNode !== firstNode &&
     lastNode?.type === "combinator" &&
     lastNode.combinator === "space"
   ) {
-    end = -1;
-    after = lastNode.before + lastNode.value + lastNode.after;
+    selector.nodes.pop();
+    selector.after += lastNode.before + lastNode.value + lastNode.after;
   }
-  return {
-    nodes:
-      start === 0 && end === nodes.length ? nodes : nodes.slice(start, end),
-    before,
-    after,
-  };
 }
 
 const shouldAddToken = () => true;
@@ -594,6 +887,7 @@ export const printers: R = {
   selector: (node: Selector) =>
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
   invalid: (node: Invalid) => node.value,
+  nth_part: ({ before, value, after }: NthPart) => `${before}${value}${after}`,
 };
 
 export function stringifyNode(node: SelectorNode): string {
@@ -607,7 +901,10 @@ export function stringifySelectors(selectors: SelectorList) {
 function stringifyNested(node: Containers): string {
   if ("nodes" in node) {
     if (node.nodes?.length) {
-      return `(${stringifySelectors(node.nodes)})`;
+      const isNth =
+        node.type === `pseudo_class` && nthPseudoClasses.has(node.value);
+      const nthExpr = isNth ? stringifyNode(node.nodes.shift()!) : ``;
+      return `(${nthExpr}${stringifySelectors(node.nodes)})`;
     } else {
       return `()`;
     }

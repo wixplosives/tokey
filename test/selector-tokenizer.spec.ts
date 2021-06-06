@@ -49,7 +49,8 @@ function createNode<TYPE extends SelectorNode["type"]>(
   if (
     defaults.type === `selector` ||
     defaults.type === `combinator` ||
-    defaults.type === `comment`
+    defaults.type === `comment` ||
+    defaults.type === `nth_part`
   ) {
     defaults.before = ``;
     defaults.after = ``;
@@ -407,6 +408,845 @@ test(`[attr-x="attr-value"]`, tokenizeSelector, [
         value: `attr-x="attr-value"`,
         start: 0,
         end: 21,
+      }),
+    ],
+  }),
+]);
+
+// nth
+
+test(`:nth-child()`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 12,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 12,
+        nodes: [],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 14,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 14,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 13,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 13,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(-2n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 15,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 15,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 14,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `-2n`,
+                start: 11,
+                end: 14,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(+2N)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 15,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 15,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 14,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `+2N`,
+                start: 11,
+                end: 14,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(-n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 14,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 14,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 13,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `-n`,
+                start: 11,
+                end: 13,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(+n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 14,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 14,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 13,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `+n`,
+                start: 11,
+                end: 13,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 13,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 13,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 12,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `n`,
+                start: 11,
+                end: 12,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(odd)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 15,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 15,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 14,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `odd`,
+                start: 11,
+                end: 14,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(even)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 16,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 16,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 15,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `even`,
+                start: 11,
+                end: 15,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n-3)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 16,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 16,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 15,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 13,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `-3`,
+                start: 13,
+                end: 15,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n+3)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 16,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 16,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 15,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 13,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `+3`,
+                start: 13,
+                end: 15,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(3)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 13,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 13,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 12,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `3`,
+                start: 11,
+                end: 12,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n- 3)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 17,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 17,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 16,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 13,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `dash`,
+                value: `-`,
+                start: 13,
+                end: 15,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `3`,
+                start: 15,
+                end: 16,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n+ 3)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 17,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 17,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 16,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 13,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `dash`,
+                value: `+`,
+                start: 13,
+                end: 15,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `3`,
+                start: 15,
+                end: 16,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n - 3)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 18,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 18,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 17,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 14,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `dash`,
+                value: `-`,
+                start: 14,
+                end: 16,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `3`,
+                start: 16,
+                end: 17,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n + 3)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 18,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 18,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 17,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 14,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `dash`,
+                value: `+`,
+                start: 14,
+                end: 16,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `3`,
+                start: 16,
+                end: 17,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n + 3 of div.klass)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 31,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 31,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 20,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 14,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `dash`,
+                value: `+`,
+                start: 14,
+                end: 16,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `3`,
+                start: 16,
+                end: 18,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `of`,
+                value: `of`,
+                start: 18,
+                end: 20,
+              }),
+            ],
+          }),
+          createNode({
+            type: `selector`,
+            start: 20,
+            end: 30,
+            before: ` `,
+            nodes: [
+              createNode({
+                type: `element`,
+                value: `div`,
+                start: 21,
+                end: 24,
+              }),
+              createNode({
+                type: `class`,
+                value: `klass`,
+                start: 24,
+                end: 30,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n of html|div)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 26,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 26,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 16,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 14,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `of`,
+                value: `of`,
+                start: 14,
+                end: 16,
+              }),
+            ],
+          }),
+          createNode({
+            type: `selector`,
+            start: 16,
+            end: 25,
+            before: ` `,
+            nodes: [
+              createNode({
+                type: `element`,
+                value: `div`,
+                start: 17,
+                end: 25,
+                namespace: {
+                  value: `html`,
+                  beforeComments: [],
+                  afterComments: [],
+                },
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-last-child(2n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 19,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-last-child`,
+        start: 0,
+        end: 19,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 16,
+            end: 18,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 16,
+                end: 18,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-of-type(2n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 16,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-of-type`,
+        start: 0,
+        end: 16,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 13,
+            end: 15,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 13,
+                end: 15,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-last-of-type(2n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 21,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-last-of-type`,
+        start: 0,
+        end: 21,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 18,
+            end: 20,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 18,
+                end: 20,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child( 2n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 15,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 15,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 14,
+            before: ` `,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 12,
+                end: 14,
+              }),
+            ],
+          }),
+        ],
       }),
     ],
   }),
@@ -791,6 +1631,120 @@ test(`*/*c1*//*c2*/|/*c3*//*c4*/div`, tokenizeSelector, [
     ],
   }),
 ]);
+
+test(
+  `:nth-child(/*c0*/ -5n /*c1*/ - /*c2*/ 10 /*c3*/ of /*c4*/div/*c5*/)`,
+  tokenizeSelector,
+  [
+    createNode({
+      type: `selector`,
+      start: 0,
+      end: 67,
+      nodes: [
+        createNode({
+          type: `pseudo_class`,
+          value: `nth-child`,
+          start: 0,
+          end: 67,
+          nodes: [
+            createNode({
+              type: `selector`,
+              start: 11,
+              end: 50,
+              nodes: [
+                createNode({
+                  type: `comment`,
+                  value: `/*c0*/`,
+                  start: 11,
+                  end: 18,
+                  after: ` `,
+                }),
+                createNode({
+                  type: `nth_part`,
+                  subtype: `step`,
+                  value: `-5n`,
+                  start: 18,
+                  end: 22,
+                  after: ` `,
+                }),
+                createNode({
+                  type: `comment`,
+                  value: `/*c1*/`,
+                  start: 22,
+                  end: 29,
+                  after: ` `,
+                }),
+                createNode({
+                  type: `nth_part`,
+                  subtype: `dash`,
+                  value: `-`,
+                  start: 29,
+                  end: 31,
+                  after: ` `,
+                }),
+                createNode({
+                  type: `comment`,
+                  value: `/*c2*/`,
+                  start: 31,
+                  end: 38,
+                  after: ` `,
+                }),
+                createNode({
+                  type: `nth_part`,
+                  subtype: `offset`,
+                  value: `10`,
+                  start: 38,
+                  end: 41,
+                  after: ` `,
+                }),
+                createNode({
+                  type: `comment`,
+                  value: `/*c3*/`,
+                  start: 41,
+                  end: 48,
+                  after: ` `,
+                }),
+                createNode({
+                  type: `nth_part`,
+                  subtype: `of`,
+                  value: `of`,
+                  start: 48,
+                  end: 50,
+                }),
+              ],
+            }),
+            createNode({
+              type: `selector`,
+              start: 50,
+              end: 66,
+              before: ` `,
+              nodes: [
+                createNode({
+                  type: `comment`,
+                  value: `/*c4*/`,
+                  start: 51,
+                  end: 57,
+                }),
+                createNode({
+                  type: "element",
+                  value: `div`,
+                  start: 57,
+                  end: 60,
+                }),
+                createNode({
+                  type: `comment`,
+                  value: `/*c5*/`,
+                  start: 60,
+                  end: 66,
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  ]
+);
 
 // combinators
 
@@ -1261,6 +2215,297 @@ test(`ns|||div`, tokenizeSelector, [
           afterComments: [],
           invalid: `namespace`,
         },
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(-3x)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 15,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 15,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 14,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `-3x`,
+                start: 11,
+                end: 14,
+                invalid: true,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(-odd)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 16,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 16,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 15,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `-odd`,
+                start: 11,
+                end: 15,
+                invalid: true,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(+even)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 17,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 17,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 16,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `+even`,
+                start: 11,
+                end: 16,
+                invalid: true,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(5n-3n)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 17,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 17,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 16,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `5n`,
+                start: 11,
+                end: 13,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `-3n`,
+                start: 13,
+                end: 16,
+                invalid: true,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(2n+3 off div)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 24,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 24,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 19,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 13,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `+3`,
+                start: 13,
+                end: 16,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `of`,
+                value: `off`,
+                start: 16,
+                end: 19,
+                invalid: true,
+              }),
+            ],
+          }),
+          createNode({
+            type: `selector`,
+            start: 19,
+            end: 23,
+            before: ` `,
+            nodes: [
+              createNode({
+                type: `element`,
+                value: `div`,
+                start: 20,
+                end: 23,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(- 5)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 15,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 15,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 14,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `-`,
+                start: 11,
+                end: 13,
+                after: ` `,
+                invalid: true,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `5`,
+                start: 13,
+                end: 14,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
+test(`:nth-child(5n - +3)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 19,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 19,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 18,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `5n`,
+                start: 11,
+                end: 14,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `dash`,
+                value: `-`,
+                start: 14,
+                end: 16,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `offset`,
+                value: `+3`,
+                start: 16,
+                end: 18,
+                invalid: true,
+              }),
+            ],
+          }),
+        ],
       }),
     ],
   }),
