@@ -538,8 +538,6 @@ class NthHandler {
     private s: Seeker<CSSSelectorToken>
   ) {
     this.ast = selectorNode.nodes;
-
-    // while (this.state !== `selector` && this.handleToken()) {}
   }
   public handleToken(token: CSSSelectorToken): boolean {
     const type = token.type;

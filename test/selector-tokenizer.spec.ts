@@ -1123,6 +1123,74 @@ test(`:nth-child(2n of html|div)`, tokenizeSelector, [
   }),
 ]);
 
+test(`:nth-child(2n of div, span)`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 27,
+    nodes: [
+      createNode({
+        type: `pseudo_class`,
+        value: `nth-child`,
+        start: 0,
+        end: 27,
+        nodes: [
+          createNode({
+            type: `selector`,
+            start: 11,
+            end: 16,
+            nodes: [
+              createNode({
+                type: `nth_part`,
+                subtype: `step`,
+                value: `2n`,
+                start: 11,
+                end: 14,
+                after: ` `,
+              }),
+              createNode({
+                type: `nth_part`,
+                subtype: `of`,
+                value: `of`,
+                start: 14,
+                end: 16,
+              }),
+            ],
+          }),
+          createNode({
+            type: `selector`,
+            start: 16,
+            end: 20,
+            before: ` `,
+            nodes: [
+              createNode({
+                type: `element`,
+                value: `div`,
+                start: 17,
+                end: 20,
+              }),
+            ],
+          }),
+          createNode({
+            type: `selector`,
+            start: 21,
+            end: 26,
+            before: ` `,
+            nodes: [
+              createNode({
+                type: `element`,
+                value: `span`,
+                start: 22,
+                end: 26,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]);
+
 test(`:nth-last-child(2n)`, tokenizeSelector, [
   createNode({
     type: `selector`,
