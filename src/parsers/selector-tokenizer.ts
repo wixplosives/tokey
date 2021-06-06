@@ -805,17 +805,38 @@ function trimCombs(selector: Selector) {
   const nodes = selector.nodes;
   const firstNode = nodes[0];
   const lastNode = last(nodes);
+  // remove first space combinator and add to selector before
+  // (going between comment is not required for the start becuase they are taken care
+  // of during parsing)
   if (firstNode?.type === "combinator" && firstNode.combinator === "space") {
     selector.nodes.shift();
     selector.before += firstNode.before + firstNode.value + firstNode.after;
   }
-  if (
-    lastNode !== firstNode &&
-    lastNode?.type === "combinator" &&
-    lastNode.combinator === "space"
-  ) {
-    selector.nodes.pop();
-    selector.after += lastNode.before + lastNode.value + lastNode.after;
+  // remove any edge space combinators (last and between comments)
+  if (lastNode !== firstNode) {
+    let index = nodes.length - 1;
+    let current = lastNode;
+    let lastComment: Comment | undefined;
+    while (
+      (current && current.type === `comment`) ||
+      (current.type === `combinator` && current.combinator === `space`)
+    ) {
+      if (current.type === `combinator`) {
+        if (!lastComment) {
+          // attach space to end of selector
+          selector.nodes.pop();
+          selector.after += current.before + current.value + current.after;
+        } else {
+          // attach space to start of comment
+          selector.nodes.splice(index, 1);
+          lastComment.before += current.before + current.value + current.after;
+          lastComment.start = current.start;
+        }
+      } else {
+        lastComment = current;
+      }
+      current = nodes[--index];
+    }
   }
 }
 

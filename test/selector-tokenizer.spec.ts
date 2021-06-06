@@ -2722,6 +2722,51 @@ test(`*    .a  + .b`, tokenizeSelector, [
   }),
 ]);
 
+test(` /*c1*/ .a .b /*c2*/ `, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 21,
+    before: ` `,
+    nodes: [
+      createNode({
+        type: `comment`,
+        value: `/*c1*/`,
+        start: 1,
+        end: 8,
+        after: ` `,
+      }),
+      createNode({
+        type: `class`,
+        value: `a`,
+        start: 8,
+        end: 10,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `space`,
+        value: ` `,
+        start: 10,
+        end: 11,
+      }),
+      createNode({
+        type: `class`,
+        value: `b`,
+        start: 11,
+        end: 13,
+      }),
+      createNode({
+        type: `comment`,
+        value: `/*c2*/`,
+        start: 13,
+        end: 21,
+        before: ` `,
+        after: ` `,
+      }),
+    ],
+  }),
+]);
+
 // combinations
 
 test(`:a(.b,::d(.e,.f))`, tokenizeSelector, [
