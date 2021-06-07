@@ -162,12 +162,6 @@ const isDelimiter = (char: string) =>
   char === "{" ||
   char === "}";
 
-const nthPseudoClasses = new Set([
-  `nth-child`,
-  `nth-last-child`,
-  `nth-of-type`,
-  `nth-last-of-type`,
-]);
 // TODO: handle more comments!
 
 function handleToken(
@@ -448,7 +442,7 @@ function handleToken(
     if (
       prev &&
       prev.type === `pseudo_class` &&
-      nthPseudoClasses.has(prev.value) &&
+      NthHandler.isNthPseudoClass(prev.value) &&
       s.peek().type !== `)`
     ) {
       // collect "An+B of" expression
@@ -546,6 +540,14 @@ function handleToken(
 }
 
 class NthHandler {
+  static isNthPseudoClass(name: string): boolean {
+    return (
+      name === `nth-child` ||
+      name === `nth-last-child` ||
+      name === `nth-of-type` ||
+      name === `nth-last-of-type`
+    );
+  }
   /**
    * check (case insensitive) and returns 2 groups:
    * 1. plus/minus sign (invalid step value)
@@ -967,7 +969,7 @@ function stringifyNested(node: Containers): string {
   if ("nodes" in node) {
     if (node.nodes?.length) {
       const isNth =
-        node.type === `pseudo_class` && nthPseudoClasses.has(node.value);
+        node.type === `pseudo_class` && NthHandler.isNthPseudoClass(node.value);
       const nthExpr = isNth ? stringifyNode(node.nodes.shift()!) : ``;
       return `(${nthExpr}${stringifySelectors(node.nodes)})`;
     } else {
