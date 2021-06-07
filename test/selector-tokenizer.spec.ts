@@ -2118,6 +2118,76 @@ test(`*+~> *`, tokenizeSelector, [
   }),
 ]);
 
+test(`* /*c1*/ + *`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 12,
+    nodes: [
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 0,
+        end: 1,
+      }),
+      createNode({
+        type: `comment`,
+        value: `/*c1*/`,
+        start: 1,
+        end: 9,
+        before: ` `,
+        after: ` `,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 9,
+        end: 11,
+        after: ` `,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 11,
+        end: 12,
+      }),
+    ],
+  }),
+]);
+
+test(` /*c1*/ + *`, tokenizeSelector, [
+  createNode({
+    type: `selector`,
+    start: 0,
+    end: 11,
+    before: ` `,
+    nodes: [
+      createNode({
+        type: `comment`,
+        value: `/*c1*/`,
+        start: 1,
+        end: 8,
+        after: ` `,
+      }),
+      createNode({
+        type: `combinator`,
+        combinator: `+`,
+        value: `+`,
+        start: 8,
+        end: 10,
+        after: ` `,
+      }),
+      createNode({
+        type: `star`,
+        value: `*`,
+        start: 10,
+        end: 11,
+      }),
+    ],
+  }),
+]);
+
 // invalid
 
 test(`:pseudo(`, tokenizeSelector, [

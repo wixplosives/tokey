@@ -246,14 +246,33 @@ function handleToken(
   } else if (isCombinatorToken(token)) {
     let lastCombinatorAst = createCombinatorAst(token);
     let lastAst: Combinator | Comment = lastCombinatorAst;
+    // insert token as a combinator
     ast.push(lastCombinatorAst);
+    // save the insertion point of the first combinator in case it's a space
+    // that might be considered a normal space later and will need to be changed.
+    let initialSpaceCombIndex: number =
+      lastCombinatorAst.combinator === `space` ? ast.length - 1 : -1;
+    /**
+     * take next spaces/combinators/comments:
+     * - combinator/space token:
+     *  - spaces: merge to previous ast node before them
+     *  - previous ast equal to space combinator
+     *    - turn previous ast to the next combinator type
+     *    - merge spaces between them
+     *  - initial ast is space (must be comments following it)
+     *    - initial space is first in selector: merge initial ast into the selector before
+     *    - otherwise merge initial ast the comment following it
+     *  - insert an invalid combinator
+     * - comment token: insert to ast
+     */
+    //
     let next = s.next();
     while (next) {
       if (isCombinatorToken(next)) {
         if (next.type === `space`) {
           // add space to the last ast node
           lastAst.after += next.value;
-          lastAst.end += next.value.length;
+          lastAst.end = next.end;
         } else if (
           lastAst === lastCombinatorAst &&
           lastAst.combinator === "space"
@@ -266,6 +285,31 @@ function handleToken(
             ` ` + lastCombinatorAst.after + nextCombinator.before;
           lastCombinatorAst.after = nextCombinator.after;
           lastCombinatorAst.end = nextCombinator.end;
+        } else if (initialSpaceCombIndex !== -1) {
+          // merge initial space combinator (classified as combinator before a comment)
+          const initialSpace = ast[initialSpaceCombIndex] as Combinator;
+          const spaceValue =
+            initialSpace.before + initialSpace.value + initialSpace.after;
+          if (initialSpaceCombIndex === 0) {
+            // merge to beginning of selector
+            currentSelector.before += spaceValue;
+          } else {
+            // merge to the next comment
+            const nodeAfterInitial = ast[initialSpaceCombIndex + 1];
+            if (nodeAfterInitial?.type === `comment`) {
+              nodeAfterInitial.before += spaceValue;
+              nodeAfterInitial.start = initialSpace.start;
+            } else {
+              // shouldn't happen as initial space is considered as a combinator
+              // only when a comment is following it and before
+            }
+          }
+          ast.splice(initialSpaceCombIndex, 1);
+          initialSpaceCombIndex = -1;
+          // add combinator
+          lastCombinatorAst = createCombinatorAst(next);
+          lastAst = lastCombinatorAst;
+          ast.push(lastCombinatorAst);
         } else {
           // add invalid combinator
           lastCombinatorAst = createCombinatorAst(next);
