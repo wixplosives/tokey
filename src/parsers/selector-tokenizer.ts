@@ -40,7 +40,7 @@ export interface Selector extends Omit<Token<"selector">, "value"> {
 }
 
 export interface PseudoClass extends Token<"pseudo_class"> {
-  nodes?: SelectorList;
+  nodes?: Selector[] | [Nth, ...SelectorList];
   colonComments: Comment[];
 }
 
@@ -96,11 +96,21 @@ export interface Comment extends Token<"comment"> {
   after: string;
 }
 
-export interface NthPart extends Token<"nth_part"> {
-  subtype: "step" | "offset" | "dash" | "of";
+export interface NthBase<PART extends string> extends Token<PART> {
   before: string;
   after: string;
   invalid?: boolean;
+}
+export interface NthStep extends NthBase<"nth_step"> {}
+export interface NthOffset extends NthBase<"nth_offset"> {}
+export interface NthDash extends NthBase<"nth_dash"> {}
+export interface NthOf extends NthBase<"nth_of"> {}
+export type NthNode = NthStep | NthOffset | NthDash | NthOf | Comment;
+export interface Nth extends Omit<Token<"nth">, "value"> {
+  nodes: Array<NthNode>;
+  before: string;
+  after: string;
+  // invalid?: boolean;
 }
 
 export type NamespacedNodes = Element | Star;
@@ -119,7 +129,11 @@ export type SelectorNode =
   | Combinator
   | Comment
   | Invalid
-  | NthPart;
+  | Nth
+  | NthStep
+  | NthDash
+  | NthOffset
+  | NthOf;
 export type SelectorNodes = SelectorNode[];
 export type SelectorList = Selector[];
 
@@ -277,9 +291,6 @@ function handleToken(
           lastCombinatorAst.before += lastCombinatorAst.after + lastCombinatorAst.value + nextCombinator.before;
           lastCombinatorAst.after = nextCombinator.after;
           lastCombinatorAst.value = nextCombinator.value;
-          lastCombinatorAst.before +=
-            ` ` + lastCombinatorAst.after + nextCombinator.before;
-          lastCombinatorAst.after = nextCombinator.after;
           lastCombinatorAst.end = nextCombinator.end;
         } else if (initialSpaceCombIndex !== -1) {
           // merge initial space combinator (classified as combinator before a comment)
@@ -437,7 +448,7 @@ function handleToken(
     }
   } else if (token.type === "(") {
     const prev = last(ast);
-    const res: SelectorList = [];
+    const res: [Selector|Nth, ...SelectorList] = [] as any;
     // handle nth selector
     if (
       prev &&
@@ -446,7 +457,9 @@ function handleToken(
       s.peek().type !== `)`
     ) {
       // collect "An+B of" expression
-      const nthSelector = ensureSelector(res, s.peek());
+      const nthSelector = createEmptyNth();
+      nthSelector.start = s.peek().start;
+      res.push(nthSelector);
       const nthParser = new NthHandler(nthSelector, s);
       s.run(
         (token) => {
@@ -482,7 +495,7 @@ function handleToken(
         }
         return handleToken(token, selectors, source, s);
       },
-      res,
+      res as SelectorList,
       source
     );
 
@@ -580,9 +593,9 @@ class NthHandler {
 
   public state: "step" | `dash` | `offset` | `of` | `selector` = `step`;
   private standaloneDash = false;
-  private ast: SelectorNodes;
+  private ast: Nth['nodes'];
   constructor(
-    private selectorNode: Selector,
+    private selectorNode: Nth,
     private s: Seeker<CSSSelectorToken>
   ) {
     this.ast = selectorNode.nodes;
@@ -638,7 +651,7 @@ class NthHandler {
       }
     } else if (type === `space`) {
       // improve typing
-      const lastNode = last(this.ast) as NthPart | Comment | undefined;
+      const lastNode = last(this.ast);
       if (lastNode) {
         lastNode.after += token.value;
         lastNode.end += token.value.length;
@@ -722,9 +735,8 @@ class NthHandler {
   }
   private pushStep(token: CSSSelectorToken, isInvalid?: boolean) {
     const value = token.value;
-    const stepNode: NthPart = {
-      type: `nth_part`,
-      subtype: `step`,
+    const stepNode: NthStep = {
+      type: `nth_step`,
       value,
       before: ``,
       after: ``,
@@ -743,8 +755,7 @@ class NthHandler {
     const value = token.value;
     if (value === `+` || value === `-`) {
       this.ast.push({
-        type: `nth_part`,
-        subtype: `dash`,
+        type: `nth_dash`,
         value: token.value,
         start: token.start,
         end: token.end,
@@ -762,9 +773,8 @@ class NthHandler {
       this.pushOf(token);
     } else {
       const value = token.value;
-      const offsetNode: NthPart = {
-        type: `nth_part`,
-        subtype: `offset`,
+      const offsetNode: NthOffset = {
+        type: `nth_offset`,
         value,
         before: ``,
         after: ``,
@@ -782,9 +792,8 @@ class NthHandler {
     }
   }
   private pushOf(token: CSSSelectorToken) {
-    const ofNode: NthPart = {
-      type: `nth_part`,
-      subtype: `of`,
+    const ofNode: NthOf = {
+      type: `nth_of`,
       value: token.value,
       before: ``,
       after: ``,
@@ -812,6 +821,16 @@ function ensureSelector(selectors: SelectorList, startToken: CSSSelectorToken) {
 function createEmptySelector(): Selector {
   return {
     type: "selector",
+    start: -1,
+    end: -1,
+    before: "",
+    after: "",
+    nodes: [],
+  };
+}
+function createEmptyNth(): Nth {
+  return {
+    type: "nth",
     start: -1,
     end: -1,
     before: "",
@@ -954,14 +973,19 @@ export const printers: R = {
   selector: (node: Selector) =>
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
   invalid: (node: Invalid) => node.value,
-  nth_part: ({ before, value, after }: NthPart) => `${before}${value}${after}`,
+  nth: (node: Nth) =>
+    `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
+  nth_step: ({ before, value, after }: NthStep) => `${before}${value}${after}`,
+  nth_dash: ({ before, value, after }: NthDash) => `${before}${value}${after}`,
+  nth_offset: ({ before, value, after }: NthOffset) => `${before}${value}${after}`,
+  nth_of: ({ before, value, after }: NthOf) => `${before}${value}${after}`,
 };
 
 export function stringifyNode(node: SelectorNode): string {
   return printers[node.type]?.(node as never) ?? "";
 }
 
-export function stringifySelectors(selectors: SelectorList) {
+export function stringifySelectors(selectors: SelectorList | [Nth, ...SelectorList]) {
   return selectors.map(stringifyNode).join(",");
 }
 

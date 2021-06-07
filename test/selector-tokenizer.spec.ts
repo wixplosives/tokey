@@ -8,6 +8,11 @@ import type {
   Selector,
   SelectorList,
   Comment,
+  Nth,
+  NthStep,
+  NthDash,
+  NthOffset,
+  NthOf,
 } from "../src/parsers/selector-tokenizer";
 
 function createNode<TYPE extends SelectorNode["type"]>(
@@ -16,6 +21,16 @@ function createNode<TYPE extends SelectorNode["type"]>(
   ? Selector
   : TYPE extends "comment"
   ? Comment
+  : TYPE extends "nth"
+  ? Nth
+  : TYPE extends "nth_step"
+  ? NthStep
+  : TYPE extends "nth_dash"
+  ? NthDash
+  : TYPE extends "nth_offset"
+  ? NthOffset
+  : TYPE extends "nth_of"
+  ? NthOf
   : SelectorNode {
   const defaults: SelectorNode = {
     type: expected.type,
@@ -50,7 +65,11 @@ function createNode<TYPE extends SelectorNode["type"]>(
     defaults.type === `selector` ||
     defaults.type === `combinator` ||
     defaults.type === `comment` ||
-    defaults.type === `nth_part`
+    defaults.type === `nth` ||
+    defaults.type === `nth_step` ||
+    defaults.type === `nth_dash` ||
+    defaults.type === `nth_offset` ||
+    defaults.type === `nth_of`
   ) {
     defaults.before = ``;
     defaults.after = ``;
@@ -445,13 +464,12 @@ test(`:nth-child(2n)`, tokenizeSelector, [
         end: 14,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 13,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 13,
@@ -477,13 +495,12 @@ test(`:nth-child(-2n)`, tokenizeSelector, [
         end: 15,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 14,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `-2n`,
                 start: 11,
                 end: 14,
@@ -509,13 +526,12 @@ test(`:nth-child(+2N)`, tokenizeSelector, [
         end: 15,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 14,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `+2N`,
                 start: 11,
                 end: 14,
@@ -541,13 +557,12 @@ test(`:nth-child(-n)`, tokenizeSelector, [
         end: 14,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 13,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `-n`,
                 start: 11,
                 end: 13,
@@ -573,13 +588,12 @@ test(`:nth-child(+n)`, tokenizeSelector, [
         end: 14,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 13,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `+n`,
                 start: 11,
                 end: 13,
@@ -605,13 +619,12 @@ test(`:nth-child(n)`, tokenizeSelector, [
         end: 13,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 12,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `n`,
                 start: 11,
                 end: 12,
@@ -637,13 +650,12 @@ test(`:nth-child(odd)`, tokenizeSelector, [
         end: 15,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 14,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `odd`,
                 start: 11,
                 end: 14,
@@ -669,13 +681,12 @@ test(`:nth-child(even)`, tokenizeSelector, [
         end: 16,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 15,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `even`,
                 start: 11,
                 end: 15,
@@ -701,20 +712,18 @@ test(`:nth-child(2n-3)`, tokenizeSelector, [
         end: 16,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 15,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 13,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `-3`,
                 start: 13,
                 end: 15,
@@ -740,20 +749,18 @@ test(`:nth-child(2n+3)`, tokenizeSelector, [
         end: 16,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 15,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 13,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `+3`,
                 start: 13,
                 end: 15,
@@ -779,13 +786,12 @@ test(`:nth-child(3)`, tokenizeSelector, [
         end: 13,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 12,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `3`,
                 start: 11,
                 end: 12,
@@ -811,28 +817,25 @@ test(`:nth-child(2n- 3)`, tokenizeSelector, [
         end: 17,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 16,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 13,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `dash`,
+                type: `nth_dash`,
                 value: `-`,
                 start: 13,
                 end: 15,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `3`,
                 start: 15,
                 end: 16,
@@ -858,28 +861,25 @@ test(`:nth-child(2n+ 3)`, tokenizeSelector, [
         end: 17,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 16,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 13,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `dash`,
+                type: `nth_dash`,
                 value: `+`,
                 start: 13,
                 end: 15,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `3`,
                 start: 15,
                 end: 16,
@@ -905,29 +905,26 @@ test(`:nth-child(2n - 3)`, tokenizeSelector, [
         end: 18,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 17,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 14,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `dash`,
+                type: `nth_dash`,
                 value: `-`,
                 start: 14,
                 end: 16,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `3`,
                 start: 16,
                 end: 17,
@@ -953,29 +950,26 @@ test(`:nth-child(2n + 3)`, tokenizeSelector, [
         end: 18,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 17,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 14,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `dash`,
+                type: `nth_dash`,
                 value: `+`,
                 start: 14,
                 end: 16,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `3`,
                 start: 16,
                 end: 17,
@@ -1001,37 +995,33 @@ test(`:nth-child(2n + 3 of div.klass)`, tokenizeSelector, [
         end: 31,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 20,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 14,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `dash`,
+                type: `nth_dash`,
                 value: `+`,
                 start: 14,
                 end: 16,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `3`,
                 start: 16,
                 end: 18,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `of`,
+                type: `nth_of`,
                 value: `of`,
                 start: 18,
                 end: 20,
@@ -1077,21 +1067,19 @@ test(`:nth-child(2n of html|div)`, tokenizeSelector, [
         end: 26,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 16,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 14,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `of`,
+                type: `nth_of`,
                 value: `of`,
                 start: 14,
                 end: 16,
@@ -1136,21 +1124,19 @@ test(`:nth-child(2n of div, span)`, tokenizeSelector, [
         end: 27,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 16,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 14,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `of`,
+                type: `nth_of`,
                 value: `of`,
                 start: 14,
                 end: 16,
@@ -1204,13 +1190,12 @@ test(`:nth-last-child(2n)`, tokenizeSelector, [
         end: 19,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 16,
             end: 18,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 16,
                 end: 18,
@@ -1236,13 +1221,12 @@ test(`:nth-of-type(2n)`, tokenizeSelector, [
         end: 16,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 13,
             end: 15,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 13,
                 end: 15,
@@ -1268,13 +1252,12 @@ test(`:nth-last-of-type(2n)`, tokenizeSelector, [
         end: 21,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 18,
             end: 20,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 18,
                 end: 20,
@@ -1300,14 +1283,13 @@ test(`:nth-child( 2n)`, tokenizeSelector, [
         end: 15,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 14,
             before: ` `,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 12,
                 end: 14,
@@ -1716,7 +1698,7 @@ test(
           end: 67,
           nodes: [
             createNode({
-              type: `selector`,
+              type: `nth`,
               start: 11,
               end: 50,
               nodes: [
@@ -1728,8 +1710,7 @@ test(
                   after: ` `,
                 }),
                 createNode({
-                  type: `nth_part`,
-                  subtype: `step`,
+                  type: `nth_step`,
                   value: `-5n`,
                   start: 18,
                   end: 22,
@@ -1743,8 +1724,7 @@ test(
                   after: ` `,
                 }),
                 createNode({
-                  type: `nth_part`,
-                  subtype: `dash`,
+                  type: `nth_dash`,
                   value: `-`,
                   start: 29,
                   end: 31,
@@ -1758,8 +1738,7 @@ test(
                   after: ` `,
                 }),
                 createNode({
-                  type: `nth_part`,
-                  subtype: `offset`,
+                  type: `nth_offset`,
                   value: `10`,
                   start: 38,
                   end: 41,
@@ -1773,8 +1752,7 @@ test(
                   after: ` `,
                 }),
                 createNode({
-                  type: `nth_part`,
-                  subtype: `of`,
+                  type: `nth_of`,
                   value: `of`,
                   start: 48,
                   end: 50,
@@ -2371,13 +2349,12 @@ test(`:nth-child(-3x)`, tokenizeSelector, [
         end: 15,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 14,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `-3x`,
                 start: 11,
                 end: 14,
@@ -2404,13 +2381,12 @@ test(`:nth-child(-odd)`, tokenizeSelector, [
         end: 16,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 15,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `-odd`,
                 start: 11,
                 end: 15,
@@ -2437,13 +2413,12 @@ test(`:nth-child(+even)`, tokenizeSelector, [
         end: 17,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 16,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `+even`,
                 start: 11,
                 end: 16,
@@ -2470,20 +2445,18 @@ test(`:nth-child(5n-3n)`, tokenizeSelector, [
         end: 17,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 16,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `5n`,
                 start: 11,
                 end: 13,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `-3n`,
                 start: 13,
                 end: 16,
@@ -2510,28 +2483,25 @@ test(`:nth-child(2n+3 off div)`, tokenizeSelector, [
         end: 24,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 19,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `2n`,
                 start: 11,
                 end: 13,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `+3`,
                 start: 13,
                 end: 16,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `of`,
+                type: `nth_of`,
                 value: `off`,
                 start: 16,
                 end: 19,
@@ -2572,13 +2542,12 @@ test(`:nth-child(- 5)`, tokenizeSelector, [
         end: 15,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 14,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `-`,
                 start: 11,
                 end: 13,
@@ -2586,8 +2555,7 @@ test(`:nth-child(- 5)`, tokenizeSelector, [
                 invalid: true,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `5`,
                 start: 13,
                 end: 14,
@@ -2613,29 +2581,26 @@ test(`:nth-child(5n - +3)`, tokenizeSelector, [
         end: 19,
         nodes: [
           createNode({
-            type: `selector`,
+            type: `nth`,
             start: 11,
             end: 18,
             nodes: [
               createNode({
-                type: `nth_part`,
-                subtype: `step`,
+                type: `nth_step`,
                 value: `5n`,
                 start: 11,
                 end: 14,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `dash`,
+                type: `nth_dash`,
                 value: `-`,
                 start: 14,
                 end: 16,
                 after: ` `,
               }),
               createNode({
-                type: `nth_part`,
-                subtype: `offset`,
+                type: `nth_offset`,
                 value: `+3`,
                 start: 16,
                 end: 18,
