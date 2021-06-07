@@ -280,6 +280,8 @@ function handleToken(
           // combine next combinator into previous (space)
           const nextCombinator = createCombinatorAst(next);
           lastCombinatorAst.combinator = nextCombinator.combinator;
+          lastCombinatorAst.before += lastCombinatorAst.after + lastCombinatorAst.value + nextCombinator.before;
+          lastCombinatorAst.after = nextCombinator.after;
           lastCombinatorAst.value = nextCombinator.value;
           lastCombinatorAst.before +=
             ` ` + lastCombinatorAst.after + nextCombinator.before;
