@@ -8,7 +8,7 @@ export class Seeker<T extends Token<unknown>> {
   constructor(public tokens: T[]) {}
   next() {
     this.index++;
-    return this.tokens[this.index] || {};
+    return this.tokens[this.index] || { type: "" };
   }
   back() {
     this.index--;
@@ -18,6 +18,19 @@ export class Seeker<T extends Token<unknown>> {
   }
   peek(num = 1) {
     return this.tokens[this.index + num] || { type: "" };
+  }
+  take(type: T["type"]) {
+    if (this.peek().type === type) {
+      return this.next();
+    }
+    return undefined;
+  }
+  takeMany(type: T["type"]) {
+    const tokens = [];
+    while (this.peek().type === type) {
+      tokens.push(this.next());
+    }
+    return tokens;
   }
   flatBlock(
     start: string,
@@ -47,5 +60,26 @@ export class Seeker<T extends Token<unknown>> {
       }
     }
     return [];
+  }
+  done() {
+    return this.index >= this.tokens.length - 1;
+  }
+  run<A>(
+    handleToken: (
+      token: T,
+      ast: A,
+      source: string,
+      seeker: this
+    ) => void | boolean,
+    ast: A,
+    source: string
+  ) {
+    let token;
+    while ((token = this.next()) && token.type) {
+      if (handleToken(token, ast, source, this) === false) {
+        break;
+      }
+    }
+    return ast;
   }
 }

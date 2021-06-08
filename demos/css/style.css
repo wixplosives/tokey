@@ -24,3 +24,12 @@ main > * {
   font-size: inherit;
   height: 100%;
 }
+
+[data-in-rage="false"] {
+  font-weight: normal;
+  color: black;
+}
+
+[data-in-rage="true"] {
+  font-weight: bolder;
+}

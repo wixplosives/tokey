@@ -13,6 +13,7 @@ export function test<T, U>(
   } else {
     log(`Pass Input: ${normInput}`);
   }
+  return actual;
 }
 
 test.TODO = function <T, U>(

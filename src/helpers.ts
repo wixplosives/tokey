@@ -12,6 +12,13 @@ export function isComment(type: string) {
 }
 
 /**
+ * Checks if a token type is string
+ */
+export function isString(type: string) {
+  return type === "string" || type === "unclosed-string";
+}
+
+/**
  * Checks for a set of JS strings
  */
 export const isStringDelimiter = (char: string) =>
@@ -111,6 +118,9 @@ export function getText(
   upToIndex = -1,
   source?: string
 ) {
+  if (tokens.length === 0) {
+    return "";
+  }
   if (upToIndex === -1) {
     upToIndex = tokens.length;
   }
@@ -168,4 +178,11 @@ export function trimTokens<Tokens extends Token<any>[]>(
     }
   }
   return tokens.slice(start, end);
+}
+
+/**
+ * get last item in array
+ */
+export function last<T>(arr: T[]): T {
+  return arr[arr.length - 1];
 }
