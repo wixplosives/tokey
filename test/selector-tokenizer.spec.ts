@@ -89,7 +89,7 @@ function test<T extends string, U extends SelectorList>(
   expected: U
 ) {
   let log = ``;
-  const actualAst = baseTest(input, aFn, expected, (msg) => (log += msg));
+  const actualAst = baseTest(input, aFn, expected, (msg: string) => (log += msg));
   const stringify = stringifySelectors(actualAst);
   if (stringify !== input) {
     throw new Error(

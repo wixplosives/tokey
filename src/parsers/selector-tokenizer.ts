@@ -448,7 +448,7 @@ function handleToken(
     }
   } else if (token.type === "(") {
     const prev = last(ast);
-    const res: [Selector|Nth, ...SelectorList] = [] as any;
+    const res: SelectorList = [];
     // handle nth selector
     if (
       prev &&
@@ -459,7 +459,7 @@ function handleToken(
       // collect "An+B of" expression
       const nthSelector = createEmptyNth();
       nthSelector.start = s.peek().start;
-      res.push(nthSelector);
+      res.push(nthSelector as unknown as Selector);
       const nthParser = new NthHandler(nthSelector, s);
       s.run(
         (token) => {
@@ -506,7 +506,10 @@ function handleToken(
       prev.type === "invalid" ||
       prev.type === "combinator" ||
       prev.type === "comment" ||
-      prev.type === "nth_part" ||
+      prev.type === "nth_step" ||
+      prev.type === "nth_dash" ||
+      prev.type === "nth_offset" ||
+      prev.type === "nth_of" ||
       ended.type !== ")"
     ) {
       ast.push({
@@ -986,7 +989,11 @@ export function stringifyNode(node: SelectorNode): string {
 }
 
 export function stringifySelectors(selectors: SelectorList | [Nth, ...SelectorList]) {
-  return selectors.map(stringifyNode).join(",");
+  const result: string[] = [];
+  for (const node of selectors) {
+    result.push(stringifyNode(node));
+  }
+  return result.join(`,`);
 }
 
 function stringifyNested(node: Containers): string {
