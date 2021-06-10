@@ -90,7 +90,7 @@ export interface Combinator extends Token<"combinator"> {
   invalid: boolean;
 }
 
-export interface Invalid extends Token<"invalid"> {}
+export type Invalid = Token<"invalid">;
 export interface Comment extends Token<"comment"> {
   before: string;
   after: string;
@@ -101,10 +101,10 @@ export interface NthBase<PART extends string> extends Token<PART> {
   after: string;
   invalid?: boolean;
 }
-export interface NthStep extends NthBase<"nth_step"> {}
-export interface NthOffset extends NthBase<"nth_offset"> {}
-export interface NthDash extends NthBase<"nth_dash"> {}
-export interface NthOf extends NthBase<"nth_of"> {}
+export type NthStep = NthBase<"nth_step">;
+export type NthOffset = NthBase<"nth_offset">;
+export type NthDash = NthBase<"nth_dash">;
+export type NthOf = NthBase<"nth_of">;
 export type NthNode = NthStep | NthOffset | NthDash | NthOf | Comment;
 export interface Nth extends Omit<Token<"nth">, "value"> {
   nodes: Array<NthNode>;
@@ -288,7 +288,10 @@ function handleToken(
           // combine next combinator into previous (space)
           const nextCombinator = createCombinatorAst(next);
           lastCombinatorAst.combinator = nextCombinator.combinator;
-          lastCombinatorAst.before += lastCombinatorAst.after + lastCombinatorAst.value + nextCombinator.before;
+          lastCombinatorAst.before +=
+            lastCombinatorAst.after +
+            lastCombinatorAst.value +
+            nextCombinator.before;
           lastCombinatorAst.after = nextCombinator.after;
           lastCombinatorAst.value = nextCombinator.value;
           lastCombinatorAst.end = nextCombinator.end;
@@ -389,8 +392,9 @@ function handleToken(
     let target: CSSSelectorToken | undefined;
     let searchIndex = 1;
     const potentialAfterComments: CSSSelectorToken[] = [];
+    // eslint-disable-next-line no-constant-condition
     while (true) {
-      let nextToken = s.peek(searchIndex);
+      const nextToken = s.peek(searchIndex);
       if (isComment(nextToken.type)) {
         potentialAfterComments.push(nextToken);
       } else if (isNamespacedToken(nextToken)) {
@@ -440,7 +444,7 @@ function handleToken(
     nsAst.end = target?.end || token.end;
     // set invalid
     if (invalid) {
-      nsAst.namespace!.invalid = invalid;
+      nsAst.namespace.invalid = invalid;
     }
     // add ast if not modified
     if (!prevAst) {
@@ -495,7 +499,7 @@ function handleToken(
         }
         return handleToken(token, selectors, source, s);
       },
-      res as SelectorList,
+      res,
       source
     );
 
@@ -596,11 +600,8 @@ class NthHandler {
 
   public state: "step" | `dash` | `offset` | `of` | `selector` = `step`;
   private standaloneDash = false;
-  private ast: Nth['nodes'];
-  constructor(
-    private selectorNode: Nth,
-    private s: Seeker<CSSSelectorToken>
-  ) {
+  private ast: Nth["nodes"];
+  constructor(private selectorNode: Nth, private s: Seeker<CSSSelectorToken>) {
     this.ast = selectorNode.nodes;
   }
   public handleToken(token: CSSSelectorToken): boolean {
@@ -932,12 +933,10 @@ function isNamespacedAst(token: SelectorNode): token is NamespacedNodes {
   return token.type === `star` || token.type === `element`;
 }
 
-interface TraverseContext {}
-
 export function traverse(
   node: SelectorNode,
-  visit: (node: SelectorNode, ctx: TraverseContext) => boolean | void,
-  ctx?: TraverseContext
+  visit: (node: SelectorNode, ctx: {}) => boolean | void,
+  ctx?: {}
 ) {
   ctx = ctx || {};
   const r = visit(node, ctx) ?? 3;
@@ -980,7 +979,8 @@ export const printers: R = {
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
   nth_step: ({ before, value, after }: NthStep) => `${before}${value}${after}`,
   nth_dash: ({ before, value, after }: NthDash) => `${before}${value}${after}`,
-  nth_offset: ({ before, value, after }: NthOffset) => `${before}${value}${after}`,
+  nth_offset: ({ before, value, after }: NthOffset) =>
+    `${before}${value}${after}`,
   nth_of: ({ before, value, after }: NthOf) => `${before}${value}${after}`,
 };
 
@@ -988,7 +988,9 @@ export function stringifyNode(node: SelectorNode): string {
   return printers[node.type]?.(node as never) ?? "";
 }
 
-export function stringifySelectors(selectors: SelectorList | [Nth, ...SelectorList]) {
+export function stringifySelectors(
+  selectors: SelectorList | [Nth, ...SelectorList]
+) {
   const result: string[] = [];
   for (const node of selectors) {
     result.push(stringifyNode(node));

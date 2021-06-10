@@ -100,7 +100,7 @@ export function findTopLevelFunctions(tokens: JSCodeToken[]) {
       break;
     }
     if (t.value === "function") {
-      let functionTokens: ParedFunction = {
+      const functionTokens: ParedFunction = {
         init: t,
         name: undefined,
         generator: undefined,
@@ -149,7 +149,7 @@ function getBlock(
   if (t.type !== blockStart) {
     return;
   }
-  let block = [t];
+  const block = [t];
   let blockLevel = 1;
   while ((t = s.next())) {
     if (!t.type) {

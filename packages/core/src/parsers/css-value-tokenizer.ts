@@ -29,9 +29,9 @@ export interface MethodCall extends ASTNode<"call"> {
   name: string;
   args: CSSCodeAst[];
 }
-export interface StringNode extends ASTNode<"string"> {}
-export interface TextNode extends ASTNode<"text"> {}
-export interface CommaNode extends ASTNode<","> {}
+export type StringNode = ASTNode<"string">;
+export type TextNode = ASTNode<"text">;
+export type CommaNode = ASTNode<",">;
 
 export const isSeparatorToken = (
   token: CSSValueCodeToken
