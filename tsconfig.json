@@ -1,8 +1,8 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/core/src" },
-    { "path": "./packages/core/test" },
-    { "path": "./packages/core/test-kit" }
+    { "path": "./packages/toky/src" },
+    { "path": "./packages/toky/test" },
+    { "path": "./packages/toky/test-kit" }
   ]
 }

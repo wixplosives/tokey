@@ -1,5 +1,5 @@
 {
-  "name": "@toky/core",
+  "name": "toky",
   "description": "simple code like tokenizer",
   "version": "1.0.0",
   "main": "dist/index.js",
