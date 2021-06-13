@@ -9,11 +9,7 @@
       "request": "launch",
       "name": "Current",
       "skipFiles": ["<node_internals>/**"],
-      "args": [
-        "-r",
-        "@ts-tools/node/r",
-        "${file}"
-      ]
+      "args": ["-r", "@ts-tools/node/r", "${file}"]
     },
 
     {
@@ -28,11 +24,7 @@
       "request": "launch",
       "name": "Tests",
       "skipFiles": ["<node_internals>/**"],
-      "args": [
-        "-r",
-        "@ts-tools/node/r",
-        "${workspaceFolder}//test/index.spec.ts"
-      ]
+      "args": ["-r", "@ts-tools/node/r", "${workspaceFolder}//test/index.spec.ts"]
     }
   ]
 }
