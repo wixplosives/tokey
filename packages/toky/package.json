@@ -22,9 +22,6 @@
     "src",
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "author": "Wix.com",
   "license": "MIT",
   "repository": "https://github.com/wixplosives/toky/packages/core",
