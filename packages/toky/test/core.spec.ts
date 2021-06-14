@@ -1,5 +1,5 @@
 import { test } from "../test-kit/testing";
-import { tokenize, TokyOptions } from "../src/core";
+import { tokenize, TokyOptions } from "toky";
 import {
   createToken,
   isWhitespace,
@@ -7,8 +7,8 @@ import {
   getJSCommentStartType,
   isCommentEnd,
   getUnclosedComment,
-} from "../src/helpers";
-import type { Token } from "../src";
+} from "toky/dist/helpers";
+import type { Token } from "toky";
 
 const options: TokyOptions<Token> = {
   isDelimiter(char: string) {
@@ -43,7 +43,7 @@ const ignoreSpaceTokenizer = <T extends string>(input: T) =>
     },
   });
 
-describe("1", () => {
+describe("core - tokenize", () => {
   it("1", () => {
     test("1", defaultTokenizer, [
       { value: "1", type: "text", start: 0, end: 1 },

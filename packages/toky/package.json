@@ -5,10 +5,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "mocha \"./dist/test/**/*.spec.js\"",
-    "typecheck": "tsc --noEmit",
     "build": "rimraf dist && tsc",
     "prepack": "npm run build",
+    "test": "mocha \"./dist/test/**/*.spec.js\"",
+    "typecheck": "tsc --noEmit",
     "start": "node scripts/dev-server.js"
   },
   "keywords": [
