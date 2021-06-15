@@ -1,4 +1,4 @@
-import { test } from "../test-kit/testing";
+import { test } from "@toky/test-kit";
 import { stripComments } from "toky/dist/parsers/strips-comments";
 
 describe(`demos/strip-comments`, () => {

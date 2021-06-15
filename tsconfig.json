@@ -3,6 +3,6 @@
   "references": [
     { "path": "./packages/toky/src" },
     { "path": "./packages/toky/test" },
-    { "path": "./packages/toky/test-kit" }
+    { "path": "./packages/test-kit/src" }
   ]
 }

@@ -1,4 +1,4 @@
-import { test } from "../../test-kit/testing";
+import { test } from "@toky/test-kit";
 import { trimTokens } from "toky/dist/helpers";
 import type { Token } from "toky";
 

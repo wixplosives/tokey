@@ -1,4 +1,4 @@
-import { test as baseTest } from "../test-kit/testing";
+import { test as baseTest } from "@toky/test-kit";
 import {
   tokenizeSelector,
   stringifySelectors,

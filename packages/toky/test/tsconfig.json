@@ -4,5 +4,5 @@
     "outDir": "../dist/test",
     "types": ["mocha"]
   },
-  "references": [{ "path": "../src" }, { "path": "../test-kit" }]
+  "references": [{ "path": "../src" }, { "path": "../../test-kit/src" }]
 }

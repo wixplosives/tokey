@@ -1,4 +1,4 @@
-import { test } from "../test-kit/testing";
+import { test } from "@toky/test-kit";
 import { createCssValueAST } from "toky/dist/parsers/css-value-tokenizer";
 
 describe(`demos/css-value-parser`, () => {

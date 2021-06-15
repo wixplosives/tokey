@@ -1,0 +1,22 @@
+{
+  "name": "@toky/test-kit",
+  "private": true,
+  "description": "test kit to test parsers and ast",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "prepack": "npm run build"
+  },
+  "files": [
+    "src",
+    "dist",
+    "!dist/test",
+    "!*/tsconfig.{json,tsbuildinfo}"
+  ],
+  "author": "Wix.com",
+  "license": "MIT",
+  "repository": "https://github.com/wixplosives/toky/packages/test-kit",
+  "prettier": {}
+}
