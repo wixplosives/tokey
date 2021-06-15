@@ -5,10 +5,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "rimraf dist && tsc",
-    "prepack": "npm run build"
-  },
+  "scripts": {},
   "files": [
     "src",
     "dist",

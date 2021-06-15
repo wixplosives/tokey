@@ -5,8 +5,6 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "prepack": "npm run build",
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },
   "keywords": [
