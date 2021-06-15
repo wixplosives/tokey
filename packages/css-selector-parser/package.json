@@ -1,6 +1,5 @@
 {
   "name": "@tokey/css-selector-parser",
-  "private": true,
   "description": "selector parser for css",
   "version": "1.0.0",
   "main": "dist/index.js",
