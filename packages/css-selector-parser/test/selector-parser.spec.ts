@@ -2000,6 +2000,45 @@ describe(`selector-parser`, () => {
         }),
       ]);
     });
+    it(`* ++*`, () => {
+      test(`* ++*`, parseCssSelector, [
+        createNode({
+          type: `selector`,
+          start: 0,
+          end: 5,
+          nodes: [
+            createNode({
+              type: `star`,
+              value: `*`,
+              start: 0,
+              end: 1,
+            }),
+            createNode({
+              type: `combinator`,
+              combinator: `+`,
+              value: `+`,
+              start: 1,
+              end: 3,
+              before: ` `,
+            }),
+            createNode({
+              type: `combinator`,
+              combinator: `+`,
+              value: `+`,
+              start: 3,
+              end: 4,
+              invalid: true,
+            }),
+            createNode({
+              type: `star`,
+              value: `*`,
+              start: 4,
+              end: 5,
+            }),
+          ],
+        }),
+      ]);
+    });
     it(`*+*+*`, () => {
       test(`*+*+*`, parseCssSelector, [
         createNode({

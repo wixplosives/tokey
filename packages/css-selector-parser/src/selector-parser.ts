@@ -119,6 +119,7 @@ function handleToken(
      *  - previous ast equal to space combinator
      *    - turn previous ast to the next combinator type
      *    - merge spaces between them
+     *    - cancel initial space tracking - must be merged with other non space combinator or already canceled
      *  - initial ast is space (must be comments following it)
      *    - initial space is first in selector: merge initial ast into the selector before
      *    - otherwise merge initial ast the comment following it
@@ -147,6 +148,8 @@ function handleToken(
           lastCombinatorAst.after = nextCombinator.after;
           lastCombinatorAst.value = nextCombinator.value;
           lastCombinatorAst.end = nextCombinator.end;
+          // reset initial space
+          initialSpaceCombIndex = -1;
         } else if (initialSpaceCombIndex !== -1) {
           // merge initial space combinator (classified as combinator before a comment)
           const initialSpace = ast[initialSpaceCombIndex] as Combinator;
