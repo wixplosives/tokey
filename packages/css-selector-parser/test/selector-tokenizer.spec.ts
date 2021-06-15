@@ -1,8 +1,7 @@
-import { test as baseTest } from "@toky/test-kit";
 import {
   tokenizeSelector,
   stringifySelectors,
-} from "toky/dist/parsers/selector-tokenizer";
+} from "@toky/css-selector-parser";
 import type {
   SelectorNode,
   Selector,
@@ -13,7 +12,8 @@ import type {
   NthDash,
   NthOffset,
   NthOf,
-} from "toky/dist/parsers/selector-tokenizer";
+} from "@toky/css-selector-parser";
+import { test as baseTest } from "@toky/test-kit";
 
 function createNode<TYPE extends SelectorNode["type"]>(
   expected: Partial<SelectorNode> & { type: TYPE }
@@ -79,7 +79,7 @@ function createNode<TYPE extends SelectorNode["type"]>(
   }
   return {
     ...defaults,
-    ...(expected as any),
+    ...(expected as unknown as any),
   };
 }
 
@@ -97,7 +97,7 @@ function test<T extends string, U extends SelectorList>(
   }
 }
 
-describe(`demos/selector-parser`, () => {
+describe(`css-selector-parser`, () => {
   describe(`selector types`, () => {
     it(`*`, () => {
       test(`*`, tokenizeSelector, [

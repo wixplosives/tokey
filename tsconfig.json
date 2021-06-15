@@ -3,6 +3,8 @@
   "references": [
     { "path": "./packages/toky/src" },
     { "path": "./packages/toky/test" },
-    { "path": "./packages/test-kit/src" }
+    { "path": "./packages/test-kit/src" },
+    { "path": "./packages/css-selector-parser/src" },
+    { "path": "./packages/css-selector-parser/test" }
   ]
 }

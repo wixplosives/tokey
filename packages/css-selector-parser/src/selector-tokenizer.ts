@@ -1,5 +1,5 @@
-import { tokenize } from "../core";
 import {
+  tokenize,
   isStringDelimiter,
   isWhitespace,
   createToken,
@@ -9,10 +9,10 @@ import {
   getUnclosedComment,
   isComment,
   getText,
+  Seeker,
   last,
-} from "../helpers";
-import { Seeker } from "../seeker";
-import type { Token, Descriptors } from "../types";
+} from "toky";
+import type { Token, Descriptors } from "toky";
 
 type Delimiters =
   | "["

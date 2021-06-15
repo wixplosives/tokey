@@ -1,0 +1,31 @@
+{
+  "name": "@toky/css-selector-parser",
+  "private": true,
+  "description": "selector parser for css",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "prepack": "npm run build",
+    "test": "mocha \"./dist/test/**/*.spec.js\""
+  },
+  "dependencies": {
+    "toky": "^1.0.0"
+  },
+  "keywords": [
+    "parser",
+    "css",
+    "selector"
+  ],
+  "files": [
+    "src",
+    "dist",
+    "!dist/test",
+    "!*/tsconfig.{json,tsbuildinfo}"
+  ],
+  "author": "Wix.com",
+  "license": "MIT",
+  "repository": "https://github.com/wixplosives/toky/packages/css-selector-parser",
+  "prettier": {}
+}
