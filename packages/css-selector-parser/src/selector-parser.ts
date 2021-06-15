@@ -20,7 +20,7 @@ import {
   ensureSelector,
   trimCombinators,
 } from "./helpers";
-import { isComment, getText, Seeker, last } from "toky";
+import { isComment, getText, Seeker, last } from "@tokey/core";
 
 export function parseCssSelector(source: string) {
   return parseTokens(source, tokenizeSelector(source));

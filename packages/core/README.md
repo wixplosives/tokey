@@ -1,4 +1,4 @@
-# `@toky/core`
+# `@tokey/core`
 
 ## API
 

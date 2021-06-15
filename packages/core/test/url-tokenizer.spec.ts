@@ -1,9 +1,9 @@
-import { test } from "@toky/test-kit";
+import { test } from "@tokey/test-kit";
 import {
   CSSCodeToken,
   CSSCodeTokenGroup,
   tokenizeCSSUrls,
-} from "toky/dist/parsers/url-tokenizer";
+} from "@tokey/core/dist/parsers/url-tokenizer";
 
 function createGroup(tokens: CSSCodeToken[]): CSSCodeTokenGroup {
   return {

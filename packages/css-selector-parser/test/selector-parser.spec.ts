@@ -1,7 +1,7 @@
 import {
   parseCssSelector,
   stringifySelectorAst,
-} from "@toky/css-selector-parser";
+} from "@tokey/css-selector-parser";
 import type {
   SelectorNode,
   Selector,
@@ -12,8 +12,8 @@ import type {
   NthDash,
   NthOffset,
   NthOf,
-} from "@toky/css-selector-parser";
-import { test as baseTest } from "@toky/test-kit";
+} from "@tokey/css-selector-parser";
+import { test as baseTest } from "@tokey/test-kit";
 
 function createNode<TYPE extends SelectorNode["type"]>(
   expected: Partial<SelectorNode> & { type: TYPE }

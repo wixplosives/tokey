@@ -1,5 +1,5 @@
-import { test } from "@toky/test-kit";
-import { stripComments } from "toky/dist/parsers/strips-comments";
+import { test } from "@tokey/test-kit";
+import { stripComments } from "@tokey/core/dist/parsers/strips-comments";
 
 describe(`demos/strip-comments`, () => {
   it("a/*comment*/b", () => {

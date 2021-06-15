@@ -1,5 +1,5 @@
-import { test } from "@toky/test-kit";
-import { getListItems } from "toky/dist/parsers/separated-shallow-list";
+import { test } from "@tokey/test-kit";
+import { getListItems } from "@tokey/core/dist/parsers/separated-shallow-list";
 
 const commaSeparated = (char: string): char is "," => char === ",";
 const commaSeparatedList = (input: string) =>

@@ -1,6 +1,6 @@
-import { test } from "@toky/test-kit";
-import { trimTokens } from "toky/dist/helpers";
-import type { Token } from "toky";
+import { test } from "@tokey/test-kit";
+import { trimTokens } from "@tokey/core/dist/helpers";
+import type { Token } from "@tokey/core";
 
 const trimSpace = (tokens: Token[]) =>
   trimTokens(tokens, (token) => token.type === "space");

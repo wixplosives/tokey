@@ -7,8 +7,8 @@ import {
   getMultilineCommentStartType,
   isCommentEnd,
   getUnclosedComment,
-} from "toky";
-import type { Token, Descriptors } from "toky";
+} from "@tokey/core";
+import type { Token, Descriptors } from "@tokey/core";
 
 type Delimiters =
   | "["

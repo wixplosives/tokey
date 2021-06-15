@@ -1,5 +1,5 @@
-import { test } from "@toky/test-kit";
-import { createCssValueAST } from "toky/dist/parsers/css-value-tokenizer";
+import { test } from "@tokey/test-kit";
+import { createCssValueAST } from "@tokey/core/dist/parsers/css-value-tokenizer";
 
 describe(`demos/css-value-parser`, () => {
   it(`red url(http://localhost/x.png)`, () => {

@@ -3,5 +3,5 @@
   "compilerOptions": {
     "outDir": "../dist"
   },
-  "references": [{ "path": "../../toky/src" }]
+  "references": [{ "path": "../../core/src" }]
 }

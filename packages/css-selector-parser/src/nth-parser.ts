@@ -1,7 +1,7 @@
 import type { CSSSelectorToken } from "./tokenizer";
 import type { Nth, NthOf, NthOffset, NthStep } from "./ast-types";
 import { createCommentAst } from "./helpers";
-import { isComment, Seeker, last } from "toky";
+import { isComment, Seeker, last } from "@tokey/core";
 
 export class NthParser {
   static isNthPseudoClass(name: string): boolean {

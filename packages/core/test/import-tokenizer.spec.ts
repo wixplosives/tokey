@@ -1,8 +1,8 @@
-import { test } from "@toky/test-kit";
+import { test } from "@tokey/test-kit";
 import {
   tokenizeImports,
   ImportValue,
-} from "toky/dist/parsers/import-tokenizer";
+} from "@tokey/core/dist/parsers/import-tokenizer";
 
 const defaultTokenizer = <T extends string>(input: T) =>
   tokenizeImports(input, "{", "}");

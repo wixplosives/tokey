@@ -1,4 +1,4 @@
-import type { Token } from "toky";
+import type { Token } from "@tokey/core";
 
 export interface Selector extends Omit<Token<"selector">, "value"> {
   nodes: SelectorNodes;

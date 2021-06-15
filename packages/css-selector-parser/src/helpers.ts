@@ -8,7 +8,7 @@ import type {
   SelectorList,
   SelectorNode,
 } from "./ast-types";
-import { Token, last } from "toky";
+import { Token, last } from "@tokey/core";
 
 // create ast nodes
 
