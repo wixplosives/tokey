@@ -20,6 +20,9 @@
     "!dist/test",
     "!*/tsconfig.{json,tsbuildinfo}"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Wix.com",
   "license": "MIT",
   "repository": "https://github.com/wixplosives/tokey/packages/core",
