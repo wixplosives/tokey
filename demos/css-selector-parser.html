@@ -21,8 +21,8 @@
     </main>
     <script type="module">
       import { initPreview, renderNestedToken } from './client/view.ts';
-      import { tokenizeSelector } from '../packages/css-selector-parser/src/index.ts';
-      initPreview(input, output, tokenizeSelector, renderNestedToken);
+      import { parseCssSelector } from '../packages/css-selector-parser/src/index.ts';
+      initPreview(input, output, parseCssSelector, renderNestedToken);
     </script>
   </body>
 </html>

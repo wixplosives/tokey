@@ -1,6 +1,6 @@
 import {
-  tokenizeSelector,
-  stringifySelectors,
+  parseCssSelector,
+  stringifySelectorAst,
 } from "@toky/css-selector-parser";
 import type {
   SelectorNode,
@@ -89,7 +89,7 @@ function test<T extends string, U extends SelectorList>(
   expected: U
 ) {
   const actualAst = baseTest(input, aFn, expected);
-  const stringify = stringifySelectors(actualAst);
+  const stringify = stringifySelectorAst(actualAst);
   if (stringify !== input) {
     throw new Error(
       `expected stringify value "${stringify}" to equal input "${input}"`
@@ -97,10 +97,10 @@ function test<T extends string, U extends SelectorList>(
   }
 }
 
-describe(`css-selector-parser`, () => {
+describe(`selector-parser`, () => {
   describe(`selector types`, () => {
     it(`*`, () => {
-      test(`*`, tokenizeSelector, [
+      test(`*`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -117,7 +117,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`some-element`, () => {
-      test(`some-element`, tokenizeSelector, [
+      test(`some-element`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -134,7 +134,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`someelement`, () => {
-      test(`someelement`, tokenizeSelector, [
+      test(`someelement`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -151,7 +151,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`.classX`, () => {
-      test(`.classX`, tokenizeSelector, [
+      test(`.classX`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -168,7 +168,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`#x-id`, () => {
-      test(`#x-id`, tokenizeSelector, [
+      test(`#x-id`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -185,7 +185,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:pseudo-class-x`, () => {
-      test(`:pseudo-class-x`, tokenizeSelector, [
+      test(`:pseudo-class-x`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -202,7 +202,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nested-pseudo-class-x()`, () => {
-      test(`:nested-pseudo-class-x()`, tokenizeSelector, [
+      test(`:nested-pseudo-class-x()`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -220,7 +220,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nested-pseudo-class-x(.a)`, () => {
-      test(`:nested-pseudo-class-x(.a)`, tokenizeSelector, [
+      test(`:nested-pseudo-class-x(.a)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -252,7 +252,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nested-pseudo-class-x(.a, .b)`, () => {
-      test(`:nested-pseudo-class-x(.a, .b)`, tokenizeSelector, [
+      test(`:nested-pseudo-class-x(.a, .b)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -298,7 +298,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`::pseudo-element-x`, () => {
-      test(`::pseudo-element-x`, tokenizeSelector, [
+      test(`::pseudo-element-x`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -315,7 +315,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`::pseudo-element-x()`, () => {
-      test(`::pseudo-element-x()`, tokenizeSelector, [
+      test(`::pseudo-element-x()`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -333,7 +333,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`::pseudo-element-x(.a)`, () => {
-      test(`::pseudo-element-x(.a)`, tokenizeSelector, [
+      test(`::pseudo-element-x(.a)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -365,7 +365,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`::pseudo-element-x(.a, .b)`, () => {
-      test(`::pseudo-element-x(.a, .b)`, tokenizeSelector, [
+      test(`::pseudo-element-x(.a, .b)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -411,7 +411,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`[attr-x]`, () => {
-      test(`[attr-x]`, tokenizeSelector, [
+      test(`[attr-x]`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -428,7 +428,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`[attr-x="attr-value"]`, () => {
-      test(`[attr-x="attr-value"]`, tokenizeSelector, [
+      test(`[attr-x="attr-value"]`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -447,7 +447,7 @@ describe(`css-selector-parser`, () => {
   });
   describe(`nth`, () => {
     it(`:nth-child()`, () => {
-      test(`:nth-child()`, tokenizeSelector, [
+      test(`:nth-child()`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -465,7 +465,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n)`, () => {
-      test(`:nth-child(2n)`, tokenizeSelector, [
+      test(`:nth-child(2n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -497,7 +497,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(-2n)`, () => {
-      test(`:nth-child(-2n)`, tokenizeSelector, [
+      test(`:nth-child(-2n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -529,7 +529,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(+2N)`, () => {
-      test(`:nth-child(+2N)`, tokenizeSelector, [
+      test(`:nth-child(+2N)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -561,7 +561,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(-n)`, () => {
-      test(`:nth-child(-n)`, tokenizeSelector, [
+      test(`:nth-child(-n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -593,7 +593,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(+n)`, () => {
-      test(`:nth-child(+n)`, tokenizeSelector, [
+      test(`:nth-child(+n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -625,7 +625,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(n)`, () => {
-      test(`:nth-child(n)`, tokenizeSelector, [
+      test(`:nth-child(n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -657,7 +657,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(odd)`, () => {
-      test(`:nth-child(odd)`, tokenizeSelector, [
+      test(`:nth-child(odd)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -689,7 +689,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(even)`, () => {
-      test(`:nth-child(even)`, tokenizeSelector, [
+      test(`:nth-child(even)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -721,7 +721,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n-3)`, () => {
-      test(`:nth-child(2n-3)`, tokenizeSelector, [
+      test(`:nth-child(2n-3)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -759,7 +759,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n+3)`, () => {
-      test(`:nth-child(2n+3)`, tokenizeSelector, [
+      test(`:nth-child(2n+3)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -797,7 +797,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(3)`, () => {
-      test(`:nth-child(3)`, tokenizeSelector, [
+      test(`:nth-child(3)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -829,7 +829,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n- 3)`, () => {
-      test(`:nth-child(2n- 3)`, tokenizeSelector, [
+      test(`:nth-child(2n- 3)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -874,7 +874,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n+ 3)`, () => {
-      test(`:nth-child(2n+ 3)`, tokenizeSelector, [
+      test(`:nth-child(2n+ 3)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -919,7 +919,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n - 3)`, () => {
-      test(`:nth-child(2n - 3)`, tokenizeSelector, [
+      test(`:nth-child(2n - 3)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -965,7 +965,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n + 3)`, () => {
-      test(`:nth-child(2n + 3)`, tokenizeSelector, [
+      test(`:nth-child(2n + 3)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1011,7 +1011,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n + 3 of div.klass)`, () => {
-      test(`:nth-child(2n + 3 of div.klass)`, tokenizeSelector, [
+      test(`:nth-child(2n + 3 of div.klass)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1084,7 +1084,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n of html|div)`, () => {
-      test(`:nth-child(2n of html|div)`, tokenizeSelector, [
+      test(`:nth-child(2n of html|div)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1142,7 +1142,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n of div, span)`, () => {
-      test(`:nth-child(2n of div, span)`, tokenizeSelector, [
+      test(`:nth-child(2n of div, span)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1209,7 +1209,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-last-child(2n)`, () => {
-      test(`:nth-last-child(2n)`, tokenizeSelector, [
+      test(`:nth-last-child(2n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1241,7 +1241,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-of-type(2n)`, () => {
-      test(`:nth-of-type(2n)`, tokenizeSelector, [
+      test(`:nth-of-type(2n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1273,7 +1273,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-last-of-type(2n)`, () => {
-      test(`:nth-last-of-type(2n)`, tokenizeSelector, [
+      test(`:nth-last-of-type(2n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1305,7 +1305,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child( 2n)`, () => {
-      test(`:nth-child( 2n)`, tokenizeSelector, [
+      test(`:nth-child( 2n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1340,7 +1340,7 @@ describe(`css-selector-parser`, () => {
   });
   describe(`namespace`, () => {
     it(`ns|div`, () => {
-      test(`ns|div`, tokenizeSelector, [
+      test(`ns|div`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1362,7 +1362,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*|div`, () => {
-      test(`*|div`, tokenizeSelector, [
+      test(`*|div`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1384,7 +1384,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`|div`, () => {
-      test(`|div`, tokenizeSelector, [
+      test(`|div`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1406,7 +1406,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`ns|*`, () => {
-      test(`ns|*`, tokenizeSelector, [
+      test(`ns|*`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1430,7 +1430,7 @@ describe(`css-selector-parser`, () => {
   });
   describe(`comments`, () => {
     it(`/* comment  */`, () => {
-      test(`/* comment  */`, tokenizeSelector, [
+      test(`/* comment  */`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1447,7 +1447,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`./*comment1???*//*???comment2*/classX`, () => {
-      test(`./*comment1???*//*???comment2*/classX`, tokenizeSelector, [
+      test(`./*comment1???*//*???comment2*/classX`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1478,7 +1478,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:/*comment1???*//*???comment2*/pseudo-class`, () => {
-      test(`:/*comment1???*//*???comment2*/pseudo-class`, tokenizeSelector, [
+      test(`:/*comment1???*//*???comment2*/pseudo-class`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1509,7 +1509,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:/*c1*//*c2*/:/*c3*//*c4*/pseudo-element`, () => {
-      test(`:/*c1*//*c2*/:/*c3*//*c4*/pseudo-element`, tokenizeSelector, [
+      test(`:/*c1*//*c2*/:/*c3*//*c4*/pseudo-element`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1556,7 +1556,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*+/*c1*/+*`, () => {
-      test(`*+/*c1*/+*`, tokenizeSelector, [
+      test(`*+/*c1*/+*`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1600,7 +1600,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*+/*c1*/  *`, () => {
-      test(`*+/*c1*/  *`, tokenizeSelector, [
+      test(`*+/*c1*/  *`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1637,7 +1637,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*+ /*c1*/ /*c2*/ *`, () => {
-      test(`*+ /*c1*/ /*c2*/ *`, tokenizeSelector, [
+      test(`*+ /*c1*/ /*c2*/ *`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1682,7 +1682,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*/*c1*//*c2*/|/*c3*//*c4*/div`, () => {
-      test(`*/*c1*//*c2*/|/*c3*//*c4*/div`, tokenizeSelector, [
+      test(`*/*c1*//*c2*/|/*c3*//*c4*/div`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1732,7 +1732,7 @@ describe(`css-selector-parser`, () => {
     it(`:nth-child(/*c0*/ -5n /*c1*/ - /*c2*/ 10 /*c3*/ of /*c4*/div/*c5*/)`, () => {
       test(
         `:nth-child(/*c0*/ -5n /*c1*/ - /*c2*/ 10 /*c3*/ of /*c4*/div/*c5*/)`,
-        tokenizeSelector,
+        parseCssSelector,
         [
           createNode({
             type: `selector`,
@@ -1843,7 +1843,7 @@ describe(`css-selector-parser`, () => {
   });
   describe(`combinators`, () => {
     it(`* .nested-class`, () => {
-      test(`* .nested-class`, tokenizeSelector, [
+      test(`* .nested-class`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1873,7 +1873,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*+.adjacent-class`, () => {
-      test(`*+.adjacent-class`, tokenizeSelector, [
+      test(`*+.adjacent-class`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1903,7 +1903,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*~.proceeding-sibling-class`, () => {
-      test(`*~.proceeding-sibling-class`, tokenizeSelector, [
+      test(`*~.proceeding-sibling-class`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1933,7 +1933,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*>.direct-child-class`, () => {
-      test(`*>.direct-child-class`, tokenizeSelector, [
+      test(`*>.direct-child-class`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -1963,7 +1963,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*++*`, () => {
-      test(`*++*`, tokenizeSelector, [
+      test(`*++*`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2001,7 +2001,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*+*+*`, () => {
-      test(`*+*+*`, tokenizeSelector, [
+      test(`*+*+*`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2044,7 +2044,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*   *`, () => {
-      test(`*   *`, tokenizeSelector, [
+      test(`*   *`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2075,7 +2075,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`* + *`, () => {
-      test(`* + *`, tokenizeSelector, [
+      test(`* + *`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2107,7 +2107,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*+~> *`, () => {
-      test(`*+~> *`, tokenizeSelector, [
+      test(`*+~> *`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2154,7 +2154,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`* /*c1*/ + *`, () => {
-      test(`* /*c1*/ + *`, tokenizeSelector, [
+      test(`* /*c1*/ + *`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2193,7 +2193,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(` /*c1*/ + *`, () => {
-      test(` /*c1*/ + *`, tokenizeSelector, [
+      test(` /*c1*/ + *`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2228,7 +2228,7 @@ describe(`css-selector-parser`, () => {
   });
   describe(`invalid`, () => {
     it(`:pseudo(`, () => {
-      test(`:pseudo(`, tokenizeSelector, [
+      test(`:pseudo(`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2251,7 +2251,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`::pseudo(`, () => {
-      test(`::pseudo(`, tokenizeSelector, [
+      test(`::pseudo(`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2274,7 +2274,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`.ns|*`, () => {
-      test(`.ns|*`, tokenizeSelector, [
+      test(`.ns|*`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2303,7 +2303,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`ns|`, () => {
-      test(`ns|`, tokenizeSelector, [
+      test(`ns|`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2326,7 +2326,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:x|`, () => {
-      test(`:x|`, tokenizeSelector, [
+      test(`:x|`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2355,7 +2355,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`ns|||div`, () => {
-      test(`ns|||div`, tokenizeSelector, [
+      test(`ns|||div`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2402,7 +2402,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(-3x)`, () => {
-      test(`:nth-child(-3x)`, tokenizeSelector, [
+      test(`:nth-child(-3x)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2435,7 +2435,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(-odd)`, () => {
-      test(`:nth-child(-odd)`, tokenizeSelector, [
+      test(`:nth-child(-odd)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2468,7 +2468,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(+even)`, () => {
-      test(`:nth-child(+even)`, tokenizeSelector, [
+      test(`:nth-child(+even)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2501,7 +2501,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(5n-3n)`, () => {
-      test(`:nth-child(5n-3n)`, tokenizeSelector, [
+      test(`:nth-child(5n-3n)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2540,7 +2540,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(2n+3 off div)`, () => {
-      test(`:nth-child(2n+3 off div)`, tokenizeSelector, [
+      test(`:nth-child(2n+3 off div)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2600,7 +2600,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(- 5)`, () => {
-      test(`:nth-child(- 5)`, tokenizeSelector, [
+      test(`:nth-child(- 5)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2640,7 +2640,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`:nth-child(5n - +3)`, () => {
-      test(`:nth-child(5n - +3)`, tokenizeSelector, [
+      test(`:nth-child(5n - +3)`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2689,7 +2689,7 @@ describe(`css-selector-parser`, () => {
   });
   describe(`spaces`, () => {
     it(`:p(  .a  ,   .b  )`, () => {
-      test(`:p(  .a  ,   .b  )`, tokenizeSelector, [
+      test(`:p(  .a  ,   .b  )`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2738,7 +2738,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`::p(  .a  ,   .b  )`, () => {
-      test(`::p(  .a  ,   .b  )`, tokenizeSelector, [
+      test(`::p(  .a  ,   .b  )`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2787,7 +2787,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`*    .a  + .b`, () => {
-      test(`*    .a  + .b`, tokenizeSelector, [
+      test(`*    .a  + .b`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2833,7 +2833,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(` /*c1*/ .a .b /*c2*/ `, () => {
-      test(` /*c1*/ .a .b /*c2*/ `, tokenizeSelector, [
+      test(` /*c1*/ .a .b /*c2*/ `, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2881,7 +2881,7 @@ describe(`css-selector-parser`, () => {
   });
   describe(`combinations`, () => {
     it(`:a(.b,::d(.e,.f))`, () => {
-      test(`:a(.b,::d(.e,.f))`, tokenizeSelector, [
+      test(`:a(.b,::d(.e,.f))`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
@@ -2954,7 +2954,7 @@ describe(`css-selector-parser`, () => {
       ]);
     });
     it(`* .a+.b`, () => {
-      test(`* .a+.b`, tokenizeSelector, [
+      test(`* .a+.b`, parseCssSelector, [
         createNode({
           type: `selector`,
           start: 0,
