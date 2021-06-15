@@ -25,11 +25,11 @@ main > * {
   height: 100%;
 }
 
-[data-in-rage="false"] {
+[data-in-rage='false'] {
   font-weight: normal;
   color: black;
 }
 
-[data-in-rage="true"] {
+[data-in-rage='true'] {
   font-weight: bolder;
 }

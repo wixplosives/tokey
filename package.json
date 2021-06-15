@@ -11,7 +11,8 @@
     "lint": "eslint . -f codeframe",
     "pretest": "yarn build && yarn lint",
     "test": "lerna run test --stream",
-    "prettify": "npx prettier . --write"
+    "prettify": "npx prettier . --write",
+    "start": "node scripts/dev-server.js"
   },
   "devDependencies": {
     "@ts-tools/node": "^2.1.1",

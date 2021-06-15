@@ -31,13 +31,11 @@
       <pre id="output"></pre>
     </main>
     <script type="module">
-      import { initPreview } from "./client/view.ts";
-      import { getListItems } from "../src/parsers/separated-shallow-list.ts";
+      import { initPreview } from './client/view.ts';
+      import { getListItems } from '../packages/toky/src/parsers/separated-shallow-list.ts';
 
       seps.oninput = () =>
-        seps.dispatchEvent(
-          new CustomEvent("playground:updateOutput", { bubbles: true })
-        );
+        seps.dispatchEvent(new CustomEvent('playground:updateOutput', { bubbles: true }));
 
       initPreview(input, output, (value) =>
         getListItems(value, (char) => {
