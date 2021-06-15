@@ -71,7 +71,7 @@ function findImports(
   tokens: CodeToken[],
   blockStart: string,
   blockEnd: string,
-  taggedImportSupport: boolean = false
+  taggedImportSupport = false
 ) {
   const imports: ImportValue[] = [];
   const s = new Seeker<CodeToken>(tokens);
@@ -82,8 +82,8 @@ function findImports(
       break;
     }
     if (token.value === "import") {
-      let startTokenIndex = s.index;
-      let errors = [];
+      const startTokenIndex = s.index;
+      const errors = [];
       let defaultName;
       let star = false;
       let named = undefined;
@@ -102,7 +102,7 @@ function findImports(
           }
         } else if (t.type === "*") {
           star = true;
-          let as = s.peek();
+          const as = s.peek();
           if (as.value === "as") {
             s.next();
             t = s.peek();

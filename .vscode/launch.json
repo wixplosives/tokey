@@ -7,15 +7,13 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Current",
+      "name": "Current test",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "preLaunchTask": "npm: build",
       "skipFiles": ["<node_internals>/**"],
-      "args": [
-        "-r",
-        "@ts-tools/node/r",
-        "${file}"
-      ]
+      "args": ["-r", "@ts-tools/node/r", "${file}"],
+      "internalConsoleOptions": "openOnSessionStart"
     },
-
     {
       "type": "node",
       "request": "launch",
@@ -26,13 +24,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Tests",
+      "name": "All tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "preLaunchTask": "npm: build",
       "skipFiles": ["<node_internals>/**"],
-      "args": [
-        "-r",
-        "@ts-tools/node/r",
-        "${workspaceFolder}//test/index.spec.ts"
-      ]
+      "args": ["-r", "@ts-tools/node/r", "${workspaceFolder}/packages/**/**.spec.ts"],
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }

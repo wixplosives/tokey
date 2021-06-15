@@ -1,34 +1,36 @@
 {
-  "name": "toky",
-  "description": "simple code like tokenizer",
-  "version": "0.1.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "name": "toky-repo",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "node -r @ts-tools/node/r test/index.spec.ts",
-    "typecheck": "tsc --noEmit",
-    "build": "rimraf dist && tsc -p tsconfig.build.json",
-    "prepack": "npm run build",
-    "start": "node scripts/dev-server.js"
+    "clean": "rimraf ./packages/*/{dist,cjs,esm}",
+    "build": "tsc --build",
+    "watch": "yarn build -w",
+    "lint": "eslint . -f codeframe",
+    "pretest": "yarn build && yarn lint",
+    "test": "lerna run test --stream",
+    "prettify": "npx prettier . --write"
   },
   "devDependencies": {
     "@ts-tools/node": "^2.1.1",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "12",
+    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/parser": "^4.26.1",
+    "eslint": "^7.28.0",
+    "eslint-config-prettier": "^8.3.0",
+    "lerna": "^4.0.0",
+    "mocha": "^9.0.0",
+    "prettier": "^2.3.1",
     "rimraf": "^3.0.2",
     "typescript": "~4.1.5"
   },
-  "keywords": [
-    "parser",
-    "tokenizer",
-    "tokens",
-    "code",
-    "javascript"
-  ],
-  "files": [
-    "src",
-    "dist"
-  ],
+  "engines": {
+    "node": ">=12"
+  },
+  "repository": "git@github.com:wixplosives/toky.git",
   "author": "Wix.com",
-  "license": "MIT",
-  "repository": "https://github.com/wixplosives/toky",
-  "prettier": {}
+  "license": "MIT"
 }

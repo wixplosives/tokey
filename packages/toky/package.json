@@ -1,0 +1,29 @@
+{
+  "name": "toky",
+  "description": "simple code like tokenizer",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "prepack": "npm run build",
+    "test": "mocha \"./dist/test/**/*.spec.js\"",
+    "typecheck": "tsc --noEmit",
+    "start": "node scripts/dev-server.js"
+  },
+  "keywords": [
+    "parser",
+    "tokenizer",
+    "tokens",
+    "code",
+    "javascript"
+  ],
+  "files": [
+    "src",
+    "dist"
+  ],
+  "author": "Wix.com",
+  "license": "MIT",
+  "repository": "https://github.com/wixplosives/toky/packages/core",
+  "prettier": {}
+}
