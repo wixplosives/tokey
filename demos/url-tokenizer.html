@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Tokens</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <main>
+      <textarea id="input">
+@function getLegacyAssetUrl($assetName) {
+    @return url('../../legacy-assets/' + $assetName);
+}
+
+[data-x="url('asdasda')"]         
+
+/* url('asd') */ 
+
+.x {
+    bg: url(../x) ,url('../y');
+    color: var(--x, url('../z'))
+
+}
+        </textarea
+      >
+      <pre id="output"></pre>
+    </main>
+    <script type="module">
+      import { initPreview } from './client/view.ts';
+      import { tokenizeCSSUrls } from '../packages/core/src/parsers/url-tokenizer.ts';
+      initPreview(input, output, tokenizeCSSUrls);
+    </script>
+  </body>
+</html>
