@@ -10,13 +10,14 @@ export function walk(
   visit: (node: SelectorNode, parents: SelectorNode[]) => number | undefined,
   options: WalkOptions = {}
 ): void {
-  const parents: SelectorNode[] = [];
+  const parents: SelectorNode[][] = [[]];
   const toVisit: Array<SelectorNode | SelectorList | typeof nestEnd> = [
     current,
   ];
   let skipAmount = -1;
   while (toVisit.length) {
     const current = toVisit.shift()!;
+    const currentParents = parents[parents.length - 1];
     // visit only allowed nodes (also skip selector list)
     if (current === nestEnd) {
       parents.pop();
@@ -26,7 +27,7 @@ export function walk(
       (!options.ignoreList || !options.ignoreList.includes(current.type)) &&
       (!options.visitList || options.visitList.includes(current.type))
     ) {
-      skipAmount = visit(current, parents) ?? -1;
+      skipAmount = visit(current, currentParents) ?? -1;
     }
     if (skipAmount === Infinity) {
       // stop all: fast bail out
@@ -46,7 +47,7 @@ export function walk(
         toVisit.push(...current);
       } else if (isWithNodes(current)) {
         // add nested nodes
-        parents.push(current);
+        parents.push([...currentParents, current]);
         toVisit.unshift(...current.nodes, nestEnd);
       }
     }
