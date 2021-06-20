@@ -4,6 +4,7 @@
     { "path": "./packages/core/src" },
     { "path": "./packages/core/test" },
     { "path": "./packages/test-kit/src" },
+    { "path": "./packages/test-kit/test" },
     { "path": "./packages/css-selector-parser/src" },
     { "path": "./packages/css-selector-parser/test" }
   ]

@@ -1,4 +1,4 @@
-import { test } from "@tokey/test-kit";
+import { testTokenizer as test } from "@tokey/test-kit";
 import { stripComments } from "@tokey/core/dist/parsers/strips-comments";
 
 describe(`demos/strip-comments`, () => {
