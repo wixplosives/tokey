@@ -1,4 +1,4 @@
-import { test } from "@tokey/test-kit";
+import { testTokenizer as test } from "@tokey/test-kit";
 import { tokenize, TokyOptions } from "@tokey/core";
 import {
   createToken,

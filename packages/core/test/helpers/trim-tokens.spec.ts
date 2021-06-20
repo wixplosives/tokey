@@ -1,4 +1,4 @@
-import { test } from "@tokey/test-kit";
+import { testTokenizer as test } from "@tokey/test-kit";
 import { trimTokens } from "@tokey/core/dist/helpers";
 import type { Token } from "@tokey/core";
 
