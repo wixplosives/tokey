@@ -179,7 +179,7 @@ describe(`ast-utils`, () => {
         ],
       });
     });
-    it(`skip X levels down (2)`, () => {
+    it(`should skip X levels down (2)`, () => {
       testWalk(parseCssSelector(`:is(:skip-2-levels(.a).b, .c).d, .e`), {
         mapVisit: ({ type, value }: any) => ({ type, value }),
         resultVisit: ({ value }: any) =>
@@ -195,7 +195,7 @@ describe(`ast-utils`, () => {
         ],
       });
     });
-    it(`skip X levels down through selectors (3)`, () => {
+    it(`should skip X levels down through selectors (3)`, () => {
       testWalk(parseCssSelector(`:is(:skip-3-levels(.a).b, .c).d, .e`), {
         mapVisit: ({ type, value }: any) => ({ type, value }),
         resultVisit: ({ value }: any) =>

@@ -4,39 +4,50 @@ export interface WalkOptions {
   visitList?: SelectorNode["type"][];
   ignoreList?: SelectorNode["type"][];
 }
+const nestEnd = Symbol(`nest-end`);
 export function walk(
   current: SelectorNode | SelectorList,
   visit: (node: SelectorNode) => number | undefined,
   options: WalkOptions = {}
-): number | undefined {
-  // visit only allowed nodes (also skip selector list)
-  if (
-    !Array.isArray(current) &&
-    (!options.ignoreList || !options.ignoreList.includes(current.type)) &&
-    (!options.visitList || options.visitList.includes(current.type))
-  ) {
-    const skipAmount = visit(current);
-    if (skipAmount !== undefined) {
-      // stop
-      return skipAmount > 0 ? skipAmount - 1 : undefined;
+): void {
+  const toVisit: Array<SelectorNode | SelectorList | typeof nestEnd> = [
+    current,
+  ];
+  let skipAmount = -1;
+  while (toVisit.length) {
+    const current = toVisit.shift()!;
+    // visit only allowed nodes (also skip selector list)
+    if (current === nestEnd) {
+      continue;
+    } else if (
+      !Array.isArray(current) &&
+      (!options.ignoreList || !options.ignoreList.includes(current.type)) &&
+      (!options.visitList || options.visitList.includes(current.type))
+    ) {
+      skipAmount = visit(current) ?? -1;
     }
-  }
-  // iterate nested nodes
-  const nodes = Array.isArray(current)
-    ? current
-    : isWithNodes(current)
-    ? current.nodes
-    : null;
-  if (nodes) {
-    for (const node of nodes) {
-      const skipAmount = walk(node, visit, options);
-      if (skipAmount !== undefined) {
-        // stop
-        return skipAmount > 0 ? skipAmount - 1 : undefined;
+    if (skipAmount === Infinity) {
+      // stop all: fast bail out
+      return;
+    } else if (skipAmount >= 0) {
+      // skip next levels
+      while (skipAmount > 0 && toVisit.length) {
+        const next = toVisit.shift()!;
+        if (next === nestEnd) {
+          skipAmount--;
+        }
+      }
+    } else {
+      // add nested
+      if (Array.isArray(current)) {
+        // add sub selectors
+        toVisit.push(...current);
+      } else if (isWithNodes(current)) {
+        // add nested nodes
+        toVisit.unshift(...current.nodes, nestEnd);
       }
     }
   }
-  return;
 }
 
 walk.skipNested = 0 as const;
