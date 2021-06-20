@@ -16,8 +16,11 @@ function testWalk(
     expectedMap,
   }: {
     walkOptions?: WalkOptions;
-    mapVisit: (node: SelectorNode) => any;
-    resultVisit?: (node: SelectorNode) => number | undefined;
+    mapVisit: (node: SelectorNode, parents: SelectorNode[]) => any;
+    resultVisit?: (
+      node: SelectorNode,
+      parents: SelectorNode[]
+    ) => number | undefined;
     expectedMap: any[];
   }
 ) {
@@ -25,9 +28,9 @@ function testWalk(
   try {
     walk(
       topNode,
-      (current: SelectorNode) => {
-        actual.push(mapVisit ? mapVisit(current) : current);
-        return resultVisit ? resultVisit(current) : undefined;
+      (current: SelectorNode, parents: SelectorNode[]) => {
+        actual.push(mapVisit ? mapVisit(current, parents) : current);
+        return resultVisit ? resultVisit(current, parents) : undefined;
       },
       walkOptions
     );
@@ -207,6 +210,50 @@ describe(`ast-utils`, () => {
           { type: `pseudo_class`, value: `skip-3-levels` },
           { type: `selector`, value: undefined },
           { type: `class`, value: `e` },
+        ],
+      });
+    });
+    it(`should provide parent list to visit`, () => {
+      testWalk(parseCssSelector(`:a(:b(:c))`), {
+        mapVisit: ({ type, value }: any, parents: any[]) => ({
+          type,
+          value,
+          parents: parents.map(({ value, type }) => value || type).join(`,`),
+        }),
+        expectedMap: [
+          { type: `selector`, value: undefined, parents: `` },
+          { type: `pseudo_class`, value: `a`, parents: `selector` },
+          { type: `selector`, value: undefined, parents: `selector,a` },
+          { type: `pseudo_class`, value: `b`, parents: `selector,a,selector` },
+          {
+            type: `selector`,
+            value: undefined,
+            parents: `selector,a,selector,b`,
+          },
+          {
+            type: `pseudo_class`,
+            value: `c`,
+            parents: `selector,a,selector,b,selector`,
+          },
+        ],
+      });
+    });
+    it(`should provide parent list to visit (test multi selectors)`, () => {
+      testWalk(parseCssSelector(`:a(:a1(), :a2), :b(:b1)`), {
+        walkOptions: {
+          ignoreList: [`selector`],
+        },
+        mapVisit: ({ type, value }: any, parents: any[]) => ({
+          type,
+          value,
+          parents: parents.map(({ value, type }) => value || type).join(`,`),
+        }),
+        expectedMap: [
+          { type: `pseudo_class`, value: `a`, parents: `selector` },
+          { type: `pseudo_class`, value: `a1`, parents: `selector,a,selector` },
+          { type: `pseudo_class`, value: `a2`, parents: `selector,a,selector` },
+          { type: `pseudo_class`, value: `b`, parents: `selector` },
+          { type: `pseudo_class`, value: `b1`, parents: `selector,b,selector` },
         ],
       });
     });
