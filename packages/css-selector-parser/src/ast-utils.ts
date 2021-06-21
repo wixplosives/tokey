@@ -21,7 +21,6 @@ export function walk(
     : [topNode];
   // initiate context
   const context = createWalkContext(topNode);
-  let skipAmount = -1;
   // iterate nodes
   while (toVisit.length) {
     const current = toVisit.shift()!;
@@ -34,32 +33,34 @@ export function walk(
       (!options.visitList || options.visitList.includes(current.type))
     ) {
       // visit node
-      skipAmount =
+      let skipAmount =
         visit(
           current,
           context.indexInSelector,
           context.nodesInSelector,
           context.parents
         ) ?? -1;
+      // point to next selector node
       context.next();
-    }
-    // setup before next iteration
-    if (skipAmount === Infinity) {
-      // stop all: fast bail out
-      return;
-    } else if (skipAmount >= 0) {
-      // skip levels
-      while (skipAmount > 0 && toVisit.length) {
-        const next = toVisit.shift()!;
-        if (next === nestEnd) {
-          skipAmount--;
-          context.up();
+      // check if to skip nested or current/following selectors
+      if (skipAmount === Infinity) {
+        // stop all: fast bail out
+        return;
+      } else if (skipAmount >= 0) {
+        // skip levels
+        while (skipAmount > 0 && toVisit.length) {
+          const next = toVisit.shift()!;
+          if (next === nestEnd) {
+            skipAmount--;
+            context.up();
+          }
         }
+        continue;
       }
-    } else if (isWithNodes(current)) {
-      // set context for nested nodes
+    }
+    // add nested nodes
+    if (isWithNodes(current)) {
       context.insertNested(current);
-      // add nested to visit list
       toVisit.unshift(...current.nodes, nestEnd);
     }
   }
