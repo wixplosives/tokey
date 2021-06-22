@@ -91,20 +91,6 @@ export function isNamespacedAst(token: SelectorNode): token is NamespacedNodes {
 
 // utils
 
-export function traverse(
-  node: SelectorNode,
-  visit: (node: SelectorNode, ctx: {}) => boolean | void,
-  ctx?: {}
-) {
-  ctx = ctx || {};
-  const r = visit(node, ctx) ?? 3;
-  if (r !== false && "nodes" in node && node.nodes) {
-    for (const child of node.nodes) {
-      traverse(child, visit, ctx);
-    }
-  }
-}
-
 export function ensureSelector(
   selectors: SelectorList,
   startToken: CSSSelectorToken
