@@ -464,6 +464,25 @@ describe(`selector-parser`, () => {
         ],
       });
     });
+    it(`&`, () => {
+      test(`&`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 1,
+            nodes: [
+              createNode({
+                type: `nesting`,
+                value: `&`,
+                start: 0,
+                end: 1,
+              }),
+            ],
+          }),
+        ],
+      });
+    });
   });
   describe(`nth`, () => {
     it(`:nth-child()`, () => {

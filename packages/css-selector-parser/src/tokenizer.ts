@@ -25,7 +25,8 @@ type Delimiters =
   | "~"
   | "+"
   | "{"
-  | "}";
+  | "}"
+  | "&";
 
 export type CSSSelectorToken = Token<Descriptors | Delimiters>;
 
@@ -60,4 +61,5 @@ const isDelimiter = (char: string) =>
   char === "~" ||
   char === "+" ||
   char === "{" ||
-  char === "}";
+  char === "}" ||
+  char === "&";

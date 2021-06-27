@@ -57,6 +57,11 @@ export interface Combinator extends Token<"combinator"> {
   invalid: boolean;
 }
 
+export interface Nesting extends Token<"nesting"> {
+  value: "&";
+  nodes?: SelectorList;
+}
+
 export type Invalid = Token<"invalid">;
 export interface Comment extends Token<"comment"> {
   before: string;
@@ -88,7 +93,8 @@ export type Containers =
   | Id
   | Class
   | PseudoClass
-  | PseudoElement;
+  | PseudoElement
+  | Nesting;
 
 export type SelectorNode =
   | Containers
