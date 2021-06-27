@@ -33,7 +33,9 @@ export function tokenizeSelector(source: string) {
   const parseLineComments = false; // why would that be a choice?
   return tokenize<CSSSelectorToken>(source, {
     isDelimiter,
-    isStringDelimiter,
+    isStringDelimiter(char: string, previousChar: string) {
+      return previousChar !== `\\` && isStringDelimiter(char);
+    },
     isWhitespace,
     shouldAddToken: () => true,
     createToken,
@@ -45,19 +47,20 @@ export function tokenizeSelector(source: string) {
   });
 }
 
-const isDelimiter = (char: string) =>
-  char === "[" ||
-  char === "]" ||
-  char === "(" ||
-  char === ")" ||
-  char === "," ||
-  char === "*" ||
-  char === "|" ||
-  char === ":" ||
-  char === "." ||
-  char === "#" ||
-  char === ">" ||
-  char === "~" ||
-  char === "+" ||
-  char === "{" ||
-  char === "}";
+const isDelimiter = (char: string, previousChar: string) =>
+  previousChar !== "\\" &&
+  (char === "[" ||
+    char === "]" ||
+    char === "(" ||
+    char === ")" ||
+    char === "," ||
+    char === "*" ||
+    char === "|" ||
+    char === ":" ||
+    char === "." ||
+    char === "#" ||
+    char === ">" ||
+    char === "~" ||
+    char === "+" ||
+    char === "{" ||
+    char === "}");
