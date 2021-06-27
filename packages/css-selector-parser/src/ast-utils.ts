@@ -12,7 +12,7 @@ export function walk(
     index: number,
     nodes: SelectorNode[],
     parents: SelectorNode[]
-  ) => number | undefined,
+  ) => number | undefined | void,
   options: WalkOptions = {}
 ): void {
   // set initial top nodes to traverse
@@ -39,7 +39,7 @@ export function walk(
           context.indexInSelector,
           context.nodesInSelector,
           context.parents
-        ) ?? -1;
+        ) as number ?? -1;
       // point to next selector node
       context.next();
       // check if to skip nested or current/following selectors
