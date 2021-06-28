@@ -1546,7 +1546,143 @@ describe(`selector-parser`, () => {
       });
     });
   });
-  describe(`nesting`, () => {
+  describe(`nesting (not-native)`, () => {
+    it(`div(:hover)`, () => {
+      test(`div(:hover)`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 11,
+            nodes: [
+              createNode({
+                type: `element`,
+                value: `div`,
+                start: 0,
+                end: 11,
+                nodes: [
+                  createNode({
+                    type: `selector`,
+                    start: 4,
+                    end: 10,
+                    nodes: [
+                      createNode({
+                        type: `pseudo_class`,
+                        value: `hover`,
+                        start: 4,
+                        end: 10,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+    });
+    it(`#id(:hover)`, () => {
+      test(`#id(:hover)`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 11,
+            nodes: [
+              createNode({
+                type: `id`,
+                value: `id`,
+                start: 0,
+                end: 11,
+                nodes: [
+                  createNode({
+                    type: `selector`,
+                    start: 4,
+                    end: 10,
+                    nodes: [
+                      createNode({
+                        type: `pseudo_class`,
+                        value: `hover`,
+                        start: 4,
+                        end: 10,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+    });
+    it(`.a(:hover)`, () => {
+      test(`.a(:hover)`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 10,
+            nodes: [
+              createNode({
+                type: `class`,
+                value: `a`,
+                start: 0,
+                end: 10,
+                nodes: [
+                  createNode({
+                    type: `selector`,
+                    start: 3,
+                    end: 9,
+                    nodes: [
+                      createNode({
+                        type: `pseudo_class`,
+                        value: `hover`,
+                        start: 3,
+                        end: 9,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+    });
+    it(`[attr="val"](:hover)`, () => {
+      test(`[attr="val"](:hover)`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 20,
+            nodes: [
+              createNode({
+                type: `attribute`,
+                value: `attr="val"`,
+                start: 0,
+                end: 20,
+                nodes: [
+                  createNode({
+                    type: `selector`,
+                    start: 13,
+                    end: 19,
+                    nodes: [
+                      createNode({
+                        type: `pseudo_class`,
+                        value: `hover`,
+                        start: 13,
+                        end: 19,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+    });
     it(`&(:hover)`, () => {
       test(`&(:hover)`, {
         expectedAst: [
