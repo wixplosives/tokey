@@ -483,6 +483,31 @@ describe(`selector-parser`, () => {
         ],
       });
     });
+    it(`&&`, () => {
+      test(`&&`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 2,
+            nodes: [
+              createNode({
+                type: `nesting`,
+                value: `&`,
+                start: 0,
+                end: 1,
+              }),
+              createNode({
+                type: `nesting`,
+                value: `&`,
+                start: 1,
+                end: 2,
+              }),
+            ],
+          }),
+        ],
+      });
+    });
   });
   describe(`nth`, () => {
     it(`:nth-child()`, () => {
@@ -1514,6 +1539,42 @@ describe(`selector-parser`, () => {
                   beforeComments: [],
                   afterComments: [],
                 },
+              }),
+            ],
+          }),
+        ],
+      });
+    });
+  });
+  describe(`nesting`, () => {
+    it(`&(:hover)`, () => {
+      test(`&(:hover)`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 9,
+            nodes: [
+              createNode({
+                type: `nesting`,
+                value: `&`,
+                start: 0,
+                end: 9,
+                nodes: [
+                  createNode({
+                    type: `selector`,
+                    start: 2,
+                    end: 8,
+                    nodes: [
+                      createNode({
+                        type: `pseudo_class`,
+                        value: `hover`,
+                        start: 2,
+                        end: 8,
+                      }),
+                    ],
+                  }),
+                ],
               }),
             ],
           }),
@@ -2885,6 +2946,43 @@ describe(`selector-parser`, () => {
         ],
       });
     });
+    it(`&|&`, () => {
+      test(`&|&`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 3,
+            nodes: [
+              createNode({
+                type: `nesting`,
+                value: `&`,
+                start: 0,
+                end: 1,
+              }),
+              createNode({
+                type: `element`,
+                value: ``,
+                start: 1,
+                end: 2,
+                namespace: {
+                  value: ``,
+                  invalid: `namespace,target`,
+                  beforeComments: [],
+                  afterComments: [],
+                },
+              }),
+              createNode({
+                type: `nesting`,
+                value: `&`,
+                start: 2,
+                end: 3,
+              }),
+            ],
+          }),
+        ],
+      });
+    });
   });
   describe(`spaces`, () => {
     it(`:p(  .a  ,   .b  )`, () => {
@@ -3201,6 +3299,37 @@ describe(`selector-parser`, () => {
                 value: `b`,
                 start: 5,
                 end: 7,
+              }),
+            ],
+          }),
+        ],
+      });
+    });
+    it(`.z&div`, () => {
+      test(`.z&div`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 6,
+            nodes: [
+              createNode({
+                type: `class`,
+                value: `z`,
+                start: 0,
+                end: 2,
+              }),
+              createNode({
+                type: `nesting`,
+                value: `&`,
+                start: 2,
+                end: 3,
+              }),
+              createNode({
+                type: `element`,
+                value: `div`,
+                start: 3,
+                end: 6,
               }),
             ],
           }),
