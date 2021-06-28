@@ -107,7 +107,7 @@ import { walk } from '@tokey/css-selector-parser';
 
 walk(
     parseCssSelector(`.one + three(#four, [five]), /*six*/ ::seven:eight`),
-    (node: , index: number, nodes: SelectorNode[], parents: SelectorNode[]) => {
+    (node: SelectorNode, index: number, nodes: SelectorNode[], parents: SelectorNode[]) => {
         // selector:  .one + three(#four, [five])
         // .one
         // +
@@ -140,7 +140,7 @@ import { walk } from '@tokey/css-selector-parser';
 
 walk(
     parseCssSelector(`selector`),
-    (node: , index: number, nodes: SelectorNode[], parents: SelectorNode[]) => {
+    (node) => {
         // return walk.skipNested;
         // return walk.skipCurrentSelector;
         // return walk.stopAll;
