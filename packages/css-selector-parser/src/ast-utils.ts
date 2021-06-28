@@ -5,6 +5,18 @@ export interface WalkOptions {
   ignoreList?: SelectorNode["type"][];
 }
 const nestEnd = Symbol(`nest-end`);
+
+/**
+ * traverse each node of the selector AST from start to end.
+ * to control traversal return:
+ *  walk.skipNested
+ *  walk.skipCurrentSelector
+ *  walk.stopAll
+ *
+ * @param topNode the top AST to traverse down from
+ * @param visit function to call for each traversed element
+ * @param options provide visitList/ignoreList for traversal
+ */
 export function walk(
   topNode: SelectorNode | SelectorList,
   visit: (
@@ -34,12 +46,12 @@ export function walk(
     ) {
       // visit node
       let skipAmount =
-        visit(
+        (visit(
           current,
           context.indexInSelector,
           context.nodesInSelector,
           context.parents
-        ) as number ?? -1;
+        ) as number) ?? -1;
       // point to next selector node
       context.next();
       // check if to skip nested or current/following selectors
