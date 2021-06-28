@@ -3339,6 +3339,65 @@ describe(`selector-parser`, () => {
       });
     });
   });
+  describe(`escaped`, () => {
+    it(`should parse escaped delimiters as part of value`, () => {
+      test(`.classWith\\.dot`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 15,
+            nodes: [
+              createNode({
+                type: `class`,
+                value: `classWith\\.dot`,
+                start: 0,
+                end: 15,
+              }),
+            ],
+          }),
+        ],
+      });
+    });
+    it(`should parse escaped delimiters (various)`, () => {
+      test(`.a\\.\\[\\]\\(\\)\\,\\*\\|\\:\\#\\>\\~\\+\\{\\}`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 32,
+            nodes: [
+              createNode({
+                type: `class`,
+                value: `a\\.\\[\\]\\(\\)\\,\\*\\|\\:\\#\\>\\~\\+\\{\\}`,
+                start: 0,
+                end: 32,
+              }),
+            ],
+          }),
+        ],
+      });
+    });
+    it(`should parse escaped string delimiters as part of value`, () => {
+      test(`.a\\"\\'`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 6,
+            nodes: [
+              createNode({
+                type: `class`,
+                value: `a\\"\\'`,
+                start: 0,
+                end: 6,
+              }),
+            ],
+          }),
+        ],
+      });
+    });
+  });
   describe(`combinations`, () => {
     it(`:a(.b,::d(.e,.f))`, () => {
       test(`:a(.b,::d(.e,.f))`, {

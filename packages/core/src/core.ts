@@ -2,8 +2,8 @@ import type { Token } from "./types";
 
 export interface TokyOptions<T extends Token<unknown>> {
   shouldAddToken(type: T["type"], value: string): boolean;
-  isStringDelimiter(char: string): boolean;
-  isDelimiter(char: string): boolean;
+  isStringDelimiter(char: string, previousChar: string): boolean;
+  isDelimiter(char: string, previousChar: string): boolean;
   isWhitespace(char: string): boolean;
   getCommentStartType(
     ch: string,
@@ -58,11 +58,11 @@ export function tokenize<T extends Token<unknown>>(
     } else if ((inComment = getCommentStartType(ch, source, nextCharIndex))) {
       pushBuffer();
       buffer += ch;
-    } else if (isStringDelimiter(ch)) {
+    } else if (isStringDelimiter(ch, previousChar)) {
       pushBuffer();
       buffer += ch;
       inString = ch;
-    } else if (isDelimiter(ch)) {
+    } else if (isDelimiter(ch, previousChar)) {
       pushBuffer();
       buffer += ch;
       pushBuffer(ch);

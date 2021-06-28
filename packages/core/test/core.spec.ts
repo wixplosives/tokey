@@ -43,6 +43,25 @@ const ignoreSpaceTokenizer = <T extends string>(input: T) =>
     },
   });
 
+const escapeTokenizer = <T extends string>(input: T) =>
+  tokenize(input, {
+    ...options,
+    isDelimiter(char: string, previousChar: string) {
+      return (
+        previousChar !== `\\` &&
+        (char === "(" ||
+          char === ")" ||
+          char === "{" ||
+          char === "}" ||
+          char === "[" ||
+          char === "]")
+      );
+    },
+    isStringDelimiter(char: string, previousChar: string) {
+      return previousChar !== `\\` && isStringDelimiter(char);
+    },
+  });
+
 describe("core - tokenize", () => {
   it("1", () => {
     test("1", defaultTokenizer, [
@@ -155,5 +174,21 @@ describe("core - tokenize", () => {
       { value: "1", type: "text", start: 0, end: 1 },
       { value: "2", type: "text", start: 2, end: 3 },
     ]);
+  });
+
+  describe(`escape`, () => {
+    it(`should ignore delimiter when previous char is escape string`, () => {
+      test(`tex\\(t`, escapeTokenizer, [
+        { value: "tex\\(t", type: "text", start: 0, end: 6 },
+      ]);
+    });
+    it(`should ignore string starter when previous char is escape string`, () => {
+      test(`tex\\"\\'t`, escapeTokenizer, [
+        { value: `tex\\"\\'t`, type: "text", start: 0, end: 8 },
+      ]);
+      test("tex\\`t", escapeTokenizer, [
+        { value: "tex\\`t", type: "text", start: 0, end: 6 },
+      ]);
+    });
   });
 });
