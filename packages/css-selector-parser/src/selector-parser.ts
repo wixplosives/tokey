@@ -399,6 +399,13 @@ function handleToken(
       newSelector.start = s.peek().start;
     }
     selectors.push(newSelector);
+  } else  if (token.type === "&") {
+    ast.push({
+      type: "nesting",
+      value: "&",
+      start: token.start,
+      end: token.end,
+    });
   } else {
     ast.push({
       type: "invalid",

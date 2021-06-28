@@ -20,6 +20,7 @@ import type {
   SelectorList,
   SelectorNode,
   Star,
+  Nesting,
 } from "./ast-types";
 
 export function stringifySelectorAst(
@@ -55,6 +56,7 @@ const printers: R = {
   comment: ({ before, value, after }: Comment) => `${before}${value}${after}`,
   star: (node: Star) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
+  nesting: (node: Nesting) => `${node.value}${stringifyNested(node)}`,
   selector: (node: Selector) =>
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
   invalid: (node: Invalid) => node.value,
