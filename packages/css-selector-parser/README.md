@@ -37,7 +37,7 @@ yarn add @tokey/css-selector-parser
 
 ### Parsing
 
-`parseCssSelector` - accepts a selector list string and returns an AST representation of that 
+`parseCssSelector` - accepts a selector list string and returns an AST representation of that.
 
 ```js
 import { parseCssSelector } from '@tokey/css-selector-parser';
@@ -129,7 +129,7 @@ walk(
 
 > Note: comments within class, pseudo-class and pseudo-element are not traversed at the moment
 >
-> for example: `./*what?!*/a`. 
+> For example: `./*what?!*/a`. 
 
 #### control traversal
 
@@ -153,7 +153,7 @@ walk(
 
 #### walk options
 
-`visitList/ignoreList` limit the types of AST calls to the visit function, but does not prevent traversal of nested nodes.
+`visitList/ignoreList` - limits the types of AST calls to the visit function, but does not prevent traversal of nested nodes.
 
 ```js
 walk(
@@ -179,7 +179,7 @@ The parser supports character escaping, but will not escape anything by itself. 
 
 ### Functional selectors
 
-The parser supports native `pseudo-classes/pseudo-elements` functional selectors, but also parses other selectors in the same way. So `type`/`id`/`class`/`attribute`/`nesting` selectors are all parsed with `nodes` in case they are followed by a pair of parentheses (e.g. `element(nodeA, nodeB)`). **This syntax is not valid CSS and should be handled before served to a CSS consumer**
+The parser supports native `pseudo-classes/pseudo-elements` functional selectors, but also parses other selectors in the same way. So `type`/`id`/`class`/`attribute`/`nesting` selectors are all parsed with `nodes` in case they are followed by a pair of parentheses (e.g. `element(nodeA, nodeB)`). **This syntax is not valid CSS and should be handled before served to a CSS consumer.**
 
 ### Nth selector
 
