@@ -464,6 +464,25 @@ describe(`selector-parser`, () => {
         ],
       });
     });
+    it(`[&="&"]`, () => {
+      test(`[&="&"]`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 7,
+            nodes: [
+              createNode({
+                type: `attribute`,
+                value: `&="&"`,
+                start: 0,
+                end: 7,
+              }),
+            ],
+          }),
+        ],
+      });
+    });
     it(`&`, () => {
       test(`&`, {
         expectedAst: [
