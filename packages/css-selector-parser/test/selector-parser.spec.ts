@@ -3051,6 +3051,22 @@ describe(`selector-parser`, () => {
         ],
       });
     });
+    it(`.x{}`, () => {
+      test(`.x{}`, {
+        expectedAst: [
+          createNode({
+            type: `selector`,
+            start: 0,
+            end: 4,
+            nodes: [
+              createNode({ type: "class", value: "x", start: 0, end: 2 }),
+              createNode({ type: "invalid", value: "{", start: 2, end: 3 }),
+              createNode({ type: "invalid", value: "}", start: 3, end: 4 }),
+            ],
+          }),
+        ],
+      });
+    });
   });
   describe(`spaces`, () => {
     it(`:p(  .a  ,   .b  )`, () => {
