@@ -6,8 +6,10 @@ export interface Selector extends Omit<Token<"selector">, "value"> {
   after: string;
 }
 
+export type NthWithSelectorList = [Nth, ...SelectorList];
+
 export interface PseudoClass extends Token<"pseudo_class"> {
-  nodes?: Selector[] | [Nth, ...SelectorList];
+  nodes?: SelectorList | NthWithSelectorList;
   colonComments: Comment[];
 }
 
@@ -109,3 +111,17 @@ export type SelectorNode =
   | NthOf;
 export type SelectorNodes = SelectorNode[];
 export type SelectorList = Selector[];
+
+export type DeepReadonlySelectorList = DeepReadonly<SelectorList>;
+export type DeepReadonlySelectorNode = DeepReadonly<SelectorNode>;
+export type DeepReadonlyNthWithSelectorList = DeepReadonly<NthWithSelectorList>;
+
+export type DeepReadonly<T> = T extends (infer R)[]
+  ? ReadonlyArray<DeepReadonly<R>>
+  : T extends Function
+  ? T
+  : T extends object
+  ? {
+      readonly [P in keyof T]: DeepReadonly<T[P]>;
+    }
+  : T;
