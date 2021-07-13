@@ -39,19 +39,19 @@ export function tokenizeImports(
 }
 
 const isDelimiter = (char: string) =>
-  char === "{" ||
-  char === "}" ||
-  char === "[" ||
-  char === "]" ||
+  char === ";" ||
   char === "(" ||
   char === ")" ||
   char === "," ||
-  char === ";" ||
+  char === "{" ||
+  char === "}" ||
   char === ":" ||
-  char === "*";
+  char === "*" ||
+  char === "[" ||
+  char === "]";
 
 const shouldAddToken = (type: CodeToken["type"]) =>
-  isComment(type) || type === "space" ? false : true;
+  type === "space" || isComment(type) ? false : true;
 
 export interface ImportValue {
   star: boolean;
@@ -254,3 +254,5 @@ function processNamedBlock(
     tokens.length = 0;
   }
 }
+
+// REGEXP for import parsing import\s+(.*?)\s*,?\s*(\{.*?\})?\s*(from)?\s*(['"].*?['"]);?
