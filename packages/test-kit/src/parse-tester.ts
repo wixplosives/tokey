@@ -1,11 +1,12 @@
 import { isMatch } from "./is-match";
 
-interface TesterConfig<AST, INPUT extends string> {
+export interface TesterConfig<AST, INPUT extends string> {
   parse: (input: INPUT) => AST;
   stringify?: (ast: AST) => string;
   log?: (...msgs: string[]) => void;
 }
-interface TestOptions<AST> {
+
+export interface TestOptions<AST> {
   expectedAst: AST;
   expectedString?: string;
   label?: string;
