@@ -3552,3 +3552,47 @@ describe(`selector-parser`, () => {
     });
   });
 });
+
+describe(`selector parsing with offest`, () => {
+  const CONSTANT_OFFEST = 10;
+
+  const testWithOffest = createParseTester({
+    parse: (input) => parseCssSelector(input, { offest: CONSTANT_OFFEST }),
+    stringify: stringifySelectorAst,
+  });
+
+  it(`should parse a selector and apply constant offest to the nodes positions`, () => {
+    testWithOffest(".x(.y)", {
+      expectedAst: [
+        createNode({
+          type: "selector",
+          start: 0 + CONSTANT_OFFEST,
+          end: 6 + CONSTANT_OFFEST,
+          nodes: [
+            createNode({
+              type: "class",
+              value: "x",
+              start: 0 + CONSTANT_OFFEST,
+              end: 6 + CONSTANT_OFFEST,
+              nodes: [
+                createNode({
+                  type: "selector",
+                  start: 3 + CONSTANT_OFFEST,
+                  end: 5 + CONSTANT_OFFEST,
+                  nodes: [
+                    createNode({
+                      type: "class",
+                      value: "y",
+                      start: 3 + CONSTANT_OFFEST,
+                      end: 5 + CONSTANT_OFFEST,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+  });
+});

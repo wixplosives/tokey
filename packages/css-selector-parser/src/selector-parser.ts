@@ -22,8 +22,8 @@ import {
 } from "./helpers";
 import { isComment, getText, Seeker, last } from "@tokey/core";
 
-export function parseCssSelector(source: string) {
-  return parseTokens(source, tokenizeSelector(source));
+export function parseCssSelector(source: string, { offest = 0 } = {}) {
+  return parseTokens(source, tokenizeSelector(source, offest));
 }
 
 function parseTokens(source: string, tokens: CSSSelectorToken[]): SelectorList {
@@ -399,7 +399,7 @@ function handleToken(
       newSelector.start = s.peek().start;
     }
     selectors.push(newSelector);
-  } else  if (token.type === "&") {
+  } else if (token.type === "&") {
     ast.push({
       type: "nesting",
       value: "&",
