@@ -27,6 +27,7 @@ interface Options<T extends Token<unknown>> {
   isDelimiter(char: string): boolean;
   isWhitespace(char: string): boolean;
   createToken(value: string, type: T["type"], start: number, end: number): T;
+  offset?: number;
 }
 
 function tokenize<T extends Token<unknown>>(

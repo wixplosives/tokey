@@ -19,6 +19,7 @@ export interface TokyOptions<T extends Token<unknown>> {
   ): boolean;
   getUnclosedComment(inComment: string): string;
   createToken(value: string, type: T["type"], start: number, end: number): T;
+  offset?: number;
 }
 
 export function tokenize<T extends Token<unknown>>(
@@ -32,6 +33,7 @@ export function tokenize<T extends Token<unknown>>(
     getCommentStartType,
     isCommentEnd,
     getUnclosedComment,
+    offset = 0,
   }: TokyOptions<T>
 ): T[] {
   const tokens: T[] = [];
@@ -39,7 +41,7 @@ export function tokenize<T extends Token<unknown>>(
   let buffer = "";
   let inComment = "";
   let inString = "";
-  let start = 0;
+  let start = offset;
   let nextCharIndex = 0;
   for (const ch of source) {
     nextCharIndex += ch.length;
@@ -51,11 +53,21 @@ export function tokenize<T extends Token<unknown>>(
       }
     } else if (inComment) {
       buffer += ch;
-      if (isCommentEnd(inComment, ch, source, nextCharIndex, previousChar)) {
+      if (
+        isCommentEnd(
+          inComment,
+          ch,
+          source,
+          nextCharIndex,
+          previousChar
+        )
+      ) {
         pushBuffer(inComment);
         inComment = "";
       }
-    } else if ((inComment = getCommentStartType(ch, source, nextCharIndex))) {
+    } else if (
+      (inComment = getCommentStartType(ch, source, nextCharIndex))
+    ) {
       pushBuffer();
       buffer += ch;
     } else if (isStringDelimiter(ch, previousChar)) {
