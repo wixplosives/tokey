@@ -93,7 +93,7 @@ export function tokenize<T extends Token<unknown>>(
     const end = start + buffer.length;
     type = type ?? (buffer.trim().length ? "text" : "space");
     if (shouldAddToken(type, buffer)) {
-      tokens.push(createToken(buffer, type, start, end));
+      tokens[tokens.length] = createToken(buffer, type, start, end);
     }
     start = end;
     buffer = "";
