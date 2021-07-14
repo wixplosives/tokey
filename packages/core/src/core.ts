@@ -42,7 +42,7 @@ export function tokenize<T extends Token<unknown>>(
   let inComment = "";
   let inString = "";
   let start = offset;
-  let nextCharIndex = offset;
+  let nextCharIndex = 0;
   for (const ch of source) {
     nextCharIndex += ch.length;
     if (inString) {
@@ -58,7 +58,7 @@ export function tokenize<T extends Token<unknown>>(
           inComment,
           ch,
           source,
-          nextCharIndex - offset,
+          nextCharIndex,
           previousChar
         )
       ) {
@@ -66,7 +66,7 @@ export function tokenize<T extends Token<unknown>>(
         inComment = "";
       }
     } else if (
-      (inComment = getCommentStartType(ch, source, nextCharIndex - offset))
+      (inComment = getCommentStartType(ch, source, nextCharIndex))
     ) {
       pushBuffer();
       buffer += ch;
