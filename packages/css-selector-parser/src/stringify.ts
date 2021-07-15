@@ -20,74 +20,74 @@ import type {
   SelectorNode,
   Star,
   Nesting,
-  DeepReadonlySelectorNode,
-  DeepReadonlySelectorList,
-  DeepReadonlyNthWithSelectorList,
-  DeepReadonly,
+  ImmutableSelectorNode,
+  ImmutableSelectorList,
+  ImmutableNthWithSelectorList,
 } from "./ast-types";
+import type {Immutable} from "./types";
 
 export function stringifySelectorAst(
   value:
-    | DeepReadonlySelectorNode
-    | DeepReadonlySelectorList
-    | DeepReadonlyNthWithSelectorList
+    | ImmutableSelectorNode
+    | ImmutableSelectorList
+    | ImmutableNthWithSelectorList
 ): string {
   return "length" in value ? stringifySelectors(value) : stringifyNode(value);
 }
 
 type Printers = {
-  [K in SelectorNode as K["type"]]: (node: DeepReadonly<K>) => string;
+  [K in SelectorNode as K["type"]]: (node: Immutable<K>) => string;
 };
 
 const printers: Printers = {
-  id: (node: DeepReadonly<Id>) => `#${node.value}${stringifyNested(node)}`,
-  class: (node: DeepReadonly<Class>) =>
+  id: (node: Immutable<Id>) => `#${node.value}${stringifyNested(node)}`,
+  class: (node: Immutable<Class>) =>
     `.${node.dotComments.map(stringifyNode).join("")}${
       node.value
     }${stringifyNested(node)}`,
-  element: (node: DeepReadonly<Element>) =>
+  element: (node: Immutable<Element>) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
-  combinator: (node: DeepReadonly<Combinator>) =>
+  combinator: (node: Immutable<Combinator>) =>
     `${node.before}${node.value}${node.after}`,
-  attribute: (node: DeepReadonly<Attribute>) =>
+  attribute: (node: Immutable<Attribute>) =>
     `[${node.value}]${stringifyNested(node)}`,
-  pseudo_class: (node: DeepReadonly<PseudoClass>) =>
+  pseudo_class: (node: Immutable<PseudoClass>) =>
     `:${node.colonComments.map(stringifyNode).join("")}${
       node.value
     }${stringifyNested(node)}`,
-  pseudo_element: (node: DeepReadonly<PseudoElement>) =>
+  pseudo_element: (node: Immutable<PseudoElement>) =>
     `:${node.colonComments.first
       .map(stringifyNode)
       .join("")}:${node.colonComments.second.map(stringifyNode).join("")}${
       node.value
     }${stringifyNested(node)}`,
-  comment: ({ before, value, after }: DeepReadonly<Comment>) =>
+  comment: ({ before, value, after }: Immutable<Comment>) =>
     `${before}${value}${after}`,
-  star: (node: DeepReadonly<Star>) =>
+  star: (node: Immutable<Star>) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
-  nesting: (node: DeepReadonly<Nesting>) =>
+  nesting: (node: Immutable<Nesting>) =>
     `${node.value}${stringifyNested(node)}`,
-  selector: (node: DeepReadonly<Selector>) =>
+  selector: (node: Immutable<Selector>) =>
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
-  invalid: (node: DeepReadonly<Invalid>) => node.value,
-  nth: (node: DeepReadonly<Nth>) =>
+  invalid: (node: Immutable<Invalid>) => node.value,
+  nth: (node: Immutable<Nth>) =>
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
-  nth_step: ({ before, value, after }: DeepReadonly<NthStep>) =>
+  nth_step: ({ before, value, after }: Immutable<NthStep>) =>
     `${before}${value}${after}`,
-  nth_dash: ({ before, value, after }: DeepReadonly<NthDash>) =>
+  nth_dash: ({ before, value, after }: Immutable<NthDash>) =>
     `${before}${value}${after}`,
-  nth_offset: ({ before, value, after }: DeepReadonly<NthOffset>) =>
+  nth_offset: ({ before, value, after }: Immutable<NthOffset>) =>
     `${before}${value}${after}`,
-  nth_of: ({ before, value, after }: DeepReadonly<NthOf>) =>
+  nth_of: ({ before, value, after }: Immutable<NthOf>) =>
     `${before}${value}${after}`,
 };
 
-function stringifyNode(node: DeepReadonlySelectorNode): string {
+function stringifyNode(node: ImmutableSelectorNode): string {
   return printers[node.type]?.(node as never) ?? "";
 }
 
 function stringifySelectors(
-  selectors: DeepReadonlySelectorList | DeepReadonlyNthWithSelectorList
+  selectors: ImmutableSelectorList | ImmutableNthWithSelectorList
 ) {
   const result: string[] = [];
   for (const node of selectors) {
@@ -96,7 +96,7 @@ function stringifySelectors(
   return result.join(`,`);
 }
 
-function stringifyNested(node: DeepReadonly<Containers>): string {
+function stringifyNested(node: Immutable<Containers>): string {
   if ("nodes" in node) {
     if (node.nodes?.length) {
       if (
@@ -117,7 +117,7 @@ function stringifyNested(node: DeepReadonly<Containers>): string {
 
 function stringifyNamespace({
   namespace,
-}: DeepReadonly<NamespacedNodes>): string {
+}: Immutable<NamespacedNodes>): string {
   let ns = ``;
   if (namespace) {
     ns += namespace.value;

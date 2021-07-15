@@ -1,3 +1,4 @@
+import type { Immutable } from "./types";
 import type { Token } from "@tokey/core";
 
 export interface Selector extends Omit<Token<"selector">, "value"> {
@@ -112,16 +113,25 @@ export type SelectorNode =
 export type SelectorNodes = SelectorNode[];
 export type SelectorList = Selector[];
 
-export type DeepReadonlySelectorList = DeepReadonly<SelectorList>;
-export type DeepReadonlySelectorNode = DeepReadonly<SelectorNode>;
-export type DeepReadonlyNthWithSelectorList = DeepReadonly<NthWithSelectorList>;
+// immutable ast
+export type ImmutableSelectorList = Immutable<SelectorList>;
+export type ImmutableSelectorNode = Immutable<SelectorNode>;
+export type ImmutableNthWithSelectorList = Immutable<NthWithSelectorList>;
 
-export type DeepReadonly<T> = T extends (infer R)[]
-  ? ReadonlyArray<DeepReadonly<R>>
-  : T extends Function
-  ? T
-  : T extends object
-  ? {
-      readonly [P in keyof T]: DeepReadonly<T[P]>;
-    }
-  : T;
+export type ImmutableStar = Immutable<Star>;
+export type ImmutableClass = Immutable<Class>;
+export type ImmutableId = Immutable<Id>;
+export type ImmutableElement = Immutable<Element>;
+export type ImmutableCombinator = Immutable<Combinator>;
+export type ImmutableAttribute = Immutable<Attribute>;
+export type ImmutablePseudoClass = Immutable<PseudoClass>;
+export type ImmutablePseudoElement = Immutable<PseudoElement>;
+export type ImmutableComment = Immutable<Comment>;
+export type ImmutableNesting = Immutable<Nesting>;
+export type ImmutableSelector = Immutable<Selector>;
+export type ImmutableInvalid = Immutable<Invalid>;
+export type ImmutableNth = Immutable<Nth>;
+export type ImmutableNthStep = Immutable<NthStep>;
+export type ImmutableNthDash = Immutable<NthDash>;
+export type ImmutableNthOffset = Immutable<NthOffset>;
+export type ImmutableNthOf = Immutable<NthOf>;
