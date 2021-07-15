@@ -2,7 +2,7 @@ import { stringifySelectorAst, parseCssSelector } from '@tokey/css-selector-pars
 import type {
     ImmutableSelectorList,
     ImmutableSelector,
-    ImmutableNthWithSelectorList,
+    ImmutableNthSelectorList,
     ImmutableStar,
     ImmutableClass,
     ImmutableId,
@@ -52,7 +52,7 @@ describe(`stringifySelectorAst`, () => {
             { src: `:nth-child(5n of)` } as any as ImmutableNthOf,
             { src: `.a, .b` } as any as ImmutableSelectorList,
             { src: `.a.b` } as any as ImmutableSelector,
-            { src: `:nth-child(5n of div)` } as any as ImmutableNthWithSelectorList,
+            { src: `:nth-child(5n of div)` } as any as ImmutableNthSelectorList,
         ].forEach((ast) => {
             stringifySelectorAst(ast); // expect no type error
         });

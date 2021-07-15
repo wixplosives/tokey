@@ -4,7 +4,7 @@ import type {
   Namespace,
   Combinator,
   Comment,
-  NamespacedNodes,
+  NamespacedNode,
   Selector,
   SelectorList,
   SelectorNode,
@@ -222,7 +222,7 @@ function handleToken(
     });
   } else if (token.type === "|") {
     // search backwards compatible namespace in ast
-    let prevAst: NamespacedNodes | undefined;
+    let prevAst: NamespacedNode | undefined;
     let prevInvalidAst: SelectorNode | undefined;
     const beforeComments: Comment[] = [];
     for (let i = ast.length - 1; i >= 0; --i) {
@@ -283,14 +283,14 @@ function handleToken(
       invalid = invalid ? `namespace,target` : `target`;
     }
     // create new ast or modify the prev
-    const nsAst: NamespacedNodes =
+    const nsAst: NamespacedNode =
       prevAst ||
       ({
         type,
         value: ``,
         start: token.start,
         end: target?.end || token.end,
-      } as NamespacedNodes);
+      } as NamespacedNode);
     nsAst.type = type;
     nsAst.namespace = {
       value: prevAst?.value || ``,

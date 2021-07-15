@@ -4,7 +4,7 @@ import type {
   Comment,
   Selector,
   Nth,
-  NamespacedNodes,
+  NamespacedNode,
   SelectorList,
   SelectorNode,
 } from "./ast-types";
@@ -85,7 +85,7 @@ export function isNamespacedToken(
 ): token is Token<"text" | "*"> {
   return token.type === `*` || token.type === `text`;
 }
-export function isNamespacedAst(token: SelectorNode): token is NamespacedNodes {
+export function isNamespacedAst(token: SelectorNode): token is NamespacedNode {
   return token.type === `star` || token.type === `element`;
 }
 

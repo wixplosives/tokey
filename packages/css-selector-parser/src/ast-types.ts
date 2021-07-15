@@ -7,10 +7,11 @@ export interface Selector extends Omit<Token<"selector">, "value"> {
   after: string;
 }
 
-export type NthWithSelectorList = [Nth, ...SelectorList];
+export type NthSelectorList = [Nth, ...SelectorList];
 
+// ToDo: try type NthSelectorList only for the specific set of types
 export interface PseudoClass extends Token<"pseudo_class"> {
-  nodes?: SelectorList | NthWithSelectorList;
+  nodes?: SelectorList | NthSelectorList;
   colonComments: Comment[];
 }
 
@@ -88,10 +89,10 @@ export interface Nth extends Omit<Token<"nth">, "value"> {
   // invalid?: boolean;
 }
 
-export type NamespacedNodes = Element | Star;
+export type NamespacedNode = Element | Star;
 
 export type Containers =
-  | NamespacedNodes
+  | NamespacedNode
   | Attribute
   | Id
   | Class
@@ -114,9 +115,14 @@ export type SelectorNodes = SelectorNode[];
 export type SelectorList = Selector[];
 
 // immutable ast
+export type ImmutableSelector = Immutable<Selector>;
+
 export type ImmutableSelectorList = Immutable<SelectorList>;
+export type ImmutableNthSelectorList = Immutable<NthSelectorList>;
+
 export type ImmutableSelectorNode = Immutable<SelectorNode>;
-export type ImmutableNthWithSelectorList = Immutable<NthWithSelectorList>;
+export type ImmutableContainers = Immutable<Containers>;
+export type ImmutableNamespacedNode = Immutable<NamespacedNode>;
 
 export type ImmutableStar = Immutable<Star>;
 export type ImmutableClass = Immutable<Class>;
@@ -128,7 +134,6 @@ export type ImmutablePseudoClass = Immutable<PseudoClass>;
 export type ImmutablePseudoElement = Immutable<PseudoElement>;
 export type ImmutableComment = Immutable<Comment>;
 export type ImmutableNesting = Immutable<Nesting>;
-export type ImmutableSelector = Immutable<Selector>;
 export type ImmutableInvalid = Immutable<Invalid>;
 export type ImmutableNth = Immutable<Nth>;
 export type ImmutableNthStep = Immutable<NthStep>;

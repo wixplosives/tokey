@@ -1,84 +1,82 @@
 import { NthParser } from "./nth-parser";
 import type {
-  Id,
-  Attribute,
-  Class,
-  Combinator,
-  Comment,
-  Containers,
-  Element,
-  Invalid,
-  NamespacedNodes,
-  Nth,
-  NthDash,
-  NthOf,
-  NthOffset,
-  NthStep,
-  PseudoClass,
-  PseudoElement,
-  Selector,
-  SelectorNode,
-  Star,
-  Nesting,
+  ImmutableId,
+  ImmutableAttribute,
+  ImmutableClass,
+  ImmutableCombinator,
+  ImmutableComment,
+  ImmutableElement,
+  ImmutableInvalid,
+  ImmutableNth,
+  ImmutableNthDash,
+  ImmutableNthOf,
+  ImmutableNthOffset,
+  ImmutableNthStep,
+  ImmutablePseudoClass,
+  ImmutablePseudoElement,
+  ImmutableSelector,
+  ImmutableStar,
+  ImmutableNesting,
   ImmutableSelectorNode,
   ImmutableSelectorList,
-  ImmutableNthWithSelectorList,
+  ImmutableNthSelectorList,
+  ImmutableContainers,
+  ImmutableNamespacedNode,
 } from "./ast-types";
-import type {Immutable} from "./types";
 
 export function stringifySelectorAst(
   value:
     | ImmutableSelectorNode
     | ImmutableSelectorList
-    | ImmutableNthWithSelectorList
+    | ImmutableNthSelectorList
 ): string {
   return "length" in value ? stringifySelectors(value) : stringifyNode(value);
 }
 
 type Printers = {
-  [K in SelectorNode as K["type"]]: (node: Immutable<K>) => string;
+  [K in ImmutableSelectorNode as K["type"]]: (node: K) => string;
 };
 
 const printers: Printers = {
-  id: (node: Immutable<Id>) => `#${node.value}${stringifyNested(node)}`,
-  class: (node: Immutable<Class>) =>
+  id: (node: ImmutableId) => `#${node.value}${stringifyNested(node)}`,
+  class: (node: ImmutableClass) =>
     `.${node.dotComments.map(stringifyNode).join("")}${
       node.value
     }${stringifyNested(node)}`,
-  element: (node: Immutable<Element>) =>
+  element: (node: ImmutableElement) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
-  combinator: (node: Immutable<Combinator>) =>
+  combinator: (node: ImmutableCombinator) =>
     `${node.before}${node.value}${node.after}`,
-  attribute: (node: Immutable<Attribute>) =>
+  attribute: (node: ImmutableAttribute) =>
     `[${node.value}]${stringifyNested(node)}`,
-  pseudo_class: (node: Immutable<PseudoClass>) =>
+  pseudo_class: (node: ImmutablePseudoClass) =>
     `:${node.colonComments.map(stringifyNode).join("")}${
       node.value
     }${stringifyNested(node)}`,
-  pseudo_element: (node: Immutable<PseudoElement>) =>
+  pseudo_element: (node: ImmutablePseudoElement) =>
     `:${node.colonComments.first
       .map(stringifyNode)
       .join("")}:${node.colonComments.second.map(stringifyNode).join("")}${
       node.value
     }${stringifyNested(node)}`,
-  comment: ({ before, value, after }: Immutable<Comment>) =>
+  comment: ({ before, value, after }: ImmutableComment) =>
     `${before}${value}${after}`,
-  star: (node: Immutable<Star>) =>
+  star: (node: ImmutableStar) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
-  nesting: (node: Immutable<Nesting>) =>
+  nesting: (node: ImmutableNesting) =>
     `${node.value}${stringifyNested(node)}`,
-  selector: (node: Immutable<Selector>) =>
+  selector: (node: ImmutableSelector) =>
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
-  invalid: (node: Immutable<Invalid>) => node.value,
-  nth: (node: Immutable<Nth>) =>
+  invalid: (node: ImmutableInvalid) => node.value,
+  nth: (node: ImmutableNth) =>
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
-  nth_step: ({ before, value, after }: Immutable<NthStep>) =>
+  nth_step: ({ before, value, after }: ImmutableNthStep) =>
     `${before}${value}${after}`,
-  nth_dash: ({ before, value, after }: Immutable<NthDash>) =>
+  nth_dash: ({ before, value, after }: ImmutableNthDash) =>
     `${before}${value}${after}`,
-  nth_offset: ({ before, value, after }: Immutable<NthOffset>) =>
+  nth_offset: ({ before, value, after }: ImmutableNthOffset) =>
     `${before}${value}${after}`,
-  nth_of: ({ before, value, after }: Immutable<NthOf>) =>
+  nth_of: ({ before, value, after }: ImmutableNthOf) =>
     `${before}${value}${after}`,
 };
 
@@ -87,7 +85,7 @@ function stringifyNode(node: ImmutableSelectorNode): string {
 }
 
 function stringifySelectors(
-  selectors: ImmutableSelectorList | ImmutableNthWithSelectorList
+  selectors: ImmutableSelectorList | ImmutableNthSelectorList
 ) {
   const result: string[] = [];
   for (const node of selectors) {
@@ -96,7 +94,7 @@ function stringifySelectors(
   return result.join(`,`);
 }
 
-function stringifyNested(node: Immutable<Containers>): string {
+function stringifyNested(node: ImmutableContainers): string {
   if ("nodes" in node) {
     if (node.nodes?.length) {
       if (
@@ -117,7 +115,7 @@ function stringifyNested(node: Immutable<Containers>): string {
 
 function stringifyNamespace({
   namespace,
-}: Immutable<NamespacedNodes>): string {
+}: ImmutableNamespacedNode): string {
   let ns = ``;
   if (namespace) {
     ns += namespace.value;
