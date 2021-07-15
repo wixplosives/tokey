@@ -81,6 +81,14 @@ const selectorList = parseCssSelector(`.card, .box`);
 */
 ```
 
+#### parsing config
+
+`offset` - start AST offset from a given point, defaults to 0:
+
+```js
+parseCssSelector(`ul`, { offset: 105 });
+```
+
 ### Stringify
 
 `stringifySelectorAst` - converts an AST node back into its string representation.

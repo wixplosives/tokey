@@ -30,7 +30,10 @@ type Delimiters =
 
 export type CSSSelectorToken = Token<Descriptors | Delimiters>;
 
-export function tokenizeSelector(source: string) {
+export function tokenizeSelector(
+  source: string,
+  options: { offset?: number } = {}
+) {
   const parseLineComments = false; // why would that be a choice?
   return tokenize<CSSSelectorToken>(source, {
     isDelimiter,
@@ -45,6 +48,7 @@ export function tokenizeSelector(source: string) {
       : getMultilineCommentStartType,
     isCommentEnd,
     getUnclosedComment,
+    offset: options.offset,
   });
 }
 
@@ -63,5 +67,6 @@ const isDelimiter = (char: string, previousChar: string) =>
     char === ">" ||
     char === "~" ||
     char === "+" ||
+    char === "{" ||
     char === "}" ||
     char === "&");

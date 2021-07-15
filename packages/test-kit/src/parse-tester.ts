@@ -1,32 +1,42 @@
 import { isMatch } from "./is-match";
 
-interface TesterConfig<AST, INPUT extends string> {
-  parse: (input: INPUT) => AST;
+export interface TesterConfig<
+  AST,
+  INPUT extends string,
+  CONFIG
+> {
+  parse: (input: INPUT, options?: CONFIG) => AST;
   stringify?: (ast: AST) => string;
   log?: (...msgs: string[]) => void;
 }
-interface TestOptions<AST> {
+
+export interface TestOptions<AST, CONFIG> {
   expectedAst: AST;
   expectedString?: string;
   label?: string;
+  config?: CONFIG;
 }
 
-export function createParseTester<AST, INPUT extends string>({
+export function createParseTester<
+  AST,
+  INPUT extends string,
+  CONFIG
+>({
   parse,
   stringify,
-}: TesterConfig<AST, INPUT>) {
-  const safeParse = (source: INPUT) => {
+}: TesterConfig<AST, INPUT, CONFIG>) {
+  const safeParse = (source: INPUT, config?: CONFIG) => {
     try {
-      return [parse(source), null];
+      return [parse(source, config), null];
     } catch (error) {
       return [null, error];
     }
   };
   return (
     source: INPUT,
-    { expectedAst, expectedString, label }: TestOptions<AST>
+    { expectedAst, expectedString, label, config }: TestOptions<AST, CONFIG>
   ) => {
-    const [actualAst, parseError] = safeParse(source);
+    const [actualAst, parseError] = safeParse(source, config);
     if (parseError) {
       throw parseError;
     }
