@@ -12,11 +12,12 @@ import type {
   NthOffset,
   NthOf,
   GroupedSelector,
+  ParseConfig,
 } from "@tokey/css-selector-parser";
 import { createParseTester } from "@tokey/test-kit";
 
 export const test = createParseTester({
-  parse: parseCssSelector,
+  parse: (selector: string, config?: ParseConfig) => parseCssSelector(selector, config),
   stringify: stringifySelectorAst,
 });
 

@@ -3480,4 +3480,28 @@ describe(`selector-parser`, () => {
       });
     });
   });
+  describe(`config`, () => {
+    describe(`offset`, () => {
+      it(`should start from a given offset`, () => {
+        test(`.classX`, {
+          config: { offset: 10 },
+          expectedAst: [
+            createNode({
+              type: `selector`,
+              start: 10,
+              end: 17,
+              nodes: [
+                createNode({
+                  type: `class`,
+                  value: `classX`,
+                  start: 10,
+                  end: 17,
+                }),
+              ],
+            }),
+          ],
+        });
+      });
+    });
+  });
 });

@@ -191,4 +191,16 @@ describe("core - tokenize", () => {
       ]);
     });
   });
+  describe(`offset`, () => {
+    it(`should start from a given offset`, () => {
+      test(
+        `1/*"23"*/`,
+        (source: string) => tokenize(source, { ...options, offset: 10 }),
+        [
+          { value: "1", type: "text", start: 10, end: 11 },
+          { value: '/*"23"*/', type: "multi-comment", start: 11, end: 19 },
+        ]
+      );
+    });
+  });
 });
