@@ -1,14 +1,14 @@
 {
   "name": "@tokey/css-selector-parser",
   "description": "selector parser for css",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },
   "dependencies": {
-    "@tokey/core": "^1.1.0"
+    "@tokey/core": "^1.2.0"
   },
   "keywords": [
     "parser",
@@ -27,5 +27,6 @@
   "author": "Wix.com",
   "license": "MIT",
   "repository": "https://github.com/wixplosives/tokey/packages/css-selector-parser",
-  "prettier": {}
+  "prettier": {},
+  "sideEffects": false
 }
