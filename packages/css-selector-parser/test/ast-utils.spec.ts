@@ -138,13 +138,13 @@ describe(`ast-utils`, () => {
           { type: `selector`, value: undefined },
           { type: `class`, value: `c` },
           { type: `selector`, value: undefined },
-          { type: `element`, value: `d` },
+          { type: `type`, value: `d` },
           { type: `selector`, value: undefined },
-          { type: `element`, value: `x` },
+          { type: `type`, value: `x` },
           { type: `selector`, value: undefined },
-          { type: `element`, value: `y` },
+          { type: `type`, value: `y` },
           { type: `combinator`, value: `+` },
-          { type: `element`, value: `z` },
+          { type: `type`, value: `z` },
         ],
       });
     });

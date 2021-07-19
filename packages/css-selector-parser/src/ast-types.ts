@@ -44,7 +44,7 @@ export interface Namespace {
   invalid?: "namespace" | "target" | "namespace,target" | "";
 }
 
-export interface Element extends Token<"element"> {
+export interface Type extends Token<"type"> {
   namespace?: Namespace;
   nodes?: SelectorList;
 }
@@ -89,7 +89,7 @@ export interface Nth extends Omit<Token<"nth">, "value"> {
   // invalid?: boolean;
 }
 
-export type NamespacedNode = Element | Star;
+export type NamespacedNode = Type | Star;
 
 export type Containers =
   | NamespacedNode
@@ -127,7 +127,7 @@ export type ImmutableNamespacedNode = Immutable<NamespacedNode>;
 export type ImmutableStar = Immutable<Star>;
 export type ImmutableClass = Immutable<Class>;
 export type ImmutableId = Immutable<Id>;
-export type ImmutableElement = Immutable<Element>;
+export type ImmutableType = Immutable<Type>;
 export type ImmutableCombinator = Immutable<Combinator>;
 export type ImmutableAttribute = Immutable<Attribute>;
 export type ImmutablePseudoClass = Immutable<PseudoClass>;

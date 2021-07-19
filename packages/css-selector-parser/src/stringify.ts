@@ -5,7 +5,7 @@ import type {
   ImmutableClass,
   ImmutableCombinator,
   ImmutableComment,
-  ImmutableElement,
+  ImmutableType,
   ImmutableInvalid,
   ImmutableNth,
   ImmutableNthDash,
@@ -43,7 +43,7 @@ const printers: Printers = {
     `.${node.dotComments.map(stringifyNode).join("")}${
       node.value
     }${stringifyNested(node)}`,
-  element: (node: ImmutableElement) =>
+  type: (node: ImmutableType) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
   combinator: (node: ImmutableCombinator) =>
     `${node.before}${node.value}${node.after}`,

@@ -30,7 +30,7 @@ describe(`selector-parser`, () => {
             end: 12,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `some-element`,
                 start: 0,
                 end: 12,
@@ -49,7 +49,7 @@ describe(`selector-parser`, () => {
             end: 11,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `someelement`,
                 start: 0,
                 end: 11,
@@ -1093,7 +1093,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `div`,
                         start: 21,
                         end: 24,
@@ -1154,7 +1154,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `div`,
                         start: 17,
                         end: 25,
@@ -1214,7 +1214,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `div`,
                         start: 17,
                         end: 20,
@@ -1228,7 +1228,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `span`,
                         start: 22,
                         end: 26,
@@ -1390,7 +1390,7 @@ describe(`selector-parser`, () => {
             end: 6,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 6,
@@ -1414,7 +1414,7 @@ describe(`selector-parser`, () => {
             end: 5,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 5,
@@ -1438,7 +1438,7 @@ describe(`selector-parser`, () => {
             end: 4,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 4,
@@ -1488,7 +1488,7 @@ describe(`selector-parser`, () => {
             end: 11,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 11,
@@ -1926,7 +1926,7 @@ describe(`selector-parser`, () => {
             end: 29,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 29,
@@ -2058,7 +2058,7 @@ describe(`selector-parser`, () => {
                           end: 57,
                         }),
                         createNode({
-                          type: "element",
+                          type: `type`,
                           value: `div`,
                           start: 57,
                           end: 60,
@@ -2619,7 +2619,7 @@ describe(`selector-parser`, () => {
             end: 3,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 0,
                 end: 3,
@@ -2650,7 +2650,7 @@ describe(`selector-parser`, () => {
                 end: 2,
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 2,
                 end: 3,
@@ -2675,7 +2675,7 @@ describe(`selector-parser`, () => {
             end: 8,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 0,
                 end: 3,
@@ -2687,7 +2687,7 @@ describe(`selector-parser`, () => {
                 },
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 3,
                 end: 4,
@@ -2699,7 +2699,7 @@ describe(`selector-parser`, () => {
                 },
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 4,
                 end: 8,
@@ -2909,7 +2909,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `div`,
                         start: 20,
                         end: 23,
@@ -3029,7 +3029,7 @@ describe(`selector-parser`, () => {
                 end: 1,
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 1,
                 end: 2,
@@ -3469,7 +3469,7 @@ describe(`selector-parser`, () => {
                 end: 3,
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 3,
                 end: 6,

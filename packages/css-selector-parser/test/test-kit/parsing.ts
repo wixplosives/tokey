@@ -57,7 +57,7 @@ export function createNode<TYPE extends SelectorNode["type"]>(
   if (defaults.type === `class`) {
     defaults.dotComments = [];
   }
-  if (defaults.type === `star` || defaults.type === `element`) {
+  if (defaults.type === `star` || defaults.type === `type`) {
     // defaults.namespace = { value: ``, beforeComments: [], afterComments: [] };
   }
   if (defaults.type === `pseudo_class`) {
