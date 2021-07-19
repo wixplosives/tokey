@@ -1,4 +1,4 @@
-import type { SelectorNode, SelectorList, Containers } from "./ast-types";
+import type { SelectorNode, SelectorList, FunctionalSelector } from "./ast-types";
 
 export interface WalkOptions {
   visitList?: SelectorNode["type"][];
@@ -124,7 +124,7 @@ walk.skipNested = 0 as const;
 walk.skipCurrentSelector = 1 as const;
 walk.stopAll = Infinity;
 
-type ContainerWithNodes = Containers & { nodes: SelectorNode[] };
+type ContainerWithNodes = FunctionalSelector & { nodes: SelectorNode[] };
 function isWithNodes(node: any): node is ContainerWithNodes {
   return node && `nodes` in node;
 }

@@ -20,7 +20,7 @@ import type {
   ImmutableSelectorNode,
   ImmutableSelectorList,
   ImmutableNthSelectorList,
-  ImmutableContainers,
+  ImmutableFunctionalSelector,
   ImmutableNamespacedNode,
 } from "./ast-types";
 
@@ -94,7 +94,7 @@ function stringifySelectors(
   return result.join(`,`);
 }
 
-function stringifyNested(node: ImmutableContainers): string {
+function stringifyNested(node: ImmutableFunctionalSelector): string {
   if ("nodes" in node) {
     if (node.nodes?.length) {
       if (

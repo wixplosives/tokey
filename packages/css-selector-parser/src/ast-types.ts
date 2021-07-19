@@ -89,9 +89,9 @@ export interface Nth extends Omit<Token<"nth">, "value"> {
   // invalid?: boolean;
 }
 
-export type NamespacedNode = Type | Star;
+export type NamespacedNode = Type | Universal;
 
-export type Containers =
+export type FunctionalSelector =
   | NamespacedNode
   | Attribute
   | Id
@@ -101,7 +101,7 @@ export type Containers =
   | Nesting;
 
 export type SelectorNode =
-  | Containers
+  | FunctionalSelector
   | Selector
   | Combinator
   | Comment
@@ -121,7 +121,7 @@ export type ImmutableSelectorList = Immutable<SelectorList>;
 export type ImmutableNthSelectorList = Immutable<NthSelectorList>;
 
 export type ImmutableSelectorNode = Immutable<SelectorNode>;
-export type ImmutableContainers = Immutable<Containers>;
+export type ImmutableFunctionalSelector = Immutable<FunctionalSelector>;
 export type ImmutableNamespacedNode = Immutable<NamespacedNode>;
 
 export type ImmutableUniversal = Immutable<Universal>;
