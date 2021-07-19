@@ -86,7 +86,7 @@ export function isNamespacedToken(
   return token.type === `*` || token.type === `text`;
 }
 export function isNamespacedAst(token: SelectorNode): token is NamespacedNode {
-  return token.type === `star` || token.type === `type`;
+  return token.type === `universal` || token.type === `type`;
 }
 
 // utils

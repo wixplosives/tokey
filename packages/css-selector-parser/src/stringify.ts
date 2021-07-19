@@ -15,7 +15,7 @@ import type {
   ImmutablePseudoClass,
   ImmutablePseudoElement,
   ImmutableSelector,
-  ImmutableStar,
+  ImmutableUniversal,
   ImmutableNesting,
   ImmutableSelectorNode,
   ImmutableSelectorList,
@@ -61,7 +61,7 @@ const printers: Printers = {
     }${stringifyNested(node)}`,
   comment: ({ before, value, after }: ImmutableComment) =>
     `${before}${value}${after}`,
-  star: (node: ImmutableStar) =>
+  universal: (node: ImmutableUniversal) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
   nesting: (node: ImmutableNesting) =>
     `${node.value}${stringifyNested(node)}`,

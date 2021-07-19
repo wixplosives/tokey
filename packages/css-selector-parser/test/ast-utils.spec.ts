@@ -114,7 +114,7 @@ describe(`ast-utils`, () => {
         },
         mapVisit: ({ type, value }: any) => ({ type, value }),
         expectedMap: [
-          { type: `star`, value: `*` },
+          { type: `universal`, value: `*` },
           { type: `class`, value: `a` },
           { type: `combinator`, value: `+` },
           { type: `pseudo_class`, value: `b` },

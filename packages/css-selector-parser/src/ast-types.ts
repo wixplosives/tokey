@@ -49,7 +49,7 @@ export interface Type extends Token<"type"> {
   nodes?: SelectorList;
 }
 
-export interface Star extends Token<"star"> {
+export interface Universal extends Token<"universal"> {
   namespace?: Namespace;
   nodes?: SelectorList;
 }
@@ -124,7 +124,7 @@ export type ImmutableSelectorNode = Immutable<SelectorNode>;
 export type ImmutableContainers = Immutable<Containers>;
 export type ImmutableNamespacedNode = Immutable<NamespacedNode>;
 
-export type ImmutableStar = Immutable<Star>;
+export type ImmutableUniversal = Immutable<Universal>;
 export type ImmutableClass = Immutable<Class>;
 export type ImmutableId = Immutable<Id>;
 export type ImmutableType = Immutable<Type>;

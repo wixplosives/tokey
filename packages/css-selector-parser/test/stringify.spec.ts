@@ -3,7 +3,7 @@ import type {
     ImmutableSelectorList,
     ImmutableSelector,
     ImmutableNthSelectorList,
-    ImmutableStar,
+    ImmutableUniversal,
     ImmutableClass,
     ImmutableId,
     ImmutableType,
@@ -33,7 +33,7 @@ describe(`stringifySelectorAst`, () => {
     describe(`immutable`, () => {
         // test types
         [
-            { src: `*` } as any as ImmutableStar,
+            { src: `*` } as any as ImmutableUniversal,
             { src: `.a` } as any as ImmutableClass,
             { src: `#id` } as any as ImmutableId,
             { src: `el` } as any as ImmutableType,

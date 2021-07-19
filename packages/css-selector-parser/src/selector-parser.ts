@@ -215,7 +215,7 @@ function handleToken(
     });
   } else if (token.type === "*") {
     ast.push({
-      type: "star",
+      type: "universal",
       value: "*",
       start: token.start,
       end: token.end,
@@ -268,7 +268,7 @@ function handleToken(
     // create/update ast
     const validNamespace = !prevInvalidAst;
     const validTarget = !!target;
-    const type = target?.type === `*` ? `star` : `type`;
+    const type = target?.type === `*` ? `universal` : `type`;
     let invalid: NonNullable<Namespace["invalid"]> = ``;
     // remove before/after pipe comments
     if (validNamespace) {
