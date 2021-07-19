@@ -11,7 +11,7 @@ describe(`selector-parser`, () => {
             end: 1,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -30,7 +30,7 @@ describe(`selector-parser`, () => {
             end: 12,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `some-element`,
                 start: 0,
                 end: 12,
@@ -49,7 +49,7 @@ describe(`selector-parser`, () => {
             end: 11,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `someelement`,
                 start: 0,
                 end: 11,
@@ -1093,7 +1093,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `div`,
                         start: 21,
                         end: 24,
@@ -1154,7 +1154,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `div`,
                         start: 17,
                         end: 25,
@@ -1214,7 +1214,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `div`,
                         start: 17,
                         end: 20,
@@ -1228,7 +1228,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `span`,
                         start: 22,
                         end: 26,
@@ -1390,7 +1390,7 @@ describe(`selector-parser`, () => {
             end: 6,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 6,
@@ -1414,7 +1414,7 @@ describe(`selector-parser`, () => {
             end: 5,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 5,
@@ -1438,7 +1438,7 @@ describe(`selector-parser`, () => {
             end: 4,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 4,
@@ -1462,7 +1462,7 @@ describe(`selector-parser`, () => {
             end: 4,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 4,
@@ -1488,7 +1488,7 @@ describe(`selector-parser`, () => {
             end: 11,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 11,
@@ -1794,7 +1794,7 @@ describe(`selector-parser`, () => {
             end: 10,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -1821,7 +1821,7 @@ describe(`selector-parser`, () => {
                 invalid: true,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 9,
                 end: 10,
@@ -1840,7 +1840,7 @@ describe(`selector-parser`, () => {
             end: 11,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -1860,7 +1860,7 @@ describe(`selector-parser`, () => {
                 after: `  `,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 10,
                 end: 11,
@@ -1879,7 +1879,7 @@ describe(`selector-parser`, () => {
             end: 18,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -1907,7 +1907,7 @@ describe(`selector-parser`, () => {
                 after: ` `,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 17,
                 end: 18,
@@ -1926,7 +1926,7 @@ describe(`selector-parser`, () => {
             end: 29,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 0,
                 end: 29,
@@ -2058,7 +2058,7 @@ describe(`selector-parser`, () => {
                           end: 57,
                         }),
                         createNode({
-                          type: "element",
+                          type: `type`,
                           value: `div`,
                           start: 57,
                           end: 60,
@@ -2090,7 +2090,7 @@ describe(`selector-parser`, () => {
             end: 15,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2122,7 +2122,7 @@ describe(`selector-parser`, () => {
             end: 17,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2154,7 +2154,7 @@ describe(`selector-parser`, () => {
             end: 27,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2186,7 +2186,7 @@ describe(`selector-parser`, () => {
             end: 21,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2218,7 +2218,7 @@ describe(`selector-parser`, () => {
             end: 4,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2239,7 +2239,7 @@ describe(`selector-parser`, () => {
                 invalid: true,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 3,
                 end: 4,
@@ -2258,7 +2258,7 @@ describe(`selector-parser`, () => {
             end: 5,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2280,7 +2280,7 @@ describe(`selector-parser`, () => {
                 invalid: true,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 4,
                 end: 5,
@@ -2299,7 +2299,7 @@ describe(`selector-parser`, () => {
             end: 5,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2312,7 +2312,7 @@ describe(`selector-parser`, () => {
                 end: 2,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 2,
                 end: 3,
@@ -2325,7 +2325,7 @@ describe(`selector-parser`, () => {
                 end: 4,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 4,
                 end: 5,
@@ -2344,7 +2344,7 @@ describe(`selector-parser`, () => {
             end: 5,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2358,7 +2358,7 @@ describe(`selector-parser`, () => {
                 after: `  `,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 4,
                 end: 5,
@@ -2377,7 +2377,7 @@ describe(`selector-parser`, () => {
             end: 5,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2392,7 +2392,7 @@ describe(`selector-parser`, () => {
                 after: ` `,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 4,
                 end: 5,
@@ -2411,7 +2411,7 @@ describe(`selector-parser`, () => {
             end: 6,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2441,7 +2441,7 @@ describe(`selector-parser`, () => {
                 invalid: true,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 5,
                 end: 6,
@@ -2460,7 +2460,7 @@ describe(`selector-parser`, () => {
             end: 12,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -2482,7 +2482,7 @@ describe(`selector-parser`, () => {
                 after: ` `,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 11,
                 end: 12,
@@ -2517,7 +2517,7 @@ describe(`selector-parser`, () => {
                 after: ` `,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 10,
                 end: 11,
@@ -2594,7 +2594,7 @@ describe(`selector-parser`, () => {
                 end: 3,
               }),
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 3,
                 end: 5,
@@ -2619,7 +2619,7 @@ describe(`selector-parser`, () => {
             end: 3,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 0,
                 end: 3,
@@ -2650,7 +2650,7 @@ describe(`selector-parser`, () => {
                 end: 2,
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 2,
                 end: 3,
@@ -2675,7 +2675,7 @@ describe(`selector-parser`, () => {
             end: 8,
             nodes: [
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 0,
                 end: 3,
@@ -2687,7 +2687,7 @@ describe(`selector-parser`, () => {
                 },
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 3,
                 end: 4,
@@ -2699,7 +2699,7 @@ describe(`selector-parser`, () => {
                 },
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 4,
                 end: 8,
@@ -2909,7 +2909,7 @@ describe(`selector-parser`, () => {
                     before: ` `,
                     nodes: [
                       createNode({
-                        type: `element`,
+                        type: `type`,
                         value: `div`,
                         start: 20,
                         end: 23,
@@ -3029,7 +3029,7 @@ describe(`selector-parser`, () => {
                 end: 1,
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: ``,
                 start: 1,
                 end: 2,
@@ -3180,7 +3180,7 @@ describe(`selector-parser`, () => {
             end: 13,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -3412,7 +3412,7 @@ describe(`selector-parser`, () => {
             end: 7,
             nodes: [
               createNode({
-                type: `star`,
+                type: `universal`,
                 value: `*`,
                 start: 0,
                 end: 1,
@@ -3469,7 +3469,7 @@ describe(`selector-parser`, () => {
                 end: 3,
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `div`,
                 start: 3,
                 end: 6,

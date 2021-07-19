@@ -44,12 +44,12 @@ export interface Namespace {
   invalid?: "namespace" | "target" | "namespace,target" | "";
 }
 
-export interface Element extends Token<"element"> {
+export interface Type extends Token<"type"> {
   namespace?: Namespace;
   nodes?: SelectorList;
 }
 
-export interface Star extends Token<"star"> {
+export interface Universal extends Token<"universal"> {
   namespace?: Namespace;
   nodes?: SelectorList;
 }
@@ -89,9 +89,9 @@ export interface Nth extends Omit<Token<"nth">, "value"> {
   // invalid?: boolean;
 }
 
-export type NamespacedNode = Element | Star;
+export type NamespacedNode = Type | Universal;
 
-export type Containers =
+export type FunctionalSelector =
   | NamespacedNode
   | Attribute
   | Id
@@ -101,7 +101,7 @@ export type Containers =
   | Nesting;
 
 export type SelectorNode =
-  | Containers
+  | FunctionalSelector
   | Selector
   | Combinator
   | Comment
@@ -121,13 +121,13 @@ export type ImmutableSelectorList = Immutable<SelectorList>;
 export type ImmutableNthSelectorList = Immutable<NthSelectorList>;
 
 export type ImmutableSelectorNode = Immutable<SelectorNode>;
-export type ImmutableContainers = Immutable<Containers>;
+export type ImmutableFunctionalSelector = Immutable<FunctionalSelector>;
 export type ImmutableNamespacedNode = Immutable<NamespacedNode>;
 
-export type ImmutableStar = Immutable<Star>;
+export type ImmutableUniversal = Immutable<Universal>;
 export type ImmutableClass = Immutable<Class>;
 export type ImmutableId = Immutable<Id>;
-export type ImmutableElement = Immutable<Element>;
+export type ImmutableType = Immutable<Type>;
 export type ImmutableCombinator = Immutable<Combinator>;
 export type ImmutableAttribute = Immutable<Attribute>;
 export type ImmutablePseudoClass = Immutable<PseudoClass>;

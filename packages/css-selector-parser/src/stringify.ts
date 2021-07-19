@@ -5,7 +5,7 @@ import type {
   ImmutableClass,
   ImmutableCombinator,
   ImmutableComment,
-  ImmutableElement,
+  ImmutableType,
   ImmutableInvalid,
   ImmutableNth,
   ImmutableNthDash,
@@ -15,12 +15,12 @@ import type {
   ImmutablePseudoClass,
   ImmutablePseudoElement,
   ImmutableSelector,
-  ImmutableStar,
+  ImmutableUniversal,
   ImmutableNesting,
   ImmutableSelectorNode,
   ImmutableSelectorList,
   ImmutableNthSelectorList,
-  ImmutableContainers,
+  ImmutableFunctionalSelector,
   ImmutableNamespacedNode,
 } from "./ast-types";
 
@@ -43,7 +43,7 @@ const printers: Printers = {
     `.${node.dotComments.map(stringifyNode).join("")}${
       node.value
     }${stringifyNested(node)}`,
-  element: (node: ImmutableElement) =>
+  type: (node: ImmutableType) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
   combinator: (node: ImmutableCombinator) =>
     `${node.before}${node.value}${node.after}`,
@@ -61,7 +61,7 @@ const printers: Printers = {
     }${stringifyNested(node)}`,
   comment: ({ before, value, after }: ImmutableComment) =>
     `${before}${value}${after}`,
-  star: (node: ImmutableStar) =>
+  universal: (node: ImmutableUniversal) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
   nesting: (node: ImmutableNesting) =>
     `${node.value}${stringifyNested(node)}`,
@@ -94,7 +94,7 @@ function stringifySelectors(
   return result.join(`,`);
 }
 
-function stringifyNested(node: ImmutableContainers): string {
+function stringifyNested(node: ImmutableFunctionalSelector): string {
   if ("nodes" in node) {
     if (node.nodes?.length) {
       if (
