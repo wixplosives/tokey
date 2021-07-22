@@ -1,7 +1,7 @@
 # @tokey/imports-parser
 
 
-Parser for esm like import syntax with support for "functional" tagged imports
+Parser for `esm` like import syntax with support for "functional" tagged imports
 
 ```ts
 import Name1, { Name2, Name3 as Name4, Tag(Name5) } from "request";

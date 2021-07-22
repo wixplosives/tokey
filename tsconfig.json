@@ -10,6 +10,6 @@
     { "path": "./packages/imports-parser/src" },
     { "path": "./packages/imports-parser/test" },
     { "path": "./packages/url-tokenizer/src" },
-    { "path": "./packages/url-tokenizer/test" }
+    { "path": "./packages/url-tokenizer/test" },
   ]
 }
