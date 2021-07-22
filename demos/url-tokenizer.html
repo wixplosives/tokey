@@ -6,6 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Tokens</title>
     <link rel="stylesheet" href="./css/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "@tokey/core": "/packages/core/src/index.ts"
+        }
+      }
+    </script>
   </head>
   <body>
     <main>
@@ -29,7 +36,7 @@
     </main>
     <script type="module">
       import { initPreview } from './client/view.ts';
-      import { tokenizeCSSUrls } from '../packages/core/src/parsers/url-tokenizer.ts';
+      import { tokenizeCSSUrls } from '../packages/url-tokenizer/src/url-tokenizer.ts';
       initPreview(input, output, tokenizeCSSUrls);
     </script>
   </body>

@@ -1,5 +1,7 @@
-import { tokenize } from "../core";
 import {
+  tokenize,
+  Token,
+  Descriptors,
   isStringDelimiter,
   isWhitespace,
   createToken,
@@ -7,8 +9,7 @@ import {
   getMultilineCommentStartType,
   isCommentEnd,
   getUnclosedComment,
-} from "../helpers";
-import type { Token, Descriptors } from "../types";
+} from "@tokey/core";
 
 type Delimiters = "(" | ")" | "," | ";" | ":";
 

@@ -1,0 +1,31 @@
+{
+  "name": "@tokey/url-tokenizer",
+  "description": "tokenize css url() syntax",
+  "version": "0.0.1",
+  "main": "dist/url-tokenizer.js",
+  "types": "dist/url-tokenizer.d.ts",
+  "scripts": {
+    "test": "mocha \"./dist/test/**/*.spec.js\""
+  },
+  "dependencies": {
+    "@tokey/core": "^1.1.0"
+  },
+  "keywords": [
+    "parser",
+    "css",
+    "url"
+  ],
+  "files": [
+    "src",
+    "dist",
+    "!dist/test",
+    "!*/tsconfig.{json,tsbuildinfo}"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Wix.com",
+  "license": "MIT",
+  "repository": "https://github.com/wixplosives/tokey/packages/url-tokenizer",
+  "prettier": {}
+}
