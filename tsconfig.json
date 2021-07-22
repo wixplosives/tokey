@@ -8,6 +8,8 @@
     { "path": "./packages/css-selector-parser/src" },
     { "path": "./packages/css-selector-parser/test" },
     { "path": "./packages/imports-parser/src" },
-    { "path": "./packages/imports-parser/test" }
+    { "path": "./packages/imports-parser/test" },
+    { "path": "./packages/css-value-tokenizer/src" },
+    { "path": "./packages/css-value-tokenizer/test" }
   ]
 }

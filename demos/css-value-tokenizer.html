@@ -6,6 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>CSS Value Tokenizer</title>
     <link rel="stylesheet" href="./css/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "@tokey/core": "/packages/core/src/index.ts"
+        }
+      }
+    </script>
   </head>
   <body>
     <main>
@@ -14,7 +21,7 @@
     </main>
     <script type="module">
       import { initPreview } from './client/view.ts';
-      import { createCssValueAST } from '../packages/core/src/parsers/css-value-tokenizer.ts';
+      import { createCssValueAST } from '../packages/css-value-tokenizer/src/css-value-tokenizer.ts';
       initPreview(input, output, createCssValueAST);
     </script>
   </body>
