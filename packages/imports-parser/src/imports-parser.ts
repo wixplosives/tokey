@@ -1,6 +1,6 @@
-import { Seeker } from "../seeker";
-import { tokenize } from "../core";
 import {
+  Seeker,
+  tokenize,
   isComment,
   isStringDelimiter,
   isWhitespace,
@@ -8,14 +8,15 @@ import {
   getJSCommentStartType,
   isCommentEnd,
   getUnclosedComment,
-} from "../helpers";
-import type { Token, Descriptors } from "../types";
+  Token,
+  Descriptors,
+} from "@tokey/core";
 
 type Delimiters = "," | ";" | ":" | "{" | "}" | "[" | "]" | "(" | ")" | "*";
 
 export type CodeToken = Token<Descriptors | Delimiters>;
 
-export function tokenizeImports(
+export function parseImports(
   source: string,
   blockStart = "{",
   blockEnd = "}",
