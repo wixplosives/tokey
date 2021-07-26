@@ -5,28 +5,36 @@ import {
 import type {
   SelectorNode,
   Selector,
+  Class,
+  PseudoElement,
+  PseudoClass,
+  Attribute,
+  Type,
+  Id,
   Comment,
   Nth,
   NthStep,
   NthDash,
   NthOffset,
   NthOf,
-  GroupedSelector,
+  Nesting,
+  CompoundSelector,
   ParseConfig,
 } from "@tokey/css-selector-parser";
 import { createParseTester } from "@tokey/test-kit";
 
 export const test = createParseTester({
-  parse: (selector: string, config?: ParseConfig) => parseCssSelector(selector, config),
+  parse: (selector: string, config?: ParseConfig) =>
+    parseCssSelector(selector, config),
   stringify: stringifySelectorAst,
 });
 
-export function createNode<
-  TYPE extends SelectorNode["type"] | GroupedSelector["type"]
->(
-  expected: Partial<SelectorNode | GroupedSelector> & { type: TYPE }
+export function createNode<TYPE extends SelectorNode["type"]>(
+  expected: Partial<SelectorNode> & { type: TYPE }
 ): TYPE extends "selector"
   ? Selector
+  : TYPE extends "comment"
+  ? Comment
   : TYPE extends "comment"
   ? Comment
   : TYPE extends "nth"
@@ -39,10 +47,24 @@ export function createNode<
   ? NthOffset
   : TYPE extends "nth_of"
   ? NthOf
-  : TYPE extends "GroupedSelector"
-  ? GroupedSelector
+  : TYPE extends "compound_selector"
+  ? CompoundSelector
+  : TYPE extends "class"
+  ? Class
+  : TYPE extends "pseudo_element"
+  ? PseudoElement
+  : TYPE extends "pseudo_class"
+  ? PseudoClass
+  : TYPE extends "attribute"
+  ? Attribute
+  : TYPE extends "type"
+  ? Type
+  : TYPE extends "id"
+  ? Id
+  : TYPE extends "nesting"
+  ? Nesting
   : SelectorNode {
-  const defaults: SelectorNode | GroupedSelector = {
+  const defaults: SelectorNode = {
     type: expected.type,
     start: 0,
     end: 0,
@@ -73,7 +95,7 @@ export function createNode<
   }
   if (
     defaults.type === `selector` ||
-    defaults.type === `grouped_selector` ||
+    defaults.type === `compound_selector` ||
     defaults.type === `combinator` ||
     defaults.type === `comment` ||
     defaults.type === `nth` ||
@@ -85,7 +107,7 @@ export function createNode<
     defaults.before = ``;
     defaults.after = ``;
   }
-  if (defaults.type === `combinator`) {
+  if (defaults.type === `combinator` || defaults.type === `compound_selector`) {
     defaults.invalid = false;
   }
   return {

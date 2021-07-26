@@ -3,6 +3,9 @@ import type {
   SelectorList,
   Selector,
   FunctionalSelector,
+  CompoundSelector,
+  Comment,
+  CommentWithNoSpacing,
 } from "./ast-types";
 
 export interface WalkOptions {
@@ -134,59 +137,80 @@ function isWithNodes(node: any): node is ContainerWithNodes {
   return node && `nodes` in node;
 }
 
-export type Target = SelectorNode[];
-export type GroupedSelector = {
-  type: "grouped_selector";
-  start: number;
-  end: number;
-  before: string;
-  after: string;
-  nodes: Target[];
-};
-export function groupSelectorTargets<AST extends SelectorList | Selector>(
+export function groupCompoundSelectors<AST extends SelectorList | Selector>(
   input: AST,
   { splitPseudoElements = true }: { splitPseudoElements?: boolean } = {}
-): AST extends SelectorList ? GroupedSelector[] : GroupedSelector {
-  const output: GroupedSelector[] = [];
-  let lastSelector: GroupedSelector;
-  let lastTarget: Target;
+): AST extends SelectorList ? SelectorList : Selector {
+  const output: SelectorList = [];
+  let lastSelector: Selector;
+  let lastCompound: CompoundSelector | undefined;
+  // let lastTarget: Target;
   walk(input, (node, index, _nodes, parents) => {
     if (parents.length === 0) {
       // first level: create top level selector and initial grouped selector
-      if (!output[index]) {
-        // add top selector
-        lastSelector = {
-          type: `grouped_selector`,
-          start: node.start,
-          end: node.end,
-          before: `before` in node ? node.before : ``,
-          after: `after` in node ? node.after : ``,
-          nodes: [],
-        };
-        output[index] = lastSelector;
-        // add chunk selector
-        lastTarget = [];
-        lastSelector.nodes.push(lastTarget);
-      }
+      lastSelector = {
+        type: `selector`,
+        start: node.start,
+        end: node.end,
+        before: `before` in node ? node.before : ``,
+        after: `after` in node ? node.after : ``,
+        nodes: [],
+      };
+      output[index] = lastSelector;
+      lastCompound = undefined;
     } else {
       // second level: (parents.length === 1)
-      if (
-        lastTarget.length > 0 &&
-        (node.type === `combinator` ||
-          node.type === `nesting` ||
-          (splitPseudoElements && node.type === `pseudo_element`))
-      ) {
-        // add next chunk selector
-        lastTarget = [];
-        lastSelector.nodes.push(lastTarget);
+      if (node.type === `pseudo_element` && splitPseudoElements === true) {
+        lastCompound = undefined;
       }
-      // add node to chunk
-      lastTarget.push(node);
-      // don't go deeper
+      if (node.type === `combinator`) {
+        lastSelector.nodes.push(node);
+        lastCompound = undefined;
+      } else if (node.type === `comment` && !isCommentWithNoSpacing(node)) {
+        // comments that break compound
+        lastSelector.nodes.push(node);
+        lastCompound = undefined;
+      } else if (
+        node.type === `selector` ||
+        node.type === `compound_selector` ||
+        node.type === `nth` ||
+        node.type === `nth_step` ||
+        node.type === `nth_dash` ||
+        node.type === `nth_offset` ||
+        node.type === `nth_of`
+      ) {
+        // ToDo: handle invalid nodes
+      } else {
+        // part of compound
+        if (!lastCompound) {
+          // add new compound selector
+          lastCompound = {
+            type: `compound_selector`,
+            start: node.start,
+            end: node.end,
+            before: ``,
+            after: ``,
+            nodes: [],
+            invalid: false,
+          };
+          lastSelector.nodes.push(lastCompound);
+        } else if (!lastCompound.invalid) {
+          // validate selector
+          lastCompound.invalid =
+            node.type === `universal` || node.type === `type`;
+        }
+        lastCompound.nodes.push(node);
+        lastCompound.end = node.end;
+      }
+      // don't go deeper - shallow group
       return walk.skipNested;
     }
     return;
   });
   // ToDo: figure out type
   return `length` in input ? output : (output[0] as any);
+}
+
+function isCommentWithNoSpacing(node: Comment): node is CommentWithNoSpacing {
+  return node.type === `comment` && node.before === `` && node.after === ``;
 }

@@ -71,6 +71,7 @@ export interface Comment extends Token<"comment"> {
   before: string;
   after: string;
 }
+export type CommentWithNoSpacing = Comment & { before: ""; after: "" };
 
 export interface NthBase<PART extends string> extends Token<PART> {
   before: string;
@@ -91,6 +92,31 @@ export interface Nth extends Omit<Token<"nth">, "value"> {
 
 export type NamespacedNode = Type | Universal;
 
+export type SimpleSelector =
+  | Type
+  | Universal
+  | Attribute
+  | Class
+  | Id
+  | PseudoClass;
+
+export interface CompoundSelector
+  extends Omit<Token<"compound_selector">, "value"> {
+  nodes: Array<
+    | SimpleSelector
+    // non standard
+    | Nesting
+    | CommentWithNoSpacing
+    | Invalid
+    | PseudoElement
+    | CompoundSelector
+    | Selector
+  >;
+  before: string;
+  after: string;
+  invalid: boolean;
+}
+
 export type FunctionalSelector =
   | NamespacedNode
   | Attribute
@@ -103,6 +129,7 @@ export type FunctionalSelector =
 export type SelectorNode =
   | FunctionalSelector
   | Selector
+  | CompoundSelector
   | Combinator
   | Comment
   | Invalid
@@ -116,6 +143,7 @@ export type SelectorList = Selector[];
 
 // immutable ast
 export type ImmutableSelector = Immutable<Selector>;
+export type ImmutableCompoundSelector = Immutable<CompoundSelector>;
 
 export type ImmutableSelectorList = Immutable<SelectorList>;
 export type ImmutableNthSelectorList = Immutable<NthSelectorList>;
@@ -133,6 +161,7 @@ export type ImmutableAttribute = Immutable<Attribute>;
 export type ImmutablePseudoClass = Immutable<PseudoClass>;
 export type ImmutablePseudoElement = Immutable<PseudoElement>;
 export type ImmutableComment = Immutable<Comment>;
+export type ImmutableCommentWithNoSpacing = Immutable<CommentWithNoSpacing>;
 export type ImmutableNesting = Immutable<Nesting>;
 export type ImmutableInvalid = Immutable<Invalid>;
 export type ImmutableNth = Immutable<Nth>;
