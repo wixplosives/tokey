@@ -117,7 +117,7 @@ describe(`ast-utils`, () => {
         },
         mapVisit: ({ type, value }: any) => ({ type, value }),
         expectedMap: [
-          { type: `star`, value: `*` },
+          { type: `universal`, value: `*` },
           { type: `class`, value: `a` },
           { type: `combinator`, value: `+` },
           { type: `pseudo_class`, value: `b` },
@@ -141,13 +141,13 @@ describe(`ast-utils`, () => {
           { type: `selector`, value: undefined },
           { type: `class`, value: `c` },
           { type: `selector`, value: undefined },
-          { type: `element`, value: `d` },
+          { type: `type`, value: `d` },
           { type: `selector`, value: undefined },
-          { type: `element`, value: `x` },
+          { type: `type`, value: `x` },
           { type: `selector`, value: undefined },
-          { type: `element`, value: `y` },
+          { type: `type`, value: `y` },
           { type: `combinator`, value: `+` },
-          { type: `element`, value: `z` },
+          { type: `type`, value: `z` },
         ],
       });
     });
@@ -734,7 +734,7 @@ describe(`ast-utils`, () => {
                 end: 15,
               }),
               createNode({
-                type: `element`,
+                type: `type`,
                 value: `el`,
                 start: 15,
                 end: 17,

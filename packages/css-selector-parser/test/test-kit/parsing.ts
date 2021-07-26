@@ -62,7 +62,7 @@ export function createNode<
   if (defaults.type === `class`) {
     defaults.dotComments = [];
   }
-  if (defaults.type === `star` || defaults.type === `element`) {
+  if (defaults.type === `universal` || defaults.type === `type`) {
     // defaults.namespace = { value: ``, beforeComments: [], afterComments: [] };
   }
   if (defaults.type === `pseudo_class`) {

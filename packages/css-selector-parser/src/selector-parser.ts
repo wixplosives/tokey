@@ -4,7 +4,7 @@ import type {
   Namespace,
   Combinator,
   Comment,
-  NamespacedNodes,
+  NamespacedNode,
   Selector,
   SelectorList,
   SelectorNode,
@@ -200,7 +200,7 @@ function handleToken(
     }
   } else if (token.type === "text") {
     ast.push({
-      type: "element",
+      type: "type",
       value: token.value,
       start: token.start,
       end: token.end,
@@ -215,14 +215,14 @@ function handleToken(
     });
   } else if (token.type === "*") {
     ast.push({
-      type: "star",
+      type: "universal",
       value: "*",
       start: token.start,
       end: token.end,
     });
   } else if (token.type === "|") {
     // search backwards compatible namespace in ast
-    let prevAst: NamespacedNodes | undefined;
+    let prevAst: NamespacedNode | undefined;
     let prevInvalidAst: SelectorNode | undefined;
     const beforeComments: Comment[] = [];
     for (let i = ast.length - 1; i >= 0; --i) {
@@ -268,7 +268,7 @@ function handleToken(
     // create/update ast
     const validNamespace = !prevInvalidAst;
     const validTarget = !!target;
-    const type = target?.type === `*` ? `star` : `element`;
+    const type = target?.type === `*` ? `universal` : `type`;
     let invalid: NonNullable<Namespace["invalid"]> = ``;
     // remove before/after pipe comments
     if (validNamespace) {
@@ -283,14 +283,14 @@ function handleToken(
       invalid = invalid ? `namespace,target` : `target`;
     }
     // create new ast or modify the prev
-    const nsAst: NamespacedNodes =
+    const nsAst: NamespacedNode =
       prevAst ||
       ({
         type,
         value: ``,
         start: token.start,
         end: target?.end || token.end,
-      } as NamespacedNodes);
+      } as NamespacedNode);
     nsAst.type = type;
     nsAst.namespace = {
       value: prevAst?.value || ``,

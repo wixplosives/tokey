@@ -1,9 +1,9 @@
 {
-  "name": "@tokey/css-selector-parser",
-  "description": "selector parser for css",
-  "version": "0.3.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "name": "@tokey/imports-parser",
+  "description": "parser for esm like imports",
+  "version": "0.0.1",
+  "main": "dist/imports-parser.js",
+  "types": "dist/imports-parser.d.ts",
   "scripts": {
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },
@@ -12,8 +12,8 @@
   },
   "keywords": [
     "parser",
-    "css",
-    "selector"
+    "esm",
+    "imports"
   ],
   "files": [
     "src",
@@ -26,7 +26,6 @@
   },
   "author": "Wix.com",
   "license": "MIT",
-  "repository": "https://github.com/wixplosives/tokey/packages/css-selector-parser",
-  "prettier": {},
-  "sideEffects": false
+  "repository": "https://github.com/wixplosives/tokey/packages/imports-parser",
+  "prettier": {}
 }

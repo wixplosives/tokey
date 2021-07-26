@@ -2,7 +2,7 @@ import type {
   SelectorNode,
   SelectorList,
   Selector,
-  Containers,
+  FunctionalSelector,
 } from "./ast-types";
 
 export interface WalkOptions {
@@ -129,7 +129,7 @@ walk.skipNested = 0 as const;
 walk.skipCurrentSelector = 1 as const;
 walk.stopAll = Infinity;
 
-type ContainerWithNodes = Containers & { nodes: SelectorNode[] };
+type ContainerWithNodes = FunctionalSelector & { nodes: SelectorNode[] };
 function isWithNodes(node: any): node is ContainerWithNodes {
   return node && `nodes` in node;
 }

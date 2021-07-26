@@ -1,14 +1,12 @@
 import { createParseTester } from "@tokey/test-kit";
-import {
-  tokenizeImports,
-  ImportValue,
-} from "@tokey/core/dist/parsers/import-tokenizer";
+import { parseImports, ImportValue } from "@tokey/imports-parser";
 
 const test = createParseTester({
-  parse: (source: string) => tokenizeImports(source, "{", "}"),
+  parse: (source: string) => parseImports(source, "{", "}"),
 });
+
 const testTagged = createParseTester({
-  parse: (source: string) => tokenizeImports(source, "{", "}", true),
+  parse: (source: string) => parseImports(source, "{", "}", true),
 });
 
 const createImportValue = (value: ImportValue) => value;
