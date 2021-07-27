@@ -2,7 +2,7 @@
 
 Simple tokenizer for css url() syntax
 
-This tokenizer will find all url() usages in a css text and return array of grouped tokens with the following type: 
+This tokenizer will find all `url()` usages in a CSS text and return an array of grouped tokens with the following type: 
 
 ```ts
 type CSSCodeTokenGroup = {
