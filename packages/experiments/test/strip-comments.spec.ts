@@ -1,5 +1,5 @@
 import { testTokenizer as test } from "@tokey/test-kit";
-import { stripComments } from "@tokey/core/dist/parsers/strips-comments";
+import { stripComments } from "@tokey/experiments";
 
 describe(`demos/strip-comments`, () => {
   it("a/*comment*/b", () => {

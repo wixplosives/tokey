@@ -18,6 +18,13 @@
         display: flex;
       }
     </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "@tokey/core": "/packages/core/src/index.ts"
+        }
+      }
+    </script>
   </head>
   <body>
     <main>
@@ -32,7 +39,7 @@
     </main>
     <script type="module">
       import { initPreview } from './client/view.ts';
-      import { getListItems } from '../packages/core/src/parsers/separated-shallow-list.ts';
+      import { getListItems } from '../packages/experiments/src/separated-shallow-list.ts';
 
       seps.oninput = () =>
         seps.dispatchEvent(new CustomEvent('playground:updateOutput', { bubbles: true }));

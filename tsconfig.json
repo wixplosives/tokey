@@ -11,5 +11,7 @@
     { "path": "./packages/imports-parser/test" },
     { "path": "./packages/url-tokenizer/src" },
     { "path": "./packages/url-tokenizer/test" },
+    { "path": "./packages/experiments/src" },
+    { "path": "./packages/experiments/test" },
   ]
 }

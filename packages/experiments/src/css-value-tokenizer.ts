@@ -1,5 +1,7 @@
-import { tokenize } from "../core";
 import {
+  tokenize,
+  Token,
+  Descriptors,
   isStringDelimiter,
   isWhitespace,
   getJSCommentStartType,
@@ -8,8 +10,7 @@ import {
   createToken,
   getText,
   getUnclosedComment,
-} from "../helpers";
-import type { Token, Descriptors } from "../types";
+} from "@tokey/core";
 
 type Delimiters = "(" | ")" | ",";
 export type SeparatorTokens = "line-comment" | "multi-comment" | "space";

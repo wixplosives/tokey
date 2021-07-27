@@ -1,5 +1,5 @@
 import { createParseTester } from "@tokey/test-kit";
-import { createCssValueAST } from "@tokey/core/dist/parsers/css-value-tokenizer";
+import { createCssValueAST } from "@tokey/experiments";
 
 const test = createParseTester({
   parse: createCssValueAST,

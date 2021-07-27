@@ -1,5 +1,5 @@
 import { createParseTester } from "@tokey/test-kit";
-import { getListItems } from "@tokey/core/dist/parsers/separated-shallow-list";
+import { getListItems } from "@tokey/experiments";
 
 const commaSeparated = (char: string): char is "," => char === ",";
 const testCommaSeparated = createParseTester({
