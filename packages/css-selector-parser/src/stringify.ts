@@ -87,7 +87,7 @@ function stringifyNode(node: ImmutableSelectorNode): string {
 }
 
 function stringifySelectors(
-  selectors: ImmutableSelectorList | ImmutableNthSelectorList
+  selectors: ReadonlyArray<ImmutableSelector | ImmutableNth>
 ) {
   const result: string[] = [];
   for (const node of selectors) {

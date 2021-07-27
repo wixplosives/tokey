@@ -5,6 +5,7 @@ import {
 import type {
   SelectorNode,
   Selector,
+  Universal,
   Class,
   PseudoElement,
   PseudoClass,
@@ -33,8 +34,8 @@ export function createNode<TYPE extends SelectorNode["type"]>(
   expected: Partial<SelectorNode> & { type: TYPE }
 ): TYPE extends "selector"
   ? Selector
-  : TYPE extends "comment"
-  ? Comment
+  : TYPE extends "universal"
+  ? Universal
   : TYPE extends "comment"
   ? Comment
   : TYPE extends "nth"

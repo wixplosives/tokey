@@ -1018,8 +1018,9 @@ describe(`ast-utils`, () => {
       );
     });
     it(`should accept readonly value and return readonly accordingly (type checks)`, () => {
-      function expectType<T>(_actual: T) {/**/}
-
+      function expectType<T>(_actual: T) {
+        /**/
+      }
       const immutable = parseCssSelector(`.a .b`) as ImmutableSelectorList;
       expectType<ImmutableSelector>(groupCompoundSelectors(immutable[0]));
       expectType<ImmutableSelectorList>(groupCompoundSelectors(immutable));
@@ -1027,6 +1028,41 @@ describe(`ast-utils`, () => {
       const mutable = parseCssSelector(`.a .b`);
       expectType<Selector>(groupCompoundSelectors(mutable[0]));
       expectType<SelectorList>(groupCompoundSelectors(mutable));
+    });
+    it(`should set invalid flag on compound with universal or type not at the start`, () => {
+      const ast = parseCssSelector(`.a*`);
+
+      const groupedSelectors = groupCompoundSelectors(ast);
+
+      expect(groupedSelectors).to.eql([
+        createNode({
+          type: `selector`,
+          start: 0,
+          end: 3,
+          nodes: [
+            createNode({
+              type: `compound_selector`,
+              start: 0,
+              end: 3,
+              invalid: true,
+              nodes: [
+                createNode({
+                  type: `class`,
+                  value: `a`,
+                  start: 0,
+                  end: 2,
+                }),
+                createNode({
+                  type: `universal`,
+                  value: `*`,
+                  start: 2,
+                  end: 3,
+                }),
+              ],
+            }),
+          ],
+        }),
+      ]);
     });
   });
 });

@@ -1,16 +1,13 @@
-// ToDo: move to types.ts
 /**
  * convert object|array into a replica deep readonly type
  */
-export type Immutable<T> = T extends (infer R)[]
-  ? ImmutableArray<R>
-  : T extends Function
+export type Immutable<T> = T extends Function
   ? T
   : T extends object
-  ? ImmutableObject<T>
+  ? ImmutableMap<T>
   : T;
 
-type ImmutableObject<T> = {
+type ImmutableMap<T> = {
   readonly [P in keyof T]: Immutable<T[P]>;
-}
-type ImmutableArray<T> = ReadonlyArray<Immutable<T>>
+};
+

@@ -158,15 +158,16 @@ export function groupCompoundSelectors<AST extends ImmutableSelectorList>(
   input: AST,
   options?: GroupCompoundOptions
 ): ImmutableSelectorList;
-export function groupCompoundSelectors<AST extends SelectorList | Selector | ImmutableSelector>(
+export function groupCompoundSelectors<AST>(
   input: AST,
   { splitPseudoElements = true }: GroupCompoundOptions = {}
 ): Selector | SelectorList | ImmutableSelector | ImmutableSelectorList {
   const output: SelectorList = [];
   let lastSelector: Selector;
   let lastCompound: CompoundSelector | undefined;
-  // ToDo: remove type as selector when walk add readonly support 
-  walk(input as Selector, (node, index, _nodes, parents) => {
+  let lastCompoundInitialPart: CompoundSelector["nodes"][number] | undefined;
+  // ToDo: remove type as selector when walk add readonly support
+  walk(input as any as Selector, (node, index, _nodes, parents) => {
     if (parents.length === 0) {
       // first level: create top level selector and initial grouped selector
       lastSelector = {
@@ -206,6 +207,7 @@ export function groupCompoundSelectors<AST extends SelectorList | Selector | Imm
         // part of compound
         if (!lastCompound) {
           // add new compound selector
+          lastCompoundInitialPart = undefined;
           lastCompound = {
             type: `compound_selector`,
             start: node.start,
@@ -216,10 +218,14 @@ export function groupCompoundSelectors<AST extends SelectorList | Selector | Imm
             invalid: false,
           };
           lastSelector.nodes.push(lastCompound);
-        } else if (!lastCompound.invalid) {
-          // validate selector
-          lastCompound.invalid =
-            node.type === `universal` || node.type === `type`;
+        }
+        if (!lastCompound.invalid && node.type !== `comment`) {
+          // validate compound parts after initial
+          if (lastCompoundInitialPart) {
+            lastCompound.invalid =
+              node.type === `universal` || node.type === `type`;
+          }
+          lastCompoundInitialPart = node;
         }
         lastCompound.nodes.push(node);
         lastCompound.end = node.end;
