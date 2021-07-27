@@ -171,16 +171,17 @@ export function groupCompoundSelectors<AST extends SelectorList | Selector>(
         lastSelector.nodes.push(node);
         lastCompound = undefined;
       } else if (
-        node.type === `selector` ||
-        node.type === `compound_selector` ||
-        node.type === `nth` ||
-        node.type === `nth_step` ||
-        node.type === `nth_dash` ||
-        node.type === `nth_offset` ||
-        node.type === `nth_of`
+        node.type === `type` ||
+        node.type === `universal` ||
+        node.type === `class` ||
+        node.type === `id` ||
+        node.type === `attribute` ||
+        node.type === `nesting` ||
+        node.type === `pseudo_class` ||
+        node.type === `pseudo_element` ||
+        node.type === `invalid` ||
+        node.type === `comment` /*no spacing*/
       ) {
-        // ToDo: handle invalid nodes
-      } else {
         // part of compound
         if (!lastCompound) {
           // add new compound selector
@@ -201,6 +202,18 @@ export function groupCompoundSelectors<AST extends SelectorList | Selector>(
         }
         lastCompound.nodes.push(node);
         lastCompound.end = node.end;
+      } else if (
+        // ToDo: spread
+        node.type === `selector` ||
+        node.type === `compound_selector` ||
+        // ToDo: move out of compound
+        node.type === `nth` ||
+        node.type === `nth_step` ||
+        node.type === `nth_dash` ||
+        node.type === `nth_offset` ||
+        node.type === `nth_of`
+      ) {
+        // ToDo: handle invalid nodes
       }
       // don't go deeper - shallow group
       return walk.skipNested;
