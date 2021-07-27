@@ -6,6 +6,9 @@ import {
   SelectorNode,
   SelectorList,
   CommentWithNoSpacing,
+  ImmutableSelectorList,
+  ImmutableSelector,
+  Selector,
 } from "@tokey/css-selector-parser";
 import { createNode } from "./test-kit/parsing";
 import { isMatch } from "@tokey/test-kit";
@@ -1013,6 +1016,17 @@ describe(`ast-utils`, () => {
           ],
         })
       );
+    });
+    it(`should accept readonly value and return readonly accordingly (type checks)`, () => {
+      function expectType<T>(_actual: T) {/**/}
+
+      const immutable = parseCssSelector(`.a .b`) as ImmutableSelectorList;
+      expectType<ImmutableSelector>(groupCompoundSelectors(immutable[0]));
+      expectType<ImmutableSelectorList>(groupCompoundSelectors(immutable));
+
+      const mutable = parseCssSelector(`.a .b`);
+      expectType<Selector>(groupCompoundSelectors(mutable[0]));
+      expectType<SelectorList>(groupCompoundSelectors(mutable));
     });
   });
 });

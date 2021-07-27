@@ -6,6 +6,8 @@ import type {
   CompoundSelector,
   Comment,
   CommentWithNoSpacing,
+  ImmutableSelector,
+  ImmutableSelectorList,
 } from "./ast-types";
 
 export interface WalkOptions {
@@ -137,15 +139,34 @@ function isWithNodes(node: any): node is ContainerWithNodes {
   return node && `nodes` in node;
 }
 
-export function groupCompoundSelectors<AST extends SelectorList | Selector>(
+export interface GroupCompoundOptions {
+  splitPseudoElements?: boolean;
+}
+export function groupCompoundSelectors<AST extends Selector>(
   input: AST,
-  { splitPseudoElements = true }: { splitPseudoElements?: boolean } = {}
-): AST extends SelectorList ? SelectorList : Selector {
+  options?: GroupCompoundOptions
+): Selector;
+export function groupCompoundSelectors<AST extends ImmutableSelector>(
+  input: AST,
+  options?: GroupCompoundOptions
+): ImmutableSelector;
+export function groupCompoundSelectors<AST extends SelectorList>(
+  input: AST,
+  options?: GroupCompoundOptions
+): SelectorList;
+export function groupCompoundSelectors<AST extends ImmutableSelectorList>(
+  input: AST,
+  options?: GroupCompoundOptions
+): ImmutableSelectorList;
+export function groupCompoundSelectors<AST extends SelectorList | Selector | ImmutableSelector>(
+  input: AST,
+  { splitPseudoElements = true }: GroupCompoundOptions = {}
+): Selector | SelectorList | ImmutableSelector | ImmutableSelectorList {
   const output: SelectorList = [];
   let lastSelector: Selector;
   let lastCompound: CompoundSelector | undefined;
-  // let lastTarget: Target;
-  walk(input, (node, index, _nodes, parents) => {
+  // ToDo: remove type as selector when walk add readonly support 
+  walk(input as Selector, (node, index, _nodes, parents) => {
     if (parents.length === 0) {
       // first level: create top level selector and initial grouped selector
       lastSelector = {
@@ -221,7 +242,7 @@ export function groupCompoundSelectors<AST extends SelectorList | Selector>(
     return;
   });
   // ToDo: figure out type
-  return `length` in input ? output : (output[0] as any);
+  return `length` in input ? output : output[0];
 }
 
 function isCommentWithNoSpacing(node: Comment): node is CommentWithNoSpacing {
