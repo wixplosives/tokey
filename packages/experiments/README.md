@@ -4,7 +4,7 @@ This repo contains example parsers and tokenizers written with tokey.
 
 # css-value-tokenizer
 
-Simple css value tokenizer for tokenizing a single css declaration value into array of tokens with type: 
+A simple CSS value tokenizer for tokenizing a single CSS declaration value into array of tokens with the following type: 
 
 ```ts
 type CSSCodeAst = StringNode | MethodCall | TextNode | CommaNode;
