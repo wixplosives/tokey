@@ -9,7 +9,7 @@
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },
   "dependencies": {
-    "@tokey/core": "^1.1.0"
+    "@tokey/core": "^1.2.0"
   },
   "keywords": [
     "parser",
