@@ -1064,5 +1064,117 @@ describe(`ast-utils`, () => {
         }),
       ]);
     });
+    it(`should flat selectors and compound selectors into compound`, () => {
+      const selector = parseCssSelector(`.x.y`)[0];
+      const compound = groupCompoundSelectors(parseCssSelector(`.q.t`)[0])
+        .nodes[0];
+      const ast = parseCssSelector(`.a`);
+      ast[0].nodes.push(selector, compound);
+
+      const groupedSelectors = groupCompoundSelectors(ast);
+
+      expect(groupedSelectors).to.eql([
+        createNode({
+          type: `selector`,
+          start: 0,
+          end: 2,
+          nodes: [
+            createNode({
+              type: `compound_selector`,
+              start: 0,
+              end: 4,
+              nodes: [
+                createNode({
+                  type: `class`,
+                  value: `a`,
+                  start: 0,
+                  end: 2,
+                }),
+                createNode({
+                  type: `class`,
+                  value: `x`,
+                  start: 0,
+                  end: 2,
+                }),
+                createNode({
+                  type: `class`,
+                  value: `y`,
+                  start: 2,
+                  end: 4,
+                }),
+                createNode({
+                  type: `class`,
+                  value: `q`,
+                  start: 0,
+                  end: 2,
+                }),
+                createNode({
+                  type: `class`,
+                  value: `t`,
+                  start: 2,
+                  end: 4,
+                }),
+              ],
+            }),
+          ],
+        }),
+      ]);
+    });
+    it(`should flat selectors multiple into compounds`, () => {
+      const selector = parseCssSelector(`.x .y`)[0];
+      const ast = parseCssSelector(`.a`);
+      ast[0].nodes.push(selector);
+
+      const groupedSelectors = groupCompoundSelectors(ast);
+
+      expect(groupedSelectors).to.eql([
+        createNode({
+          type: `selector`,
+          start: 0,
+          end: 2,
+          nodes: [
+            createNode({
+              type: `compound_selector`,
+              start: 0,
+              end: 2,
+              nodes: [
+                createNode({
+                  type: `class`,
+                  value: `a`,
+                  start: 0,
+                  end: 2,
+                }),
+                createNode({
+                  type: `class`,
+                  value: `x`,
+                  start: 0,
+                  end: 2,
+                }),
+              ],
+            }),
+            createNode({
+              type: `combinator`,
+              combinator: `space`,
+              value: ` `,
+              start: 2,
+              end: 3,
+            }),
+            createNode({
+              type: `compound_selector`,
+              start: 3,
+              end: 5,
+              nodes: [
+                createNode({
+                  type: `class`,
+                  value: `y`,
+                  start: 3,
+                  end: 5,
+                }),
+              ],
+            }),
+          ],
+        }),
+      ]);
+    });
   });
 });
