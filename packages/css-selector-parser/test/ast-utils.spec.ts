@@ -9,6 +9,8 @@ import {
   ImmutableSelectorList,
   ImmutableSelector,
   Selector,
+  PseudoClass,
+  Nth,
 } from "@tokey/css-selector-parser";
 import { createNode } from "./test-kit/parsing";
 import { isMatch } from "@tokey/test-kit";
@@ -1169,6 +1171,84 @@ describe(`ast-utils`, () => {
                   value: `y`,
                   start: 3,
                   end: 5,
+                }),
+              ],
+            }),
+          ],
+        }),
+      ]);
+    });
+    it(`should keep out-of-context nodes out of compound selector`, () => {
+      const nthSelector = parseCssSelector(`:nth-child(5n- 4 of)`)[0];
+      const nth = (nthSelector.nodes[0] as PseudoClass).nodes![0] as Nth;
+      const ast = parseCssSelector(`.a.b`);
+      // create broken selector: ".a5n - 4 of.b"
+      ast[0].nodes.splice(1, 0, nth, ...nth.nodes);
+      nth.nodes.length = 0;
+
+      const groupedSelectors = groupCompoundSelectors(ast);
+
+      expect(groupedSelectors).to.eql([
+        createNode({
+          type: `selector`,
+          start: 0,
+          end: 4,
+          nodes: [
+            createNode({
+              type: `compound_selector`,
+              start: 0,
+              end: 2,
+              nodes: [
+                createNode({
+                  type: `class`,
+                  value: `a`,
+                  start: 0,
+                  end: 2,
+                }),
+              ],
+            }),
+            createNode({
+              type: `nth`,
+              start: 11,
+              end: 19,
+              nodes: [],
+            }),
+            createNode({
+              type: `nth_step`,
+              value: `5n`,
+              start: 11,
+              end: 13,
+            }),
+            createNode({
+              type: `nth_dash`,
+              value: `-`,
+              start: 13,
+              end: 15,
+              after: ` `,
+            }),
+            createNode({
+              type: `nth_offset`,
+              value: `4`,
+              start: 15,
+              end: 17,
+              after: ` `,
+            }),
+            createNode({
+              type: `nth_of`,
+              value: `of`,
+              start: 17,
+              end: 19,
+            }),
+            createNode({
+              type: `compound_selector`,
+              start: 2,
+              end: 4,
+              nodes: [
+                createNode({
+                  type: `class`,
+                  value: `b`,
+                  start: 2,
+                  end: 4,
                 }),
               ],
             }),

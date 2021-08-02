@@ -239,14 +239,15 @@ function createCompoundContext({
         handleNode(innerNode);
       }
     } else if (
-      // ToDo: move out of compound
       node.type === `nth` ||
       node.type === `nth_step` ||
       node.type === `nth_dash` ||
       node.type === `nth_offset` ||
       node.type === `nth_of`
     ) {
-      // ToDo: handle invalid nodes
+      // handle out of context nodes
+      lastSelector.nodes.push(node);
+      lastCompound = undefined;
     }
   };
   return {
