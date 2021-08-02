@@ -157,6 +157,21 @@ describe(`ast-utils`, () => {
         ],
       });
     });
+    it(`should visit compound selectors`, () => {
+      testWalk(groupCompoundSelectors(parseCssSelector(`.a.b .c.d`)), {
+        mapVisit: ({ type, value }: any) => ({ type, value }),
+        expectedMap: [
+          { type: `selector`, value: undefined },
+          { type: `compound_selector`, value: undefined },
+          { type: `class`, value: `a` },
+          { type: `class`, value: `b` },
+          { type: `combinator`, value: ` ` },
+          { type: `compound_selector`, value: undefined },
+          { type: `class`, value: `c` },
+          { type: `class`, value: `d` },
+        ],
+      });
+    });
     it(`should skip nested (return 0)`, () => {
       testWalk(parseCssSelector(`:is(:skip-nested(.a).b, .c).d, .e`), {
         mapVisit: ({ type, value }: any) => ({ type, value }),
