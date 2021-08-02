@@ -37,7 +37,7 @@ export function groupCompoundSelectors<AST>(
   // ToDo: remove type as selector when walk add readonly support
   walk(input as any as Selector, (node, _index, _nodes, parents) => {
     if (parents.length === 0 && node.type === `selector`) {
-      // first level: create top level selector and initial grouped selector
+      // first level: create top level selector
       context.addSelector(node);
     } else {
       // second level: (parents.length === 1)
@@ -64,7 +64,7 @@ function createCompoundContext({
       lastSelector.nodes.push(node);
       lastCompound = undefined;
     } else if (node.type === `comment` && !isCommentWithNoSpacing(node)) {
-      // comments that break compound
+      // comment that breaks compound
       lastSelector.nodes.push(node);
       lastCompound = undefined;
     } else if (
