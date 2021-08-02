@@ -3,7 +3,7 @@ import {
   CSSCodeToken,
   CSSCodeTokenGroup,
   tokenizeCSSUrls,
-} from "@tokey/core/dist/parsers/url-tokenizer";
+} from "@tokey/url-tokenizer";
 
 function createGroup(tokens: CSSCodeToken[]): CSSCodeTokenGroup {
   return {
