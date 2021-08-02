@@ -133,6 +133,40 @@ function createCompoundContext({
   };
 }
 
+export function splitCompoundSelectors<AST extends Selector>(
+  input: AST
+): Selector;
+export function splitCompoundSelectors<AST extends ImmutableSelector>(
+  input: AST
+): ImmutableSelector;
+export function splitCompoundSelectors<AST extends SelectorList>(
+  input: AST
+): SelectorList;
+export function splitCompoundSelectors<AST extends ImmutableSelectorList>(
+  input: AST
+): ImmutableSelectorList;
+export function splitCompoundSelectors<AST extends SelectorList | Selector>(
+  input: AST
+): SelectorList | Selector | ImmutableSelector | ImmutableSelectorList {
+  const inputSelectors: SelectorList = Array.isArray(input) ? input : [input];
+  const output: SelectorList = [];
+  for (const inputSelector of inputSelectors) {
+    const outputSelector: Selector = {
+      ...inputSelector,
+      nodes: [],
+    };
+    for (const node of inputSelector.nodes) {
+      if (node.type === `compound_selector`) {
+        outputSelector.nodes.push(...node.nodes);
+      } else {
+        outputSelector.nodes.push(node);
+      }
+    }
+    output.push(outputSelector);
+  }
+  return `length` in input ? output : output[0];
+}
+
 function isCommentWithNoSpacing(node: Comment): node is CommentWithNoSpacing {
   return node.type === `comment` && node.before === `` && node.after === ``;
 }

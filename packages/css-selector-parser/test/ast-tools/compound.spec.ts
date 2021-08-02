@@ -1,6 +1,7 @@
 import {
   parseCssSelector,
   groupCompoundSelectors,
+  splitCompoundSelectors,
   SelectorList,
   CommentWithNoSpacing,
   ImmutableSelectorList,
@@ -18,7 +19,7 @@ describe(`ast-tools/compound`, () => {
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -60,13 +61,14 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should split multiple selectors`, () => {
     const ast = parseCssSelector(`.a,.b .c`);
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -128,13 +130,14 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should keep track of selector spaces`, () => {
     const ast = parseCssSelector(` .a , .b `);
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -180,13 +183,14 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should split on nesting selectors`, () => {
     const ast = parseCssSelector(`&>&`);
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -228,13 +232,14 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should split pseudo-elements by default`, () => {
     const ast = parseCssSelector(`.a::b::c`);
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -282,6 +287,7 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should configure no split for pseudo-elements (combined into target)`, () => {
     const ast = parseCssSelector(`.a::b::c`);
@@ -290,7 +296,7 @@ describe(`ast-tools/compound`, () => {
       splitPseudoElements: false,
     });
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -324,13 +330,14 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should not split any other selectors`, () => {
     const ast = parseCssSelector(`.a:hover[attr]+el.b#id`);
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -396,20 +403,22 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should return zero selectors for empty selector`, () => {
     const ast = parseCssSelector(``);
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([]);
+    expect(groupedSelectors, `group`).to.eql([]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should combine non breaking comments into the compound nodes`, () => {
     const ast = parseCssSelector(`/*c1*/.a/*c2*/ /*c3*/.b/*c4*/`);
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -475,13 +484,14 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should not split nested selectors`, () => {
     const ast = parseCssSelector(`:has(.a .b)`);
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -531,13 +541,14 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should accept a single selector`, () => {
     const ast = parseCssSelector(`.a .b, .c~.d`);
 
     const groupedSelector = groupCompoundSelectors(ast[1]);
 
-    expect(groupedSelector).to.eql(
+    expect(groupedSelector, `group`).to.eql(
       createNode({
         type: `selector`,
         start: 6,
@@ -580,6 +591,7 @@ describe(`ast-tools/compound`, () => {
         ],
       })
     );
+    expect(splitCompoundSelectors(groupedSelector), `split`).to.eql(ast[1]);
   });
   it(`should accept readonly value and return readonly accordingly (type checks)`, () => {
     function expectType<T>(_actual: T) {
@@ -588,17 +600,21 @@ describe(`ast-tools/compound`, () => {
     const immutable = parseCssSelector(`.a .b`) as ImmutableSelectorList;
     expectType<ImmutableSelector>(groupCompoundSelectors(immutable[0]));
     expectType<ImmutableSelectorList>(groupCompoundSelectors(immutable));
+    expectType<ImmutableSelector>(splitCompoundSelectors(immutable[0]));
+    expectType<ImmutableSelectorList>(splitCompoundSelectors(immutable));
 
     const mutable = parseCssSelector(`.a .b`);
     expectType<Selector>(groupCompoundSelectors(mutable[0]));
     expectType<SelectorList>(groupCompoundSelectors(mutable));
+    expectType<Selector>(splitCompoundSelectors(mutable[0]));
+    expectType<SelectorList>(splitCompoundSelectors(mutable));
   });
   it(`should set invalid flag on compound with universal or type not at the start`, () => {
     const ast = parseCssSelector(`.a*`);
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -627,6 +643,7 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
   it(`should flat selectors and compound selectors into compound`, () => {
     const selector = parseCssSelector(`.x.y`)[0];
@@ -637,7 +654,7 @@ describe(`ast-tools/compound`, () => {
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -683,6 +700,48 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(
+      splitCompoundSelectors(groupedSelectors),
+      `split cannot reconstruct`
+    ).to.eql([
+      createNode({
+        type: `selector`,
+        start: 0,
+        end: 2,
+        nodes: [
+          createNode({
+            type: `class`,
+            value: `a`,
+            start: 0,
+            end: 2,
+          }),
+          createNode({
+            type: `class`,
+            value: `x`,
+            start: 0,
+            end: 2,
+          }),
+          createNode({
+            type: `class`,
+            value: `y`,
+            start: 2,
+            end: 4,
+          }),
+          createNode({
+            type: `class`,
+            value: `q`,
+            start: 0,
+            end: 2,
+          }),
+          createNode({
+            type: `class`,
+            value: `t`,
+            start: 2,
+            end: 4,
+          }),
+        ],
+      }),
+    ]);
   });
   it(`should flat selectors multiple into compounds`, () => {
     const selector = parseCssSelector(`.x .y`)[0];
@@ -691,7 +750,7 @@ describe(`ast-tools/compound`, () => {
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -739,6 +798,43 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(
+      splitCompoundSelectors(groupedSelectors),
+      `split cannot reconstruct`
+    ).to.eql([
+      createNode({
+        type: `selector`,
+        start: 0,
+        end: 2,
+        nodes: [
+          createNode({
+            type: `class`,
+            value: `a`,
+            start: 0,
+            end: 2,
+          }),
+          createNode({
+            type: `class`,
+            value: `x`,
+            start: 0,
+            end: 2,
+          }),
+          createNode({
+            type: `combinator`,
+            combinator: `space`,
+            value: ` `,
+            start: 2,
+            end: 3,
+          }),
+          createNode({
+            type: `class`,
+            value: `y`,
+            start: 3,
+            end: 5,
+          }),
+        ],
+      }),
+    ]);
   });
   it(`should keep out-of-context nodes out of compound selector`, () => {
     const nthSelector = parseCssSelector(`:nth-child(5n- 4 of)`)[0];
@@ -750,7 +846,7 @@ describe(`ast-tools/compound`, () => {
 
     const groupedSelectors = groupCompoundSelectors(ast);
 
-    expect(groupedSelectors).to.eql([
+    expect(groupedSelectors, `group`).to.eql([
       createNode({
         type: `selector`,
         start: 0,
@@ -817,5 +913,6 @@ describe(`ast-tools/compound`, () => {
         ],
       }),
     ]);
+    expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
   });
 });
