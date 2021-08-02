@@ -7,8 +7,8 @@ import type {
   CommentWithNoSpacing,
   ImmutableSelector,
   ImmutableSelectorList,
-} from '../ast-types';
-import { walk } from './walk';
+} from "../ast-types";
+import { walk } from "./walk";
 
 export interface GroupCompoundOptions {
   splitPseudoElements?: boolean;
@@ -109,13 +109,7 @@ function createCompoundContext({
       for (const innerNode of node.nodes) {
         handleNode(innerNode);
       }
-    } else if (
-      node.type === `nth` ||
-      node.type === `nth_step` ||
-      node.type === `nth_dash` ||
-      node.type === `nth_offset` ||
-      node.type === `nth_of`
-    ) {
+    } else {
       // handle out of context nodes
       lastSelector.nodes.push(node);
       lastCompound = undefined;
