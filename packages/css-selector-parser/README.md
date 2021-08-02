@@ -234,6 +234,8 @@ const flatSelectorList = splitCompoundSelectors(compoundSelectorList);
 */
 ```
 
+> Note: compound selector contain `invalid` flag to indicate selector has a `universal` or `type` selector that is not located in the first part of the selector.
+
 > Note: comments with no spacing are included within the compound selector
 
 #### groupCompoundSelectors options
