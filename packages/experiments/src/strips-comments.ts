@@ -1,5 +1,5 @@
-import { tokenize } from "../core";
 import {
+  tokenize,
   isStringDelimiter,
   isWhitespace,
   createToken,
@@ -9,8 +9,9 @@ import {
   getMultilineCommentStartType,
   isCommentEnd,
   getUnclosedComment,
-} from "../helpers";
-import type { Token, Descriptors } from "../types";
+  Token,
+  Descriptors,
+} from "@tokey/core";
 
 const isDelimiter = () => false;
 const shouldAddToken = (type: Descriptors) => !isComment(type);
