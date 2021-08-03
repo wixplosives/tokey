@@ -179,6 +179,112 @@ walk(
 );
 ```
 
+### Compound selector
+
+`groupCompoundSelectors` and `splitCompoundSelectors` - take a `Selector | SelectorList` and shallow group or split [compound selectors](https://www.w3.org/TR/selectors-4/#compound) accordingly.
+
+```js
+import {
+    parseCssSelector,
+    groupCompoundSelectors,
+    splitCompoundSelectors
+} from '@tokey/css-selector-parser';
+
+const selectorList = parseCssSelector(`.a.b .c.d`);
+
+const compoundSelectorList = groupCompoundSelectors(selectorList);
+/*
+[
+    {
+        type: `selector,
+        nodes: [
+            {
+                type: `compound_selector`,
+                nodes: [
+                    { type: `class`, value: `a` },
+                    { type: `class`, value: `b` },
+                ]
+            }
+            { type: `combinator`, value: ` ` },
+            {
+                type: `compound_selector`,
+                nodes: [
+                    { type: `class`, value: `c` },
+                    { type: `class`, value: `d` },
+                ]
+            }
+        ]
+    }
+]
+*/
+const flatSelectorList = splitCompoundSelectors(compoundSelectorList);
+/*
+[
+    {
+        type: `selector,
+        nodes: [
+            { type: `class`, value: `a` },
+            { type: `class`, value: `b` },
+            { type: `combinator`, value: ` ` },
+            { type: `class`, value: `c` },
+            { type: `class`, value: `d` },
+        ]
+    }
+]
+*/
+```
+
+> Note: compound selector contain `invalid` flag to indicate selector has a `universal` or `type` selector that is not located in the first part of the selector.
+
+> Note: comments with no spacing are included within the compound selector
+
+#### groupCompoundSelectors options
+
+`splitPseudoElements` - by default pseudo-elements are split into separated compound selectors, use `splitPseudoElements: false` to combine them into the previous compound selector:
+
+```js
+const selectorList = parseCssSelector(`.a::before`);
+
+const compoundSelectorList = groupCompoundSelectors(selectorList);
+/*
+[
+    {
+        type: `selector,
+        nodes: [
+            {
+                type: `compound_selector`,
+                nodes: [
+                    { type: `class`, value: `a` },
+                ]
+            }
+            {
+                type: `compound_selector`,
+                nodes: [
+                    { type: `pseudo_element`, value: `before` },
+                ]
+            }
+        ]
+    }
+]
+*/
+const compoundSelectorList = groupCompoundSelectors(selectorList, {splitPseudoElements: false});
+/*
+[
+    {
+        type: `selector,
+        nodes: [
+            {
+                type: `compound_selector`,
+                nodes: [
+                    { type: `class`, value: `a` },
+                    { type: `pseudo_element`, value: `before` },
+                ]
+            }
+        ]
+    }
+]
+```
+
 ## Design decisions
 
 ### Escaping

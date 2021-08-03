@@ -5,18 +5,28 @@ import {
 import type {
   SelectorNode,
   Selector,
+  Universal,
+  Class,
+  PseudoElement,
+  PseudoClass,
+  Attribute,
+  Type,
+  Id,
   Comment,
   Nth,
   NthStep,
   NthDash,
   NthOffset,
   NthOf,
+  Nesting,
+  CompoundSelector,
   ParseConfig,
 } from "@tokey/css-selector-parser";
 import { createParseTester } from "@tokey/test-kit";
 
 export const test = createParseTester({
-  parse: (selector: string, config?: ParseConfig) => parseCssSelector(selector, config),
+  parse: (selector: string, config?: ParseConfig) =>
+    parseCssSelector(selector, config),
   stringify: stringifySelectorAst,
 });
 
@@ -24,6 +34,8 @@ export function createNode<TYPE extends SelectorNode["type"]>(
   expected: Partial<SelectorNode> & { type: TYPE }
 ): TYPE extends "selector"
   ? Selector
+  : TYPE extends "universal"
+  ? Universal
   : TYPE extends "comment"
   ? Comment
   : TYPE extends "nth"
@@ -36,6 +48,22 @@ export function createNode<TYPE extends SelectorNode["type"]>(
   ? NthOffset
   : TYPE extends "nth_of"
   ? NthOf
+  : TYPE extends "compound_selector"
+  ? CompoundSelector
+  : TYPE extends "class"
+  ? Class
+  : TYPE extends "pseudo_element"
+  ? PseudoElement
+  : TYPE extends "pseudo_class"
+  ? PseudoClass
+  : TYPE extends "attribute"
+  ? Attribute
+  : TYPE extends "type"
+  ? Type
+  : TYPE extends "id"
+  ? Id
+  : TYPE extends "nesting"
+  ? Nesting
   : SelectorNode {
   const defaults: SelectorNode = {
     type: expected.type,
@@ -68,6 +96,7 @@ export function createNode<TYPE extends SelectorNode["type"]>(
   }
   if (
     defaults.type === `selector` ||
+    defaults.type === `compound_selector` ||
     defaults.type === `combinator` ||
     defaults.type === `comment` ||
     defaults.type === `nth` ||
@@ -79,7 +108,7 @@ export function createNode<TYPE extends SelectorNode["type"]>(
     defaults.before = ``;
     defaults.after = ``;
   }
-  if (defaults.type === `combinator`) {
+  if (defaults.type === `combinator` || defaults.type === `compound_selector`) {
     defaults.invalid = false;
   }
   return {

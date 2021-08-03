@@ -15,6 +15,7 @@ import type {
   ImmutablePseudoClass,
   ImmutablePseudoElement,
   ImmutableSelector,
+  ImmutableCompoundSelector,
   ImmutableUniversal,
   ImmutableNesting,
   ImmutableSelectorNode,
@@ -63,9 +64,10 @@ const printers: Printers = {
     `${before}${value}${after}`,
   universal: (node: ImmutableUniversal) =>
     `${stringifyNamespace(node)}${node.value}${stringifyNested(node)}`,
-  nesting: (node: ImmutableNesting) =>
-    `${node.value}${stringifyNested(node)}`,
+  nesting: (node: ImmutableNesting) => `${node.value}${stringifyNested(node)}`,
   selector: (node: ImmutableSelector) =>
+    `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
+  compound_selector: (node: ImmutableCompoundSelector) =>
     `${node.before}${node.nodes.map(stringifyNode).join("")}${node.after}`,
   invalid: (node: ImmutableInvalid) => node.value,
   nth: (node: ImmutableNth) =>
@@ -85,7 +87,7 @@ function stringifyNode(node: ImmutableSelectorNode): string {
 }
 
 function stringifySelectors(
-  selectors: ImmutableSelectorList | ImmutableNthSelectorList
+  selectors: ReadonlyArray<ImmutableSelector | ImmutableNth>
 ) {
   const result: string[] = [];
   for (const node of selectors) {
@@ -113,9 +115,7 @@ function stringifyNested(node: ImmutableFunctionalSelector): string {
   return "";
 }
 
-function stringifyNamespace({
-  namespace,
-}: ImmutableNamespacedNode): string {
+function stringifyNamespace({ namespace }: ImmutableNamespacedNode): string {
   let ns = ``;
   if (namespace) {
     ns += namespace.value;

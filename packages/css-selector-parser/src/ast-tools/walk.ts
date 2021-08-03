@@ -1,4 +1,8 @@
-import type { SelectorNode, SelectorList, FunctionalSelector } from "./ast-types";
+import type {
+  SelectorNode,
+  SelectorList,
+  FunctionalSelector,
+} from "../ast-types";
 
 export interface WalkOptions {
   visitList?: SelectorNode["type"][];
