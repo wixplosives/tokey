@@ -5,6 +5,8 @@ import {
   groupCompoundSelectors,
   SelectorNode,
   SelectorList,
+  ImmutableSelectorList,
+  ImmutableSelectorNode,
 } from "@tokey/css-selector-parser";
 import { isMatch } from "@tokey/test-kit";
 
@@ -242,6 +244,32 @@ describe(`ast-tools/walk`, () => {
         { type: `selector`, value: undefined },
         { type: `class`, value: `e` },
       ],
+    });
+  });
+  it(`should accept readonly value and iterate on readonly accordingly (type checks)`, () => {
+    function expectType<T>(_actual: T) {
+      /**/
+    }
+
+    walk({} as ImmutableSelectorList, (node, _index, nodes, parents) => {
+      expectType<ImmutableSelectorNode>(node);
+      expectType<ImmutableSelectorNode[]>(nodes);
+      expectType<ImmutableSelectorNode[]>(parents);
+    });
+    walk({} as ImmutableSelectorNode, (node, _index, nodes, parents) => {
+      expectType<ImmutableSelectorNode>(node);
+      expectType<ImmutableSelectorNode[]>(nodes);
+      expectType<ImmutableSelectorNode[]>(parents);
+    });
+    walk({} as SelectorList, (node, _index, nodes, parents) => {
+      expectType<SelectorNode>(node);
+      expectType<SelectorNode[]>(nodes);
+      expectType<SelectorNode[]>(parents);
+    });
+    walk({} as SelectorNode, (node, _index, nodes, parents) => {
+      expectType<SelectorNode>(node);
+      expectType<SelectorNode[]>(nodes);
+      expectType<SelectorNode[]>(parents);
     });
   });
   describe(`context`, () => {

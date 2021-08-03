@@ -2,12 +2,20 @@ import type {
   SelectorNode,
   SelectorList,
   FunctionalSelector,
+  ImmutableSelectorNode,
+  ImmutableSelectorList,
 } from "../ast-types";
 
 export interface WalkOptions {
   visitList?: SelectorNode["type"][];
   ignoreList?: SelectorNode["type"][];
 }
+export type WalkVisitor<AST extends SelectorNode | ImmutableSelectorNode> = (
+  node: AST,
+  index: number,
+  nodes: AST[],
+  parents: AST[]
+) => number | undefined | void;
 const nestEnd = Symbol(`nest-end`);
 
 /**
@@ -21,20 +29,30 @@ const nestEnd = Symbol(`nest-end`);
  * @param visit function to call for each traversed element
  * @param options provide visitList/ignoreList for traversal
  */
-export function walk(
-  topNode: SelectorNode | SelectorList,
-  visit: (
-    node: SelectorNode,
-    index: number,
-    nodes: SelectorNode[],
-    parents: SelectorNode[]
-  ) => number | undefined | void,
+export function walk<AST extends SelectorNode | SelectorList>(
+  topNode: AST,
+  visit: WalkVisitor<SelectorNode>,
+  options?: WalkOptions
+): void;
+export function walk<AST extends ImmutableSelectorNode | ImmutableSelectorList>(
+  topNode: AST,
+  visit: WalkVisitor<ImmutableSelectorNode>,
+  options?: WalkOptions
+): void;
+export function walk<
+  AST extends
+    | SelectorNode
+    | SelectorList
+    | ImmutableSelectorNode
+    | ImmutableSelectorList
+>(
+  topNode: AST,
+  visit: WalkVisitor<SelectorNode> | WalkVisitor<ImmutableSelectorNode>,
   options: WalkOptions = {}
 ): void {
   // set initial top nodes to traverse
-  const toVisit: Array<SelectorNode | typeof nestEnd> = Array.isArray(topNode)
-    ? [...topNode]
-    : [topNode];
+  const toVisit: Array<SelectorNode | ImmutableSelectorNode | typeof nestEnd> =
+    Array.isArray(topNode) ? [...topNode] : [topNode];
   // initiate context
   const context = createWalkContext(topNode);
   // iterate nodes
@@ -48,13 +66,15 @@ export function walk(
       (!options.ignoreList || !options.ignoreList.includes(current.type)) &&
       (!options.visitList || options.visitList.includes(current.type))
     ) {
+      visit;
+      current;
       // visit node
       let skipAmount =
         (visit(
-          current,
+          current as SelectorNode,
           context.indexInSelector,
-          context.nodesInSelector,
-          context.parents
+          context.nodesInSelector as SelectorNode[],
+          context.parents as SelectorNode[]
         ) as number) ?? -1;
       // point to next selector node
       context.next();
@@ -82,25 +102,37 @@ export function walk(
   }
 }
 
-interface WalkContext {
-  parents: SelectorNode[];
+interface WalkContext<AST> {
+  parents: AST[];
   indexInSelector: number;
-  nodesInSelector: SelectorNode[];
+  nodesInSelector: ReadonlyArray<AST>;
   up(): void;
   next(): void;
   insertNested(node: ContainerWithNodes): void;
 }
-function createWalkContext(topNode: SelectorNode | SelectorList) {
+function createWalkContext(
+  topNode: SelectorNode | SelectorList
+): WalkContext<SelectorNode>;
+function createWalkContext(
+  topNode: ImmutableSelectorNode | ImmutableSelectorList
+): WalkContext<ImmutableSelectorNode>;
+function createWalkContext(
+  topNode:
+    | SelectorNode
+    | SelectorList
+    | ImmutableSelectorNode
+    | ImmutableSelectorList
+) {
   const prevIndex: number[] = [];
-  const prevParents: SelectorNode[][] = [[]];
-  const context: WalkContext = {
+  const prevParents: ImmutableSelectorNode[][] = [[]];
+  const context: WalkContext<SelectorNode | ImmutableSelectorNode> = {
     parents: [],
     indexInSelector: 0,
     nodesInSelector: Array.isArray(topNode)
       ? topNode
       : `nodes` in topNode
       ? topNode.nodes!
-      : [topNode],
+      : ([topNode] as SelectorNode[]),
     up() {
       context.parents.pop();
       context.indexInSelector = prevIndex.shift()!;
