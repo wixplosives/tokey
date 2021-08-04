@@ -66,8 +66,6 @@ export function walk<
       (!options.ignoreList || !options.ignoreList.includes(current.type)) &&
       (!options.visitList || options.visitList.includes(current.type))
     ) {
-      visit;
-      current;
       // visit node
       let skipAmount =
         (visit(
