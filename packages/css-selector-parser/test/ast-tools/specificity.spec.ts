@@ -103,4 +103,12 @@ describe(`ast-tools/specificity`, () => {
     );
     expect(specificity).to.eql([0, 1, 0, 0]);
   });
+  it(`should not take non native functional selectors arguments into account`, () => {
+    const specificity = calcSpecificity(
+      parseCssSelector(
+        `div(#a).x(#b)::y(#c)[attr](#d)&(#e)*(#f)#id(#g):unknown(#h)`
+      )
+    );
+    expect(specificity).to.eql([0, 1, 3, 2]);
+  });
 });

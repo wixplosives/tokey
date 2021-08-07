@@ -33,7 +33,7 @@ export function calcSpecificity(
         result[1]++;
         break;
     }
-    return;
+    return node.type !== `selector` ? walk.skipNested : undefined;
   });
   return result;
 }
