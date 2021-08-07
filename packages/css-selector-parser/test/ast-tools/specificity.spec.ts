@@ -69,7 +69,7 @@ describe(`ast-tools/specificity`, () => {
     const specificity = calcSpecificity(parseCssSelector(`:has(.a, #b)`));
     expect(specificity).to.eql([0, 1, 0, 0]);
   });
-  it(`should not zero specificity for :where()`, () => {
+  it(`should add zero specificity for :where()`, () => {
     const specificity = calcSpecificity(parseCssSelector(`:where(.a, #b)`));
     expect(specificity).to.eql([0, 0, 0, 0]);
   });
