@@ -39,6 +39,11 @@ describe(`ast-tools/specificity`, () => {
         selector: `#a`,
         expected: [0, 1, 0, 0],
       },
+      {
+        selectorType: `nested`,
+        selector: `&`,
+        expected: [0, 0, 0, 0],
+      },
     ].forEach(({ selectorType, selector, expected }) => {
       it(`should return correct specificity for ${selectorType} selector`, () => {
         const specificity = calcSpecificity(parseCssSelector(selector));
