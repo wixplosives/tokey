@@ -1,4 +1,8 @@
-import { calcSpecificity, parseCssSelector } from "@tokey/css-selector-parser";
+import {
+  calcSpecificity,
+  groupCompoundSelectors,
+  parseCssSelector,
+} from "@tokey/css-selector-parser";
 import { expect } from "chai";
 
 describe(`ast-tools/specificity`, () => {
@@ -113,6 +117,12 @@ describe(`ast-tools/specificity`, () => {
         )
       );
       expect(specificity).to.eql([0, 1, 3, 2]);
+    });
+    it(`should handle compound selector AST`, () => {
+      const specificity = calcSpecificity(
+        groupCompoundSelectors(parseCssSelector(`.a .b`))
+      );
+      expect(specificity).to.eql([0, 0, 2, 0]);
     });
   });
 });

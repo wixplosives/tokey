@@ -33,7 +33,9 @@ export function calcSpecificity(
         result[1]++;
         break;
     }
-    return node.type !== `selector` ? walk.skipNested : undefined;
+    return node.type !== `selector` && node.type !== `compound_selector`
+      ? walk.skipNested
+      : undefined;
   });
   return result;
 }
