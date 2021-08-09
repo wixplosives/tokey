@@ -108,6 +108,12 @@ describe(`ast-tools/specificity`, () => {
       );
       expect(specificity).to.eql([0, 0, 5, 0]);
     });
+    it(`should not add specificity for comments`, () => {
+      const specificity = calcSpecificity(
+        parseCssSelector(`/*c1*/./*c2*/a/*c3*/`)[0]
+      );
+      expect(specificity).to.eql([0, 0, 1, 0]);
+    });
     it(`should handle nested pseudo classes`, () => {
       const specificity = calcSpecificity(
         parseCssSelector(`:is(:where(#zero), :has(:not(span, #a), .a))`)[0]
