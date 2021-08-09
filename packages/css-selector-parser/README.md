@@ -285,6 +285,37 @@ const compoundSelectorList = groupCompoundSelectors(selectorList, {splitPseudoEl
 ]
 ```
 
+### Selector specificity
+
+`calcSpecificity` take a `Selector` and returns it's specificity value
+
+```js
+import {
+    parseCssSelector,
+    calcSpecificity,
+} from '@tokey/css-selector-parser';
+
+const specificity = parseCssSelector(`span.x.y#z`);
+// [0, 1, 2, 1]
+```
+
+`compareSpecificity` takes 2 specificity values and return 0 if they are equal, 1 if the first is higher and -1 if the second is higher:
+
+```js
+import {
+    compareSpecificity,
+} from '@tokey/css-selector-parser';
+
+compareSpecificity(
+    [0, 2, 0, 0],
+    [0, 1, 0, 0]
+) // 1
+compareSpecificity(
+    [0, 0, 2, 0],
+    [0, 1, 0, 0]
+) // -1
+```
+
 ## Design decisions
 
 ### Escaping
