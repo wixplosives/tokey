@@ -81,7 +81,7 @@ function mostSpecificInnerSelector(
  * @param b second specificity
  * @returns 0 if equal, 1 when a is more specific, -1 when b is more specific
  */
-function compareSpecificity(a: Specificity, b: Specificity): -1 | 0 | 1 {
+export function compareSpecificity(a: Specificity, b: Specificity): -1 | 0 | 1 {
   for (let i = 0; i < 4; ++i) {
     const specificityDiff = a[i] - b[i];
     if (specificityDiff > 0) {

@@ -4,5 +4,8 @@ export * from "./ast-types";
 export { stringifySelectorAst } from "./stringify";
 export { walk } from "./ast-tools/walk";
 export type { WalkOptions } from "./ast-tools/walk";
-export { groupCompoundSelectors, splitCompoundSelectors } from "./ast-tools/compound";
-export { calcSpecificity } from "./ast-tools/specificity";
+export {
+  groupCompoundSelectors,
+  splitCompoundSelectors,
+} from "./ast-tools/compound";
+export { calcSpecificity, compareSpecificity } from "./ast-tools/specificity";
