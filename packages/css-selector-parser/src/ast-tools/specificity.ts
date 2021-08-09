@@ -1,18 +1,15 @@
 import type {
   ImmutableSelectorNode,
-  ImmutableSelectorList,
   ImmutablePseudoClass,
-  SelectorList,
+  SelectorNode,
 } from "../ast-types";
 import { walk } from "./walk";
 
 type Specificity = [number, number, number, number];
-export function calcSpecificity(
-  ast: ImmutableSelectorList | ImmutableSelectorNode
-): Specificity {
+export function calcSpecificity(ast: ImmutableSelectorNode): Specificity {
   const result: Specificity = [0, 0, 0, 0];
   // ToDo: remove casting once immutable walk is supported
-  walk(ast as SelectorList, (node) => {
+  walk(ast as SelectorNode, (node) => {
     switch (node.type) {
       case `type`:
       case `pseudo_element`:
