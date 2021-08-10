@@ -9,3 +9,4 @@ export {
   splitCompoundSelectors,
 } from "./ast-tools/compound";
 export { calcSpecificity, compareSpecificity } from "./ast-tools/specificity";
+export type { Specificity } from "./ast-tools/specificity";

@@ -5,7 +5,12 @@ import type {
 } from "../ast-types";
 import { walk } from "./walk";
 
-type Specificity = [number, number, number, number];
+export type Specificity = [
+  inlineLevel: number,
+  idLevel: number,
+  classOrAttributeLevel: number,
+  typeOrElementLevel: number
+];
 export function calcSpecificity(ast: ImmutableSelectorNode): Specificity {
   const result: Specificity = [0, 0, 0, 0];
   // ToDo: remove casting once immutable walk is supported
