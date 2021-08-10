@@ -7,6 +7,7 @@ import type {
   CommentWithNoSpacing,
   ImmutableSelector,
   ImmutableSelectorList,
+  ImmutableSelectorNode,
 } from "../ast-types";
 import { walk } from "./walk";
 
@@ -29,13 +30,18 @@ export function groupCompoundSelectors<AST extends ImmutableSelectorList>(
   input: AST,
   options?: GroupCompoundOptions
 ): ImmutableSelectorList;
-export function groupCompoundSelectors<AST>(
+export function groupCompoundSelectors<
+  AST extends
+    | Selector
+    | ImmutableSelector
+    | SelectorList
+    | ImmutableSelectorList
+>(
   input: AST,
   options?: GroupCompoundOptions
-): Selector | SelectorList | ImmutableSelector | ImmutableSelectorList {
+): Selector | ImmutableSelector | SelectorList | ImmutableSelectorList {
   const context = createCompoundContext(options);
-  // ToDo: remove type as selector when walk add readonly support
-  walk(input as any as Selector, (node, _index, _nodes, parents) => {
+  walk(input, (node, _index, _nodes, parents) => {
     if (parents.length === 0 && node.type === `selector`) {
       // first level: create top level selector
       context.addSelector(node);
@@ -49,14 +55,16 @@ export function groupCompoundSelectors<AST>(
   });
   return `length` in input ? context.output : context.output[0];
 }
+
+type CompoundSelectorPart = CompoundSelector["nodes"][number];
 function createCompoundContext({
   splitPseudoElements = true,
 }: GroupCompoundOptions = {}) {
   const output: SelectorList = [];
   let lastSelector: Selector;
   let lastCompound: CompoundSelector | undefined;
-  let lastCompoundInitialPart: CompoundSelector["nodes"][number] | undefined;
-  const handleNode = (node: SelectorNode) => {
+  let lastCompoundInitialPart: CompoundSelectorPart | undefined;
+  const handleNode = (node: SelectorNode | ImmutableSelectorNode) => {
     if (node.type === `pseudo_element` && splitPseudoElements === true) {
       lastCompound = undefined;
     }
@@ -100,9 +108,9 @@ function createCompoundContext({
           lastCompound.invalid =
             node.type === `universal` || node.type === `type`;
         }
-        lastCompoundInitialPart = node;
+        lastCompoundInitialPart = node as CompoundSelectorPart;
       }
-      lastCompound.nodes.push(node);
+      lastCompound.nodes.push(node as CompoundSelectorPart);
       lastCompound.end = node.end;
     } else if (node.type === `selector` || node.type === `compound_selector`) {
       // spread
@@ -111,12 +119,12 @@ function createCompoundContext({
       }
     } else {
       // handle out of context nodes
-      lastSelector.nodes.push(node);
+      lastSelector.nodes.push(node as SelectorNode);
       lastCompound = undefined;
     }
   };
   return {
-    addSelector(node: Selector) {
+    addSelector(node: Selector | ImmutableSelector) {
       lastSelector = {
         type: `selector`,
         start: node.start,
