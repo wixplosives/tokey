@@ -349,7 +349,7 @@ describe(`ast-tools/walk`, () => {
       });
     });
     it(`should provide index and sibling nodes within selector (skip nodes)`, () => {
-      testWalk(parseCssSelector(`:a(.a1.a2, .aX.aY), :b(.b1.b2)`), {
+      testWalk(parseCssSelector(`:a(.a1.a2, .aX.aY), :b(.b1.b2):c`), {
         mapVisit: ({ type, value }: any, index: number, nodes: any[]) => ({
           type,
           value,
@@ -408,7 +408,8 @@ describe(`ast-tools/walk`, () => {
             index: 1,
             nodes: `selector,selector`,
           },
-          { type: `pseudo_class`, value: `b`, index: 0, nodes: `b` },
+          { type: `pseudo_class`, value: `b`, index: 0, nodes: `b,c` },
+          { type: `pseudo_class`, value: `c`, index: 1, nodes: `b,c` },
         ],
       });
     });
@@ -416,31 +417,35 @@ describe(`ast-tools/walk`, () => {
       testWalk(parseCssSelector(`:a(:b(:c))`), {
         mapVisit: (
           { type, value }: any,
-          _index: number,
+          index: number,
           _nodes: any[],
           parents: any[]
         ) => ({
           type,
           value,
+          index,
           parents: parents.map(({ value, type }) => value || type).join(`,`),
         }),
         expectedMap: [
-          { type: `selector`, value: undefined, parents: `` },
-          { type: `pseudo_class`, value: `a`, parents: `selector` },
-          { type: `selector`, value: undefined, parents: `selector,a` },
+          { type: `selector`, value: undefined, index: 0, parents: `` },
+          { type: `pseudo_class`, value: `a`, index: 0, parents: `selector` },
+          { type: `selector`, value: undefined, index: 0, parents: `selector,a` },
           {
             type: `pseudo_class`,
             value: `b`,
+            index: 0,
             parents: `selector,a,selector`,
           },
           {
             type: `selector`,
             value: undefined,
+            index: 0,
             parents: `selector,a,selector,b`,
           },
           {
             type: `pseudo_class`,
             value: `c`,
+            index: 0,
             parents: `selector,a,selector,b,selector`,
           },
         ],
