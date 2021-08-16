@@ -1,14 +1,14 @@
 {
   "name": "@tokey/css-selector-parser",
   "description": "selector parser for css",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },
   "dependencies": {
-    "@tokey/core": "^1.2.0"
+    "@tokey/core": "^1.2.1"
   },
   "keywords": [
     "parser",
