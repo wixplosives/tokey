@@ -79,10 +79,10 @@ describe(`ast-tools/walk`, () => {
       walkOptions: {
         ignoreList: ["selector", `id`],
       },
-      mapVisit: ({ type, value }: any) => ({ type, value }),
+      mapVisit: ({ type, value }: any, index) => ({ type, value, index }),
       expectedMap: [
-        { type: `class`, value: `a` },
-        { type: `class`, value: `c` },
+        { type: `class`, value: `a`, index: 0 },
+        { type: `class`, value: `c`, index: 2 },
       ],
     });
   });
@@ -91,10 +91,10 @@ describe(`ast-tools/walk`, () => {
       walkOptions: {
         visitList: [`id`],
       },
-      mapVisit: ({ type, value }: any) => ({ type, value }),
+      mapVisit: ({ type, value }: any, index) => ({ type, value, index }),
       expectedMap: [
-        { type: `id`, value: `b` },
-        { type: `id`, value: `d` },
+        { type: `id`, value: `b`, index: 1 },
+        { type: `id`, value: `d`, index: 4 },
       ],
     });
   });

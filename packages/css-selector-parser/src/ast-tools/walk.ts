@@ -74,8 +74,6 @@ export function walk<
           context.nodesInSelector as SelectorNode[],
           context.parents as SelectorNode[]
         ) as number) ?? -1;
-      // point to next selector node
-      context.next();
       // check if to skip nested or current/following selectors
       if (skipAmount === Infinity) {
         // stop all: fast bail out
@@ -92,6 +90,8 @@ export function walk<
         continue;
       }
     }
+    // point to next selector node
+    context.next();
     // add nested nodes
     if (isWithNodes(current)) {
       context.insertNested(current);
