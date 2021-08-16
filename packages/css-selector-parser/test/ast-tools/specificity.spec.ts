@@ -144,6 +144,12 @@ describe(`ast-tools/specificity`, () => {
         );
         expect(specificity).to.eql([0, 0, 2, 0]);
       });
+      it(`should handle empty functional selector`, () => {
+        const specificity = calcSpecificity(
+          groupCompoundSelectors(parseCssSelector(`div:not()`)[0])
+        );
+        expect(specificity).to.eql([0, 0, 0, 1]);
+      });
     });
     describe(`accepted values`, () => {
       basicSelectors.forEach(({ selectorType, selector, expected }) => {

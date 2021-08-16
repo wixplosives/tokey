@@ -69,15 +69,15 @@ function mostSpecificInnerSelector(
   node: ImmutablePseudoClass,
   result: Specificity
 ) {
-  if (node.nodes) {
-    let highest: Specificity | undefined;
+  if (node.nodes?.length) {
+    let highest: Specificity = [0, 0, 0, 0];
     for (const selector of node.nodes) {
       const currentSpecificity = calcSpecificity(selector);
       if (!highest || compareSpecificity(currentSpecificity, highest) === 1) {
         highest = currentSpecificity;
       }
     }
-    addSpecificity(result, highest!);
+    addSpecificity(result, highest);
   }
 }
 /**
