@@ -1,10 +1,6 @@
 import { isMatch } from "./is-match";
 
-export interface TesterConfig<
-  AST,
-  INPUT extends string,
-  CONFIG
-> {
+export interface TesterConfig<AST, INPUT extends string, CONFIG> {
   parse: (input: INPUT, options?: CONFIG) => AST;
   stringify?: (ast: AST) => string;
   log?: (...msgs: string[]) => void;
@@ -17,19 +13,15 @@ export interface TestOptions<AST, CONFIG> {
   config?: CONFIG;
 }
 
-export function createParseTester<
-  AST,
-  INPUT extends string,
-  CONFIG
->({
+export function createParseTester<AST, INPUT extends string, CONFIG>({
   parse,
   stringify,
 }: TesterConfig<AST, INPUT, CONFIG>) {
   const safeParse = (source: INPUT, config?: CONFIG) => {
     try {
-      return [parse(source, config), null];
+      return [parse(source, config), null] as const;
     } catch (error) {
-      return [null, error];
+      return [null, error] as const;
     }
   };
   return (
@@ -46,7 +38,7 @@ export function createParseTester<
       throw new Error(createParseTester.errors.mismatchAst(a, e, label));
     }
     if (stringify) {
-      const actualString = stringify(actualAst);
+      const actualString = stringify(actualAst!);
       expectedString = expectedString ?? source;
       if (actualString !== expectedString) {
         throw new Error(
