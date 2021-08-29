@@ -7,6 +7,8 @@
     { "path": "./packages/test-kit/test" },
     { "path": "./packages/css-selector-parser/src" },
     { "path": "./packages/css-selector-parser/test" },
+    { "path": "./packages/css-value-parser/src" },
+    { "path": "./packages/css-value-parser/test" },
     { "path": "./packages/imports-parser/src" },
     { "path": "./packages/imports-parser/test" },
     { "path": "./packages/url-tokenizer/src" },
