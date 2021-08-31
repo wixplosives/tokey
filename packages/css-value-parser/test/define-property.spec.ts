@@ -39,7 +39,7 @@ describe(`value-parser/define-property`, () => {
       expect(errors).to.equal([
         {
           msg: defineProperty.errors.unexpectedComma(),
-          ref: ast,
+          ref: ast[1],
         },
       ]);
     });
@@ -113,10 +113,45 @@ describe(`value-parser/define-property`, () => {
           amount: {
             value: [cssVars.x[0]],
             resolved: [
-              [
-                { origin: ast, nodes: [ast[0]] },
-                { origin: cssVars.x, nodes: [cssVars.x[0]] },
-              ],
+              {
+                origin: ast,
+                nodes: [0],
+                resolved: [{ origin: cssVars.x, nodes: [0] }],
+              },
+            ],
+          },
+        });
+      });
+      it(`should resolve origin deep`, () => {
+        const p = defineProperty({
+          name: `my-prop`,
+          syntax: `<number>`,
+          classifications: {
+            amount: (node) => node.type === `<number>`,
+          },
+        });
+
+        const ast = parseCssValue(`var(--x)`);
+        const cssVars = {
+          x: parseCssValue(`var(--y)`),
+          y: parseCssValue(`123`),
+        };
+
+        expect(p.classify(ast, { cssVars })).deep.include({
+          amount: {
+            value: [cssVars.y[0]],
+            resolved: [
+              {
+                origin: ast,
+                nodes: [0],
+                resolved: [
+                  {
+                    origin: cssVars.x,
+                    nodes: [0],
+                    resolved: [{ origin: cssVars.y, nodes: [0] }],
+                  },
+                ],
+              },
             ],
           },
         });
@@ -142,18 +177,22 @@ describe(`value-parser/define-property`, () => {
           amountA: {
             value: [cssVars.x[0]],
             resolved: [
-              [
-                { origin: ast, nodes: [ast[0]] },
-                { origin: cssVars.x, nodes: [cssVars.x[0]] },
-              ],
+              {
+                origin: ast,
+                nodes: [0],
+                resolved: [{ origin: cssVars.x, nodes: [0] }],
+              },
             ],
           },
           amountB: {
             value: [cssVars.x[2]],
             resolved: [
               [
-                { origin: ast, nodes: [ast[0]] },
-                { origin: cssVars.x, nodes: [cssVars.x[2]] },
+                {
+                  origin: ast,
+                  nodes: [0],
+                  resolved: [{ origin: cssVars.x, nodes: [2] }],
+                },
               ],
             ],
           },
@@ -181,19 +220,21 @@ describe(`value-parser/define-property`, () => {
           amountA: {
             value: [cssVars.x[0]],
             resolved: [
-              [
-                { origin: ast, nodes: [ast[0]] },
-                { origin: cssVars.x, nodes: [cssVars.x[0]] },
-              ],
+              {
+                origin: ast,
+                nodes: [0],
+                resolved: [{ origin: cssVars.x, nodes: [0] }],
+              },
             ],
           },
           amountB: {
             value: [cssVars.y[0]],
             resolved: [
-              [
-                { origin: ast, nodes: [ast[2]] },
-                { origin: cssVars.y, nodes: [cssVars.y[0]] },
-              ],
+              {
+                origin: ast,
+                nodes: [2],
+                resolved: [{ origin: cssVars.y, nodes: [0] }],
+              },
             ],
           },
         });
@@ -218,18 +259,21 @@ describe(`value-parser/define-property`, () => {
           position: {
             value: [cssVars.x[0], cssVars.x[1], cssVars.x[2]],
             resolved: [
-              [
-                { origin: ast, nodes: [ast[0]] },
-                { origin: cssVars.x, nodes: [cssVars.x[0]] },
-              ],
-              [
-                { origin: ast, nodes: [ast[0]] },
-                { origin: cssVars.x, nodes: [cssVars.x[1]] },
-              ],
-              [
-                { origin: ast, nodes: [ast[0]] },
-                { origin: cssVars.x, nodes: [cssVars.x[2]] },
-              ],
+              {
+                origin: ast,
+                nodes: [0],
+                resolved: [{ origin: cssVars.x, nodes: [0] }],
+              },
+              {
+                origin: ast,
+                nodes: [0],
+                resolved: [{ origin: cssVars.x, nodes: [1] }],
+              },
+              {
+                origin: ast,
+                nodes: [0],
+                resolved: [{ origin: cssVars.x, nodes: [2] }],
+              },
             ],
           },
         });
@@ -255,15 +299,17 @@ describe(`value-parser/define-property`, () => {
           position: {
             value: [cssVars.x[0], ast[1], cssVars.y[0]],
             resolved: [
-              [
-                { origin: ast, nodes: [ast[0]] },
-                { origin: cssVars.x, nodes: [cssVars.x[0]] },
-              ],
-              [{ origin: ast, nodes: [ast[1]] }],
-              [
-                { origin: ast, nodes: [ast[2]] },
-                { origin: cssVars.y, nodes: [cssVars.y[0]] },
-              ],
+              {
+                origin: ast,
+                nodes: [0],
+                resolved: [{ origin: cssVars.x, nodes: [0] }],
+              },
+              { origin: ast, nodes: [1] },
+              {
+                origin: ast,
+                nodes: [2],
+                resolved: [{ origin: cssVars.y, nodes: [0] }],
+              },
             ],
           },
         });
@@ -313,10 +359,11 @@ describe(`value-parser/define-property`, () => {
           amount: {
             value: [buildVars.$x[0]],
             resolved: [
-              [
-                { origin: ast[0], nodes: [ast[0]] },
-                { origin: buildVars.$x, nodes: [buildVars.$x[0]] },
-              ],
+              {
+                origin: ast[0],
+                nodes: [0],
+                resolved: [{ origin: buildVars.$x, nodes: [0] }],
+              },
             ],
           },
         });
@@ -326,7 +373,7 @@ describe(`value-parser/define-property`, () => {
           name: `my-prop`,
           syntax: `<length>`,
           classifications: {
-            amount: (node) => node.type === `<number>`,
+            amount: (node) => node.type === `<length>`,
           },
         });
 
@@ -341,11 +388,12 @@ describe(`value-parser/define-property`, () => {
           amount: {
             value: [buildVars.$x[0], ast[1]],
             resolved: [
-              [
-                { origin: ast, nodes: [ast[0]] },
-                { origin: buildVars.$x, nodes: [buildVars.$x[0]] },
-              ],
-              [{ origin: ast, nodes: [ast[1]] }],
+              {
+                origin: ast,
+                nodes: [0],
+                resolved: [{ origin: buildVars.$x, nodes: [0] }],
+              },
+              { origin: ast, nodes: [ast[1]] },
             ],
           },
         });
