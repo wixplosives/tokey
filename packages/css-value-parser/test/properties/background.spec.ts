@@ -1,9 +1,9 @@
-import { parseCssValue, background } from "@tokey/css-value-parser";
+import { parseCSSValue, background } from "@tokey/css-value-parser";
 import { expect } from "chai";
 
 describe(`value-parser/properties/background`, () => {
   it(`should resolve classification`, () => {
-    const ast = parseCssValue(
+    const ast = parseCSSValue(
       //0  1                                       2   3  4  5      6         7      8          9
       `red linear-gradient(green 0%, yellow 100%) 40% 30% / auto border-box fixed padding-box repeat-x`
     );

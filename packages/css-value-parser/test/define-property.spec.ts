@@ -1,4 +1,4 @@
-import { defineProperty, parseCssValue } from "@tokey/css-value-parser";
+import { defineProperty, parseCSSValue } from "@tokey/css-value-parser";
 import { expect } from "chai";
 
 describe(`value-parser/define-property`, () => {
@@ -9,7 +9,7 @@ describe(`value-parser/define-property`, () => {
         syntax: `<number>`,
       });
 
-      expect(p.validate(parseCssValue(`55`))).to.equal([]);
+      expect(p.validate(parseCSSValue(`55`))).to.equal([]);
     });
     it(`should warn on unexpected type`, () => {
       const p = defineProperty({
@@ -17,12 +17,12 @@ describe(`value-parser/define-property`, () => {
         syntax: `<number>`,
       });
 
-      const ast = parseCssValue(`abc`);
+      const ast = parseCSSValue(`abc`);
       const errors = p.validate(ast);
 
       expect(errors).to.equal([
         {
-          msg: defineProperty.errors.unexpectedType(ast[0], `number`),
+          msg: defineProperty.errors.unexpectedType(ast[0], `<number>`),
           ref: ast[0],
         },
       ]);
@@ -33,7 +33,7 @@ describe(`value-parser/define-property`, () => {
         syntax: `<number>`,
       });
 
-      const ast = parseCssValue(`44,55`);
+      const ast = parseCSSValue(`44,55`);
       const errors = p.validate(ast);
 
       expect(errors).to.equal([
@@ -50,7 +50,7 @@ describe(`value-parser/define-property`, () => {
         topLevelCommaSeparation: true,
       });
 
-      const ast = parseCssValue(`44,55`);
+      const ast = parseCSSValue(`44,55`);
       const errors = p.validate(ast);
 
       expect(errors).to.equal([]);
@@ -68,10 +68,10 @@ describe(`value-parser/define-property`, () => {
         },
       });
 
-      expect(p.getFormat(parseCssValue(`55`)), `number`).to.eql(`number`);
-      expect(p.getFormat(parseCssValue(`xy`)), `string`).to.eql(`string`);
-      expect(p.getFormat(parseCssValue(`true`)), `boolean`).to.eql(`boolean`);
-      expect(p.getFormat(parseCssValue(`5px`)), `unknown`).to.eql(undefined);
+      expect(p.getFormat(parseCSSValue(`55`)), `number`).to.eql(`number`);
+      expect(p.getFormat(parseCSSValue(`xy`)), `string`).to.eql(`string`);
+      expect(p.getFormat(parseCSSValue(`true`)), `boolean`).to.eql(`boolean`);
+      expect(p.getFormat(parseCSSValue(`5px`)), `unknown`).to.eql(undefined);
     });
   });
   describe(`classification`, () => {
@@ -85,7 +85,7 @@ describe(`value-parser/define-property`, () => {
         },
       });
 
-      const ast = parseCssValue(`50 abc`);
+      const ast = parseCSSValue(`50 abc`);
       const classification = p.classify(ast);
 
       expect(classification.amount.value).to.equal(ast[0]);
@@ -104,9 +104,9 @@ describe(`value-parser/define-property`, () => {
           },
         });
 
-        const ast = parseCssValue(`var(--x)`);
+        const ast = parseCSSValue(`var(--x)`);
         const cssVars = {
-          x: parseCssValue(`123`),
+          x: parseCSSValue(`123`),
         };
 
         expect(p.classify(ast, { cssVars })).deep.include({
@@ -131,10 +131,10 @@ describe(`value-parser/define-property`, () => {
           },
         });
 
-        const ast = parseCssValue(`var(--x)`);
+        const ast = parseCSSValue(`var(--x)`);
         const cssVars = {
-          x: parseCssValue(`var(--y)`),
-          y: parseCssValue(`123`),
+          x: parseCSSValue(`var(--y)`),
+          y: parseCSSValue(`123`),
         };
 
         expect(p.classify(ast, { cssVars })).deep.include({
@@ -168,9 +168,9 @@ describe(`value-parser/define-property`, () => {
           },
         });
 
-        const ast = parseCssValue(`var(--x)`);
+        const ast = parseCSSValue(`var(--x)`);
         const cssVars = {
-          x: parseCssValue(`123 789`),
+          x: parseCSSValue(`123 789`),
         };
 
         expect(p.classify(ast, { cssVars })).deep.include({
@@ -210,10 +210,10 @@ describe(`value-parser/define-property`, () => {
           },
         });
 
-        const ast = parseCssValue(`var(--x) var(--y)`);
+        const ast = parseCSSValue(`var(--x) var(--y)`);
         const cssVars = {
-          x: parseCssValue(`123`),
-          y: parseCssValue(`789`),
+          x: parseCSSValue(`123`),
+          y: parseCSSValue(`789`),
         };
 
         expect(p.classify(ast, { cssVars })).deep.include({
@@ -250,9 +250,9 @@ describe(`value-parser/define-property`, () => {
           },
         });
 
-        const ast = parseCssValue(`var(--x)`);
+        const ast = parseCSSValue(`var(--x)`);
         const cssVars = {
-          x: parseCssValue(`1px 2px`),
+          x: parseCSSValue(`1px 2px`),
         };
 
         expect(p.classify(ast, { cssVars })).deep.include({
@@ -289,10 +289,10 @@ describe(`value-parser/define-property`, () => {
           },
         });
 
-        const ast = parseCssValue(`var(--x) var(--y)`);
+        const ast = parseCSSValue(`var(--x) var(--y)`);
         const cssVars = {
-          x: parseCssValue(`1px`),
-          y: parseCssValue(`2px`),
+          x: parseCSSValue(`1px`),
+          y: parseCSSValue(`2px`),
         };
 
         expect(p.classify(ast, { cssVars })).deep.include({
@@ -323,9 +323,9 @@ describe(`value-parser/define-property`, () => {
           },
         });
 
-        const ast = parseCssValue(`var(--x)px`);
+        const ast = parseCSSValue(`var(--x)px`);
         const cssVars = {
-          x: parseCssValue(`5`),
+          x: parseCSSValue(`5`),
         };
 
         // ToDo: maybe all methods should always output errors
@@ -348,9 +348,9 @@ describe(`value-parser/define-property`, () => {
           },
         });
 
-        const ast = parseCssValue(`$x`, { parseBuildVar: $varParser });
-        const buildVars: Record<string, ReturnType<typeof parseCssValue>> = {
-          $x: parseCssValue(`123`),
+        const ast = parseCSSValue(`$x`, { parseBuildVar: $varParser });
+        const buildVars: Record<string, ReturnType<typeof parseCSSValue>> = {
+          $x: parseCSSValue(`123`),
         };
 
         expect(
@@ -377,9 +377,9 @@ describe(`value-parser/define-property`, () => {
           },
         });
 
-        const ast = parseCssValue(`#($x)px`, { parseBuildVar: $varParser });
-        const buildVars: Record<string, ReturnType<typeof parseCssValue>> = {
-          $x: parseCssValue(`123`),
+        const ast = parseCSSValue(`#($x)px`, { parseBuildVar: $varParser });
+        const buildVars: Record<string, ReturnType<typeof parseCSSValue>> = {
+          $x: parseCSSValue(`123`),
         };
 
         expect(

@@ -1,5 +1,6 @@
 export * from "./ast-types";
-export { parseCssValue } from "./value-parser";
+export { parseCSSValue } from "./value-parser";
+export { stringifyCSSValue } from "./value-stringify";
 export { defineProperty } from "./define-property";
 // properties
 export { background } from "./properties/background";

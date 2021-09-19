@@ -1,11 +1,11 @@
 import type { CSSValueAST, BuildVarAst } from "./ast-types";
 import type { ParseResults } from "./value-parser";
 
-export declare function defineProperty<
+export function defineProperty<
   FORMATS extends string,
   CLASSIFICATIONS extends string,
   TOP_COMMA extends boolean = false
->(config: {
+>(_config: {
   name: string;
   syntax: string;
   subSyntax?: Record<string, string>;
@@ -14,7 +14,7 @@ export declare function defineProperty<
   formats?: Record<FORMATS, string>;
   classifications?: Record<
     CLASSIFICATIONS,
-    | MatchClassification
+    | MatchClassification // ToDo: optional default value / required
     | (TOP_COMMA extends true
         ? {
             match?: MatchClassification;
@@ -40,7 +40,9 @@ export declare function defineProperty<
   ) => TOP_COMMA extends true
     ? Record<CLASSIFICATIONS, Classification>[]
     : Record<CLASSIFICATIONS, Classification>;
-};
+} {
+  return {} as any;
+}
 
 defineProperty.errors = {
   unexpectedType: (node: CSSValueAST<any>, expectedType: string) =>
