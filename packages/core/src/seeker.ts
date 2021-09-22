@@ -25,6 +25,12 @@ export class Seeker<T extends Token<unknown>> {
     }
     return undefined;
   }
+  eat(type: T["type"]) {
+    while (this.peek().type === type) {
+      this.index++;
+    }
+    return this;
+  }
   takeMany(type: T["type"]) {
     const tokens = [];
     while (this.peek().type === type) {

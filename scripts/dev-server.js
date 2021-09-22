@@ -78,10 +78,10 @@ async function createIndex() {
         withFileTypes: true,
     });
     const paths = files
-        .filter((file) => !file.isDirectory())
+        .filter((file) => !file.isDirectory() && file.name.endsWith('html'))
         .map(({ name: fileName }) => {
-            const name = path.parse(fileName).name;
-            const href = `/demos/${name}`;
+            const { name, ext } = path.parse(fileName);
+            const href = `/demos/${name}${ext}`;
             return `<a href="${href}">${name}</a>`;
         });
     return `
