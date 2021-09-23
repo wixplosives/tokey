@@ -14,6 +14,7 @@ import {
 } from "../src/value-syntax-parser";
 
 import * as webCssRef from "@webref/css";
+
 describe(`sanity`, () => {
   before(async () => {
     const specs = await webCssRef.listAll();
@@ -22,7 +23,7 @@ describe(`sanity`, () => {
         describe("properties", () => {
           for (const { name, value } of Object.values(data.properties)) {
             if (value) {
-              it(`<'${name}'>`, () => {
+              it(`<'${name}'>: ${value}`, () => {
                 parseValueSyntax(value);
               });
             }
@@ -31,7 +32,7 @@ describe(`sanity`, () => {
         describe("valuespaces", () => {
           for (const [name, { value }] of Object.entries(data.valuespaces)) {
             if (value) {
-              it(name, () => {
+              it(`${name}: ${value}`, () => {
                 parseValueSyntax(value);
               });
             }

@@ -213,8 +213,27 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
   ) => {
     if (token.type === "<") {
       let closed = false;
-      const name = s.eat("space").next();
-      const type = getComponentType(name);
+      s.eat("space");
+      const nameBlock = s.run<ValueSyntaxToken[]>(
+        (node, ast) => {
+          const { type } = node;
+          if (type === "space" || type === "[" || type === ">") {
+            return false;
+          } else {
+            ast.push(node);
+            return;
+          }
+        },
+        [],
+        _source
+      );
+      if (nameBlock.length === 0) {
+        throw new Error("missing data type name");
+      }
+      s.back();
+      const name = getText(nameBlock, undefined, undefined, source);
+
+      const type = getLiteralValueType(name);
       let range: Range | undefined;
       if (type === "invalid") {
         throw new Error("missing data type name");
@@ -241,20 +260,19 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
       if (!closed) {
         throw new Error('missing ">"');
       }
-      if (type === "property") {
-        ast.push(property(name.value.slice(1, -1), range));
+      if (type === "quoted") {
+        ast.push(property(name.slice(1, -1), range));
       } else {
-        ast.push(dataType(name.value, range));
+        ast.push(dataType(name, range));
       }
     } else if (token.type === "[") {
       const res = s.run(handleToken, { ast: [] }, source);
-      // eslint-disable-next-line no-debugger
       applyPrecedence(res.ast);
       ast.push(group(res.ast));
     } else if (token.type === "]") {
       return false;
     } else if (token.type === "text") {
-      const t = getComponentType(token);
+      const t = getLiteralValueType(token.value);
       if (t === "invalid") {
         if (token.value.startsWith("'")) {
           const tokens = s.run(
@@ -278,7 +296,7 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
         } else {
           throw new Error("invalid literal");
         }
-      } else if (t === "property") {
+      } else if (t === "quoted") {
         ast.push(literal(token.value.slice(1, -1), true));
       } else {
         ast.push(keyword(token.value));
@@ -293,12 +311,7 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
     } else if (token.type === "space") {
       s.eat("space");
     } else if (isRangeMultiplier(token)) {
-      let node = last(ast);
-
-      if (node.type === "juxtaposing") {
-        // TODO: handle multi juxtaposing nesting?
-        node = last(node.nodes);
-      }
+      const node = lastParsedNode(ast);
       if (!node || node.type === "juxtaposing" || isLowLevelGroup(node)) {
         throw new Error("unexpected modifier");
       }
@@ -308,12 +321,8 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
       }
       node.multipliers.range = typeToRange(token.type);
     } else if (token.type === "{") {
-      let node = last(ast);
+      const node = lastParsedNode(ast);
 
-      if (node.type === "juxtaposing") {
-        // TODO: handle multi juxtaposing nesting?
-        node = last(node.nodes);
-      }
       if (!node || isLowLevelGroup(node) || node.type === "juxtaposing") {
         throw new Error("unexpected range modifier");
       }
@@ -326,9 +335,6 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
       if (sep) {
         const end = s.eat("space").take("text");
         const close = s.eat("space").take("}");
-        if (!end) {
-          throw new Error("missing end value");
-        }
         if (!close) {
           throw new Error("missing }");
         }
@@ -339,7 +345,7 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
         }
         node.multipliers.range = [
           parseNumber(start.value),
-          parseNumber(end.value),
+          parseNumber(end?.value ?? "∞"),
         ];
       } else {
         const close = s.eat("space").take("}");
@@ -356,12 +362,7 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
         ];
       }
     } else if (token.type === "#") {
-      let node = last(ast);
-
-      if (node.type === "juxtaposing") {
-        // TODO: handle multi juxtaposing nesting?
-        node = last(node.nodes);
-      }
+      const node = lastParsedNode(ast);
       if (!node || node.type === "juxtaposing" || isLowLevelGroup(node)) {
         throw new Error("unexpected list modifier");
       }
@@ -374,15 +375,9 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
       }
       ast.push(doubleAmpersand([]));
     } else if (token.type === "|") {
-      const nextBar = s.take("|");
-      if (nextBar) {
-        ast.push(doubleBar([]));
-      } else {
-        ast.push(bar([]));
-      }
+      ast.push(s.take("|") ? doubleBar([]) : bar([]));
     } else {
-      s.eat("space");
-      throw new Error(`un handled ${JSON.stringify(token)}`);
+      throw new Error(`UnHandled ${JSON.stringify(token)}`);
     }
 
     applyJuxtaposing(ast);
@@ -399,6 +394,12 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
   applyPrecedence(results.ast);
 
   return results.ast[0];
+}
+
+function lastParsedNode(ast: ValueSyntaxAstNode[]) {
+  const node = last(ast);
+  // assume the parse process in juxtaposing on each step
+  return node?.type === "juxtaposing" ? last(node.nodes) : node;
 }
 
 function applyPrecedence(ast: ValueSyntaxAstNode[]) {
@@ -488,30 +489,42 @@ function isLowLevelGroup(
   return type === "&&" || type === "|" || type === "||";
 }
 
-export function stringify(node: ValueSyntaxAstNode) {
+export function stringify(node: ValueSyntaxAstNode): string {
   const { type } = node;
+  if ("multipliers" in node) {
+    throw new Error("TODO: multipliers");
+  }
   if (type === "property") {
     return `<'${node.name}'${node.range ? ` [${node.range}]` : ""}>`;
   } else if (type === "data-type") {
     return `<${node.name}${node.range ? ` [${node.range}]` : ""}>`;
   } else if (type === "literal") {
     return node.enclosed ? `'${node.name}'` : `${node.name}`;
+  } else if (type === "group") {
+    return `[ ${node.nodes.map((child) => stringify(child)).join("")} ]`;
+  } else if (type === "&&") {
+    return node.nodes.map((child) => stringify(child)).join(" && ");
+  } else if (type === "||") {
+    return node.nodes.map((child) => stringify(child)).join(" || ");
+  } else if (type === "|") {
+    return node.nodes.map((child) => stringify(child)).join(" | ");
+  } else if (type === "juxtaposing") {
+    return node.nodes.map((child) => stringify(child)).join(" ");
+  } else if (type === "keyword") {
+    return node.name;
   } else {
     throw new Error(`missing stringify for node ${JSON.stringify(node)}`);
   }
 }
 
-function getComponentType(token: ValueSyntaxToken) {
-  if (token.type === "text") {
-    if (token.value.startsWith("'")) {
-      if (token.value.endsWith("'") && token.value.length > 1) {
-        return "property";
-      } else {
-        return "invalid";
-      }
+function getLiteralValueType(value: string) {
+  if (value.startsWith("'")) {
+    if (value.endsWith("'") && value.length > 1) {
+      return "quoted";
     } else {
-      return "data-type";
+      return "invalid";
     }
+  } else {
+    return "literal";
   }
-  return "invalid";
 }
