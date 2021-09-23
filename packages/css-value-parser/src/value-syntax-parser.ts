@@ -198,13 +198,12 @@ export function doubleBar(nodes: ValueSyntaxAstNode[]): DoubleBarNode {
 
 interface ParsingContext {
   ast: ValueSyntaxAstNode[];
-  state: [allOf: number[], anyOf: number[], oneOf: number[]];
 }
 
 function parseTokens(tokens: ValueSyntaxToken[], source: string) {
   const handleToken = (
     token: ValueSyntaxToken,
-    { ast, state }: ParsingContext,
+    { ast }: ParsingContext,
     _source: string,
     s: Seeker<ValueSyntaxToken>
   ) => {
@@ -244,9 +243,9 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
         ast.push(dataType(name.value, range));
       }
     } else if (token.type === "[") {
-      const res = s.run(handleToken, { ast: [], state: [[], [], []] }, source);
+      const res = s.run(handleToken, { ast: [] }, source);
       // eslint-disable-next-line no-debugger
-
+      applyPrecedence(res.ast);
       ast.push(group(res.ast));
     } else if (token.type === "]") {
       return false;
@@ -354,13 +353,13 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
       if (!nextAnd) {
         throw new Error("missing &");
       }
-      state[0].push(ast.push(doubleAmpersand([])) - 1);
+      ast.push(doubleAmpersand([]));
     } else if (token.type === "|") {
       const nextBar = s.take("|");
       if (nextBar) {
-        state[1].push(ast.push(doubleBar([])) - 1);
+        ast.push(doubleBar([]));
       } else {
-        state[2].push(ast.push(bar([])) - 1);
+        ast.push(bar([]));
       }
     } else {
       s.eat("space");
@@ -374,31 +373,42 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
 
   const results = new Seeker(tokens).run<ParsingContext>(
     handleToken,
-    { ast: [], state: [[], [], []] },
+    { ast: [] },
     source
   );
 
-  applyPrecedence(results);
+  applyPrecedence(results.ast);
 
   return results.ast[0];
 }
 
-function applyPrecedence({ ast, state }: ParsingContext) {
-  
-  for (let i = 0; i < state.length; i++) {
-    const precedenceGroup = state[i];
-    let length = precedenceGroup.length;
-    while (length--) {
-      const index = precedenceGroup[length];
-      const before = ast[index - 1];
-      const target = ast[index] as DoubleAmpersandNode;
-      const after = ast[index + 1];
-      if (after.type === target.type) {
-        target.nodes.push(before, ...after.nodes);
-        ast.splice(index - 1, 3, target);
-      } else {
-        target.nodes.push(before, after);
-        ast.splice(index - 1, 3, target);
+function applyPrecedence(ast: ValueSyntaxAstNode[]) {
+  const order = ["&&", "||", "|"] as const;
+
+  for (let i = 0; i < order.length; i++) {
+    const type = order[i];
+    for (let j = 0; j < ast.length; j++) {
+      const node = ast[j];
+      if (node.type === type) {
+        const before = ast[j - 1];
+        const after = ast[j + 1];
+        if (!before) {
+          throw new Error(`missing node before ${type}`);
+        }
+        if (!after) {
+          throw new Error(`missing node after ${type}`);
+        }
+        if (after.type === type) {
+          throw new Error("invalid grouping");
+        }
+        if (before.type === type) {
+          before.nodes.push(after);
+          ast.splice(j - 1, 3, before);
+        } else {
+          node.nodes.push(before, after);
+          ast.splice(j - 1, 3, node);
+        }
+        j--;
       }
     }
   }
@@ -443,7 +453,7 @@ function applyJuxtaposing(ast: ValueSyntaxAstNode[]) {
   if (ast.length > 1) {
     const last = ast[ast.length - 1];
     const prev = ast[ast.length - 2];
-    if (prev.type === "juxtaposing") {
+    if (prev.type === "juxtaposing" && !isLowLevelGroup(last)) {
       ast.length = ast.length - 1;
       prev.nodes.push(last);
     } else if (!isLowLevelGroup(prev) && !isLowLevelGroup(last)) {

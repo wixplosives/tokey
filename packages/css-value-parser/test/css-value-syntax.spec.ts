@@ -106,10 +106,10 @@ describe.only("value-syntax-parser", () => {
       expect(parseValueSyntax(`<'name'>*`)).to.eql(
         property("name", undefined, { range: [0, Infinity] })
       );
-      expect(parseValueSyntax(`<name>{2}`)).to.eql(
+      expect(parseValueSyntax(`<'name'>{2}`)).to.eql(
         property("name", undefined, { range: [2, 2] })
       );
-      expect(parseValueSyntax(`<name>{2, 4}`)).to.eql(
+      expect(parseValueSyntax(`<'name'>{2, 4}`)).to.eql(
         property("name", undefined, { range: [2, 4] })
       );
     });
@@ -126,10 +126,10 @@ describe.only("value-syntax-parser", () => {
       expect(parseValueSyntax(`'name'*`)).to.eql(
         literal("name", true, { range: [0, Infinity] })
       );
-      expect(parseValueSyntax(`<'name'>{2}`)).to.eql(
+      expect(parseValueSyntax(`'name'{2}`)).to.eql(
         literal("name", true, { range: [2, 2] })
       );
-      expect(parseValueSyntax(`<'name'>{2, 4}`)).to.eql(
+      expect(parseValueSyntax(`'name'{2, 4}`)).to.eql(
         literal("name", true, { range: [2, 4] })
       );
     });
@@ -222,7 +222,7 @@ describe.only("value-syntax-parser", () => {
         );
       });
     });
-    describe.only("bar", () => {
+    describe("bar", () => {
       it("should parse bar combinator", () => {
         expect(parseValueSyntax(`a | b`)).to.eql(
           bar([keyword("a"), keyword("b")])
