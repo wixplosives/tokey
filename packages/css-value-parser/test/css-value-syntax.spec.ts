@@ -13,7 +13,21 @@ import {
   property,
 } from "../src/value-syntax-parser";
 
-describe.only("value-syntax-parser", () => {
+import { valueDefinitions } from "../src/value-definitions";
+
+describe("sanity", () => {
+  for (const [key, { syntax }] of Object.entries(valueDefinitions.props)) {
+    if (key === "<'overflow-clip-margin'>") {
+      it(key + ": " + syntax, () => {
+        parseValueSyntax(syntax);
+      });
+    }
+  }
+});
+
+// add test for # 
+
+describe("value-syntax-parser", () => {
   describe("components", () => {
     it("should parse simple data-type component", () => {
       expect(parseValueSyntax(`<name>`)).to.eql(dataType("name"));

@@ -289,31 +289,34 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
     } else if (token.type === "space") {
       s.eat("space");
     } else if (isRangeMultiplier(token)) {
-      const node = last(ast);
-      if (!node) {
-        throw new Error("unexpected modifier");
-      }
-      if (isLowLevelGroup(node) || node.type === "juxtaposing") {
-        throw new Error("unexpected modifier");
-      }
+      let node = last(ast);
 
+      if (node.type === "juxtaposing") {
+        // TODO: handle multi juxtaposing nesting?
+        node = last(node.nodes);
+      }
+      if (!node || node.type === "juxtaposing" || isLowLevelGroup(node)) {
+        throw new Error("unexpected modifier");
+      }
       node.multipliers ??= {};
       if (node.multipliers.range) {
         throw new Error("multiple multipliers on same node");
       }
       node.multipliers.range = typeToRange(token.type);
     } else if (token.type === "{") {
-      const node = last(ast);
-      if (!node) {
-        throw new Error("unexpected modifier");
+      let node = last(ast);
+
+      if (node.type === "juxtaposing") {
+        // TODO: handle multi juxtaposing nesting?
+        node = last(node.nodes);
       }
-      if (isLowLevelGroup(node) || node.type === "juxtaposing") {
-        throw new Error("unexpected modifier");
+      if (!node || isLowLevelGroup(node) || node.type === "juxtaposing") {
+        throw new Error("unexpected range modifier");
       }
 
       const start = s.eat("space").take("text");
       if (!start) {
-        throw new Error("missing range start");
+        throw new Error("missing range start value");
       }
       const sep = s.eat("space").take(",");
       if (sep) {
@@ -348,6 +351,18 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
           parseNumber(start.value),
         ];
       }
+    } else if (token.type === "#") {
+      let node = last(ast);
+
+      if (node.type === "juxtaposing") {
+        // TODO: handle multi juxtaposing nesting?
+        node = last(node.nodes);
+      }
+      if (!node || node.type === "juxtaposing" || isLowLevelGroup(node)) {
+        throw new Error("unexpected list modifier");
+      }
+      node.multipliers ??= {};
+      node.multipliers.list = true;
     } else if (token.type === "&") {
       const nextAnd = s.take("&");
       if (!nextAnd) {
