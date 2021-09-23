@@ -141,7 +141,11 @@ type Combinators =
   | BarNode;
 
 type Components = DataTypeNode | PropertyNode;
-type ValueSyntaxAstNode = Components | KeywordNode | LiteralNode | Combinators;
+export type ValueSyntaxAstNode =
+  | Components
+  | KeywordNode
+  | LiteralNode
+  | Combinators;
 
 export function literal(
   name: string,

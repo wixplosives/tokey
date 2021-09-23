@@ -13,19 +13,39 @@ import {
   property,
 } from "../src/value-syntax-parser";
 
-import { valueDefinitions } from "../src/value-definitions";
-
-describe("sanity", () => {
-  for (const [key, { syntax }] of Object.entries(valueDefinitions.props)) {
-    if (key === "<'overflow-clip-margin'>") {
-      it(key + ": " + syntax, () => {
-        parseValueSyntax(syntax);
+import * as webCssRef from "@webref/css";
+describe(`sanity`, () => {
+  before(async () => {
+    const specs = await webCssRef.listAll();
+    for (const [specName, data] of Object.entries(specs)) {
+      describe(specName, () => {
+        describe("properties", () => {
+          for (const { name, value } of Object.values(data.properties)) {
+            if (value) {
+              it(`<'${name}'>`, () => {
+                parseValueSyntax(value);
+              });
+            }
+          }
+        });
+        describe("valuespaces", () => {
+          for (const [name, { value }] of Object.entries(data.valuespaces)) {
+            if (value) {
+              it(name, () => {
+                parseValueSyntax(value);
+              });
+            }
+          }
+        });
       });
     }
-  }
+  });
+  it(`just here to make the before dynamically load and create tests`, () => {
+    /**/
+  });
 });
 
-// add test for # 
+// add test for #
 
 describe("value-syntax-parser", () => {
   describe("components", () => {
