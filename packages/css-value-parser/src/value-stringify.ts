@@ -1,6 +1,7 @@
 import type {
   BaseAstNode,
   Literal,
+  CssWideKeyword,
   Space,
   Comment,
   String,
@@ -41,6 +42,7 @@ type Printers = {
 const stringifyByType: Printers = {
   space: ({ before, value, after }: Space) => before + value + after,
   literal: ({ before, value, after }: Literal) => before + value + after,
+  "css-wide-keyword": ({ value }: CssWideKeyword) => value,
   invalid: ({ value }: Invalid) => value,
   comment: ({ value }: Comment) => value,
   call: ({ value, before, after, args }: Call) =>

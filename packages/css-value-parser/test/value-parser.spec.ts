@@ -4,6 +4,7 @@ import {
   customIdent,
   dashedIdent,
   literal,
+  cssWideKeyword,
   space,
   invalid,
   comment,
@@ -85,6 +86,43 @@ describe(`value-parser`, () => {
         type: `-`,
         source: `-`,
         expected: [literal({ value: `-`, start: 0, end: 1 })],
+      },
+    ].forEach(createTest);
+  });
+  describe(`css-wide-keyword`, () => {
+    [
+      {
+        type: `inherit`,
+        source: `inherit`,
+        expected: [cssWideKeyword({ value: `inherit`, start: 0, end: 7 })],
+      },
+      {
+        type: `unset`,
+        source: `unset`,
+        expected: [cssWideKeyword({ value: `unset`, start: 0, end: 5 })],
+      },
+      {
+        type: `initial`,
+        source: `initial`,
+        expected: [cssWideKeyword({ value: `initial`, start: 0, end: 7 })],
+      },
+      {
+        type: `inherit`,
+        desc: `case-insensitive`,
+        source: `iNhErIt`,
+        expected: [cssWideKeyword({ value: `iNhErIt`, start: 0, end: 7 })],
+      },
+      {
+        type: `unset`,
+        desc: `case-insensitive`,
+        source: `uNsEt`,
+        expected: [cssWideKeyword({ value: `uNsEt`, start: 0, end: 5 })],
+      },
+      {
+        type: `initial`,
+        desc: `case-insensitive`,
+        source: `InItIaL`,
+        expected: [cssWideKeyword({ value: `InItIaL`, start: 0, end: 7 })],
       },
     ].forEach(createTest);
   });

@@ -15,6 +15,7 @@ export interface CSSValueAST<TYPE extends string> {
 
 export type BaseAstNode =
   | Literal
+  | CssWideKeyword
   | Space
   | Comment
   | Invalid
@@ -44,6 +45,9 @@ export type BuildVarAst = CSSValueAST<`build-var`> & {
 export type Literal = CSSValueAST<`literal`> & {
   before: string;
   after: string;
+};
+export type CssWideKeyword = CSSValueAST<`css-wide-keyword`> & {
+  value: AnyCase<`inherit` | `unset` | `initial`>;
 };
 export type Space = CSSValueAST<`space`> & {
   before: string;
@@ -148,6 +152,15 @@ export const literal = (value: Partial<Literal>): Literal => ({
   value: ``,
   ...value,
   type: `literal`,
+});
+export const cssWideKeyword = (
+  value: Partial<CssWideKeyword>
+): CssWideKeyword => ({
+  start: 0,
+  end: 0,
+  value: `initial`,
+  ...value,
+  type: `css-wide-keyword`,
 });
 export const space = (value: Partial<Space>): Space => ({
   start: 0,

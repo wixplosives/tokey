@@ -3,6 +3,7 @@ import {
   customIdent,
   dashedIdent,
   literal,
+  cssWideKeyword,
   space,
   string,
   number,
@@ -106,6 +107,15 @@ function handleToken(
           args,
           before,
           after,
+        })
+      );
+    } else if (ident.match(/^inherit|unset|initial$/i)) {
+      // css-wide keyword
+      ast.push(
+        cssWideKeyword({
+          value: ident as any,
+          start: token.start,
+          end: s.peek(0).end,
         })
       );
     } else if (ident.match(/^--/)) {
