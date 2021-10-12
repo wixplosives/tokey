@@ -57,10 +57,13 @@ export function renderToken(
     const isArray = Array.isArray(token);
     const open = isArray ? '[' : '{';
     const close = isArray ? ']' : '}';
-    const inRange = 'start' in token && 'end' in token ? isInRange(token, range) : parentInRange;
+    const inRange =
+        'start' in token && 'end' in token
+            ? isInRange(token as { start: number; end: number }, range)
+            : parentInRange;
 
     let out = open + '\n';
-    for (const [k, v] of Object.entries(token)) {
+    for (const [k, v] of Object.entries(token as object)) {
         out += '  '.repeat(1 + level) + (isArray ? '' : k + ': ');
         if (typeof v === 'object' && v !== null) {
             out += renderToken(v, range, level + 1, inRange);

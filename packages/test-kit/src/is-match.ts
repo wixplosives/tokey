@@ -11,8 +11,8 @@ export function isMatch(a: any, b: any): boolean {
     });
   }
   if (typeof a === "object" && typeof b === "object") {
-    const ak = Object.keys(a);
-    const bk = Object.keys(b);
+    const ak = Object.keys(a as object);
+    const bk = Object.keys(b as object);
     if (ak.length !== bk.length) {
       return false;
     }
