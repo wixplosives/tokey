@@ -7,7 +7,7 @@ export type Immutable<T> = T extends Function
   ? ImmutableMap<T>
   : T;
 
-type ImmutableMap<T> = {
+export type ImmutableMap<T> = {
   readonly [P in keyof T]: Immutable<T[P]>;
 };
 
