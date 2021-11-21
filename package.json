@@ -7,10 +7,10 @@
   "scripts": {
     "clean": "rimraf ./packages/*/{dist,cjs,esm}",
     "build": "tsc --build",
-    "watch": "yarn build -w",
+    "watch": "npm run build -- -w",
     "lint": "eslint .",
-    "pretest": "yarn build && yarn lint",
-    "test": "lerna run test --stream",
+    "pretest": "npm run build && npm run lint",
+    "test": "mocha \"./packages/*/dist/test/**/*.spec.js\"",
     "prettify": "npx prettier . --write",
     "start": "node scripts/dev-server.js"
   },
