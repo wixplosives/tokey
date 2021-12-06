@@ -12,6 +12,6 @@
     { "path": "./packages/url-tokenizer/src" },
     { "path": "./packages/url-tokenizer/test" },
     { "path": "./packages/experiments/src" },
-    { "path": "./packages/experiments/test" },
+    { "path": "./packages/experiments/test" }
   ]
 }
