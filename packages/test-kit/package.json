@@ -14,6 +14,5 @@
   ],
   "author": "Wix.com",
   "license": "MIT",
-  "repository": "https://github.com/wixplosives/tokey/packages/test-kit",
-  "prettier": {}
+  "repository": "https://github.com/wixplosives/tokey/packages/test-kit"
 }

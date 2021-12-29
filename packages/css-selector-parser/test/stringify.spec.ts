@@ -58,6 +58,5 @@ describe(`stringifySelectorAst`, () => {
         ].forEach((ast) => {
             stringifySelectorAst(ast); // expect no type error
         });
-        
     });
 });

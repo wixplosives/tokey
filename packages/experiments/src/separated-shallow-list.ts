@@ -1,71 +1,71 @@
 import {
-  tokenize,
-  isStringDelimiter,
-  isWhitespace,
-  createToken,
-  groupTokens,
-  trimTokens,
-  isComment,
-  getJSCommentStartType,
-  getMultilineCommentStartType,
-  isCommentEnd,
-  getUnclosedComment,
-  Token,
-  Descriptors,
-  TokenGroup,
-} from "@tokey/core";
+    tokenize,
+    isStringDelimiter,
+    isWhitespace,
+    createToken,
+    groupTokens,
+    trimTokens,
+    isComment,
+    getJSCommentStartType,
+    getMultilineCommentStartType,
+    isCommentEnd,
+    getUnclosedComment,
+    Token,
+    Descriptors,
+    TokenGroup,
+} from '@tokey/core';
 
 const shouldAddToken = () => true;
 
 export function getListItems<T extends string>(
-  source: string,
-  isDelimiter: (char: string) => char is T,
-  parseLineComments = true
+    source: string,
+    isDelimiter: (char: string) => char is T,
+    parseLineComments = true
 ) {
-  return createListItems(
-    tokenize<Token<Descriptors>>(source, {
-      isDelimiter,
-      isStringDelimiter,
-      isWhitespace,
-      shouldAddToken,
-      createToken,
-      getCommentStartType: parseLineComments
-        ? getJSCommentStartType
-        : getMultilineCommentStartType,
-      isCommentEnd,
-      getUnclosedComment,
-    }),
-    isDelimiter
-  );
+    return createListItems(
+        tokenize<Token<Descriptors>>(source, {
+            isDelimiter,
+            isStringDelimiter,
+            isWhitespace,
+            shouldAddToken,
+            createToken,
+            getCommentStartType: parseLineComments
+                ? getJSCommentStartType
+                : getMultilineCommentStartType,
+            isCommentEnd,
+            getUnclosedComment,
+        }),
+        isDelimiter
+    );
 }
 
 function createListItems(
-  tokens: Token[],
-  isDelimiter: (char: string) => boolean,
-  processGroup: (tokens: Token[]) => Token[] = (tokens) =>
-    trimTokens(
-      tokens.filter(({ type }) => !isComment(type)),
-      ({ type }) => type === "space"
-    )
+    tokens: Token[],
+    isDelimiter: (char: string) => boolean,
+    processGroup: (tokens: Token[]) => Token[] = (tokens) =>
+        trimTokens(
+            tokens.filter(({ type }) => !isComment(type)),
+            ({ type }) => type === 'space'
+        )
 ) {
-  const groups: TokenGroup<"list-item">[] = [];
-  let group: Token[] = [];
-  for (const token of tokens) {
-    if (isDelimiter(token.type)) {
-      handleGroup();
-      group = [];
-    } else {
-      group.push(token);
+    const groups: TokenGroup<'list-item'>[] = [];
+    let group: Token[] = [];
+    for (const token of tokens) {
+        if (isDelimiter(token.type)) {
+            handleGroup();
+            group = [];
+        } else {
+            group.push(token);
+        }
     }
-  }
-  handleGroup();
+    handleGroup();
 
-  return groups;
+    return groups;
 
-  function handleGroup() {
-    group = processGroup(group);
-    if (group.length) {
-      groups.push(groupTokens(group, "list-item"));
+    function handleGroup() {
+        group = processGroup(group);
+        if (group.length) {
+            groups.push(groupTokens(group, 'list-item'));
+        }
     }
-  }
 }
