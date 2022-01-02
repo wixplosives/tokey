@@ -1,6 +1,5 @@
 {
   "name": "@tokey/css-value-parser",
-  "private": true,
   "description": "value parser for css",
   "version": "0.0.1",
   "main": "dist/index.js",
