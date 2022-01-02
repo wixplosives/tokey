@@ -1,6 +1,7 @@
 {
   "files": [],
   "references": [
+    { "path": "./demos/client" },
     { "path": "./packages/core/src" },
     { "path": "./packages/core/test" },
     { "path": "./packages/test-kit/src" },

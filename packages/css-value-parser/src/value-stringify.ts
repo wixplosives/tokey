@@ -33,6 +33,7 @@ export function stringifyCSSValue(ast: BaseAstNode | BaseAstNode[]) {
     return result;
 }
 function stringifyNode(node: BaseAstNode) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return stringifyByType[node.type]?.(node as any) || ``;
 }
 

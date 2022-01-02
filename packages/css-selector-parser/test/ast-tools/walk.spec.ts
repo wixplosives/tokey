@@ -417,7 +417,12 @@ describe(`ast-tools/walk`, () => {
                 expectedMap: [
                     { type: `selector`, value: undefined, index: 0, parents: `` },
                     { type: `pseudo_class`, value: `a`, index: 0, parents: `selector` },
-                    { type: `selector`, value: undefined, index: 0, parents: `selector,a` },
+                    {
+                        type: `selector`,
+                        value: undefined,
+                        index: 0,
+                        parents: `selector,a`,
+                    },
                     {
                         type: `pseudo_class`,
                         value: `b`,

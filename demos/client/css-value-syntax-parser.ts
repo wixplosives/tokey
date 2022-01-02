@@ -1,10 +1,12 @@
-import { initPreview } from './client/view';
-import { parseValueSyntax } from '../packages/css-value-parser/src/value-syntax-parser';
-import { valueDefinitions } from '../packages/css-value-parser/src/value-definitions';
+import { initPreview } from './view';
+import { parseValueSyntax } from '@tokey/css-value-parser';
+// import { valueDefinitions } from '../../packages/css-value-parser/src/value-definitions';
 
-const topBar = document.getElementById('top-bar');
+const valueDefinitions = { props: {} as Record<string, { syntax: string }> };
+
+const topBar = document.getElementById('top-bar') as HTMLElement;
 const input = document.getElementById('input') as HTMLTextAreaElement;
-const output = document.getElementById('output');
+const output = document.getElementById('output') as HTMLElement;
 const select = document.createElement('select');
 
 Object.keys(valueDefinitions.props).forEach((key) => {
@@ -23,7 +25,7 @@ select.onchange = () => {
     setValue(select.value);
 };
 
-function setValue(value) {
+function setValue(value: string) {
     input.value = value;
     document.dispatchEvent(new CustomEvent('playground:updateOutput'));
 }

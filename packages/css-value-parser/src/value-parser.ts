@@ -301,6 +301,7 @@ function parseNumber(
         const nodeType =
             knownUnits[numberUnit.toLowerCase() as keyof typeof knownUnits] || unknownUnit;
         ast.push(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             nodeType({
                 value: numberValue,
                 unit: numberUnit,
