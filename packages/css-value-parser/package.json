@@ -1,0 +1,34 @@
+{
+  "name": "@tokey/css-value-parser",
+  "description": "value parser for css",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "mocha \"./dist/test/**/*.spec.js\""
+  },
+  "dependencies": {
+    "@tokey/core": "^1.2.1"
+  },
+  "devDependencies": {
+    "@webref/css": "^2.0.12"
+  },
+  "keywords": [
+    "parser",
+    "css",
+    "value"
+  ],
+  "files": [
+    "src",
+    "dist",
+    "!dist/test",
+    "!*/tsconfig.{json,tsbuildinfo}"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Wix.com",
+  "license": "MIT",
+  "repository": "https://github.com/wixplosives/tokey/packages/css-value-parser",
+  "sideEffects": false
+}

@@ -97,19 +97,19 @@ export function trimCombinators(selector: Selector) {
     const firstNode = nodes[0];
     const lastNode = last(nodes);
     // remove first space combinator and add to selector before
-    // (going between comment is not required for the start becuase they are taken care
+    // (going between comment is not required for the start because they are taken care
     // of during parsing)
     if (firstNode?.type === 'combinator' && firstNode.combinator === 'space') {
         selector.nodes.shift();
         selector.before += firstNode.before + firstNode.value + firstNode.after;
     }
     // remove any edge space combinators (last and between comments)
-    if (lastNode !== firstNode) {
+    if (lastNode && lastNode !== firstNode) {
         let index = nodes.length - 1;
         let current = lastNode;
         let lastComment: Comment | undefined;
         while (
-            (current && current.type === `comment`) ||
+            current.type === `comment` ||
             (current.type === `combinator` && current.combinator === `space`)
         ) {
             if (current.type === `combinator`) {

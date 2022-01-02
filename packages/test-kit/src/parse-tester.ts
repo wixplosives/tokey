@@ -17,11 +17,11 @@ export function createParseTester<AST, INPUT extends string, CONFIG>({
     parse,
     stringify,
 }: TesterConfig<AST, INPUT, CONFIG>) {
-    const safeParse = (source: INPUT, config?: CONFIG) => {
+    const safeParse = (source: INPUT, config?: CONFIG): [AST, null] | [null, Error] => {
         try {
-            return [parse(source, config), null] as const;
+            return [parse(source, config), null];
         } catch (error) {
-            return [null, error] as const;
+            return [null, error as Error];
         }
     };
     return (

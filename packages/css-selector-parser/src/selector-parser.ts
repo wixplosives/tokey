@@ -374,8 +374,8 @@ function handleToken(
                 end: ended?.end ?? s.peekBack().end,
             });
         } else {
-            if (res.length) {
-                const lastSelector = last(res);
+            const lastSelector = last(res);
+            if (lastSelector) {
                 trimCombinators(lastSelector);
             }
             prev.nodes = res;
@@ -384,7 +384,8 @@ function handleToken(
     } else if (isComment(token.type)) {
         ast.push(createCommentAst(token));
     } else if (token.type === ',') {
-        const selector = last(selectors);
+        // we ensure at least one selector present
+        const selector = last(selectors)!;
         selector.end = token.start;
         trimCombinators(selector);
         const newSelector = createEmptySelector();

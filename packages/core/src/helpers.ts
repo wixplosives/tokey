@@ -168,6 +168,6 @@ export function trimTokens<Tokens extends Token<any>[]>(
 /**
  * get last item in array
  */
-export function last<T>(arr: T[]): T {
+export function last<T>(arr: T[]): T | undefined {
     return arr[arr.length - 1];
 }

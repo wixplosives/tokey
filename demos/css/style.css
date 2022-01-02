@@ -10,6 +10,7 @@ html {
 main {
   height: 100%;
   display: flex;
+  overflow: hidden;
 }
 main > * {
   flex: 1 0 50%;
@@ -32,4 +33,9 @@ main > * {
 
 [data-in-rage='true'] {
   font-weight: bolder;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
 }
