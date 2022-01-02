@@ -308,6 +308,12 @@ describe(`value-parser`, () => {
         },
         {
           type: `<number>`,
+          desc: `start with dot`,
+          source: `.5`,
+          expected: [number({ value: `.5`, start: 0, end: 2 })],
+        },
+        {
+          type: `<number>`,
           desc: `sign +`,
           source: `+5.5`,
           expected: [number({ value: `+5.5`, start: 0, end: 4 })],
