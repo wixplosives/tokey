@@ -87,6 +87,11 @@ describe(`value-parser`, () => {
         source: `-`,
         expected: [literal({ value: `-`, start: 0, end: 1 })],
       },
+      {
+        type: `(`,
+        source: `(`,
+        expected: [literal({ value: `(`, start: 0, end: 1 })],
+      },
     ].forEach(createTest);
   });
   describe(`css-wide-keyword`, () => {
@@ -560,12 +565,6 @@ describe(`value-parser`, () => {
   });
   describe(`invalid`, () => {
     [
-      {
-        type: `invalid`,
-        desc: `un-opened parentheses`,
-        source: `)`,
-        expected: [invalid({ value: `)`, start: 0, end: 1 })],
-      },
       {
         type: `invalid`,
         desc: `standalone hash`,

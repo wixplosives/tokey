@@ -49,15 +49,7 @@ function handleToken(
   s: Seeker<CSSValueToken>
 ): void {
   const { type, value, start, end } = token;
-  if (type === `,` || type === `/`) {
-    ast.push(
-      literal({
-        start,
-        end,
-        value,
-      })
-    );
-  } else if (type === `space`) {
+  if (type === `space`) {
     const firstSpace = value.indexOf(` `);
     const before = firstSpace !== -1 ? value.substring(0, firstSpace) : ``;
     const after =
@@ -195,6 +187,18 @@ function handleToken(
         value,
         start,
         end,
+      })
+    );
+  } else if (value.length === 1) {
+    /* catches: , / or any other single char value.
+    not sure about this, might be better to break down 
+    any multi value token into single literal nodes.
+    */
+    ast.push(
+      literal({
+        start,
+        end,
+        value,
       })
     );
   } else {
