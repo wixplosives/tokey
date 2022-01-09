@@ -157,6 +157,18 @@ describe(`value-parser`, () => {
                         }),
                     ],
                 },
+                {
+                    type: `<custom-ident>`,
+                    desc: `end with number`,
+                    source: `abc5`,
+                    expected: [
+                        customIdent({
+                            value: `abc5`,
+                            start: 0,
+                            end: 4,
+                        }),
+                    ],
+                },
             ].forEach(createTest);
         });
         describe(`dashed-ident`, () => {

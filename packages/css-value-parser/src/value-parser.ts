@@ -370,7 +370,7 @@ function isNumber(value: string) {
     return !!numVal && numVal === value;
 }
 function isStartOfNumber(value: string): false | [number: string, leftover: string] {
-    const match = value.match(new RegExp(validNumberRegex, `i`));
+    const match = value.match(new RegExp(`^(` + validNumberRegex + `)`, `i`));
     const numVal = match?.[0];
     return numVal ? [numVal, value.substring(numVal.length)] : false;
 }
