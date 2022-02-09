@@ -19,6 +19,7 @@ import {
     integer,
     color,
     invalid,
+    comment,
 } from './ast-types';
 import {
     lengthValidUnits,
@@ -30,7 +31,6 @@ import {
 import { tokenizeValue, CSSValueToken } from './tokenizer';
 import { stringifyCSSValue } from './value-stringify';
 import { Seeker, isComment } from '@tokey/core';
-import { comment } from '.';
 
 export type ParseResults = Array<BaseAstNode>;
 
