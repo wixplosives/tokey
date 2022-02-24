@@ -11,7 +11,7 @@
     "@tokey/core": "^1.2.1"
   },
   "devDependencies": {
-    "@webref/css": "^3.0.6"
+    "@webref/css": "^3.0.7"
   },
   "keywords": [
     "parser",
