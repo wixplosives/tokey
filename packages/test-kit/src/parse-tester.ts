@@ -38,7 +38,7 @@ export function createParseTester<AST, INPUT extends string, CONFIG>({
             throw new Error(createParseTester.errors.mismatchAst(a, e, label));
         }
         if (stringify) {
-            const actualString = stringify(actualAst!);
+            const actualString = stringify(actualAst);
             expectedString = expectedString ?? source;
             if (actualString !== expectedString) {
                 throw new Error(
