@@ -295,7 +295,7 @@ import {
     calcSpecificity,
 } from '@tokey/css-selector-parser';
 
-const specificity = parseCssSelector(`span.x.y#z`);
+const specificity = calcSpecificity(parseCssSelector(`span.x.y#z`));
 // [0, 1, 2, 1]
 ```
 
