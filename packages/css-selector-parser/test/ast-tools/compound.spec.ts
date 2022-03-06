@@ -332,6 +332,72 @@ describe(`ast-tools/compound`, () => {
         ]);
         expect(splitCompoundSelectors(groupedSelectors), `split`).to.eql(ast);
     });
+    it(`should configure deep compound unification`, () => {
+        const ast = parseCssSelector(`.a:is(.b.c)`);
+
+        const groupedSelectors = groupCompoundSelectors(ast, {
+            deep: true,
+        });
+
+        expect(groupedSelectors, `group`).to.eql([
+            createNode({
+                type: `selector`,
+                start: 0,
+                end: 11,
+                nodes: [
+                    createNode({
+                        type: `compound_selector`,
+                        start: 0,
+                        end: 11,
+                        nodes: [
+                            createNode({
+                                type: `class`,
+                                value: `a`,
+                                start: 0,
+                                end: 2,
+                            }),
+                            createNode({
+                                type: `pseudo_class`,
+                                value: `is`,
+                                start: 2,
+                                end: 11,
+                                nodes: [
+                                    createNode({
+                                        type: `selector`,
+                                        start: 6,
+                                        end: 10,
+                                        nodes: [
+                                            createNode({
+                                                type: `compound_selector`,
+                                                start: 6,
+                                                end: 10,
+                                                nodes: [
+                                                    createNode({
+                                                        type: `class`,
+                                                        value: `b`,
+                                                        start: 6,
+                                                        end: 8,
+                                                    }),
+                                                    createNode({
+                                                        type: `class`,
+                                                        value: `c`,
+                                                        start: 8,
+                                                        end: 10,
+                                                    }),
+                                                ],
+                                            }),
+                                        ],
+                                    }),
+                                ],
+                            }),
+                        ],
+                    }),
+                ],
+            }),
+        ]);
+        // ToDo: implement deep split
+        // expect(splitCompoundSelectors(groupedSelectors, { deep: true }), `split`).to.eql(ast);
+    });
     it(`should not split any other selectors`, () => {
         const ast = parseCssSelector(`.a:hover[attr]+el.b#id`);
 
