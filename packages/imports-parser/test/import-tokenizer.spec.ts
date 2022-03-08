@@ -49,6 +49,48 @@ describe(`demos/import-tokenizer`, () => {
             ],
         });
     });
+    it(`import "x" import "y" (strictSemiColon)`, () => {
+        testStrictSemiColon(`import "x" import "y"`, {
+            expectedAst: [
+                createImportValue({
+                    star: false,
+                    named: undefined,
+                    tagged: undefined,
+                    from: 'x',
+                    defaultName: undefined,
+                    errors: ['missing semicolon'],
+                    start: 0,
+                    end: 10,
+                }),
+                createImportValue({
+                    star: false,
+                    named: undefined,
+                    tagged: undefined,
+                    from: 'y',
+                    defaultName: undefined,
+                    errors: [],
+                    start: 11,
+                    end: 21,
+                })
+            ],
+        });
+    });
+    it(`import "x" (strictSemiColon)`, () => {
+        testStrictSemiColon(`import "x" /**/ `, {
+            expectedAst: [
+                createImportValue({
+                    star: false,
+                    named: undefined,
+                    tagged: undefined,
+                    from: 'x',
+                    defaultName: undefined,
+                    errors: [],
+                    start: 0,
+                    end: 10,
+                }),
+            ],
+        });
+    });
     it(`import "x" (strictSemiColon)`, () => {
         testStrictSemiColon(`import "x"`, {
             expectedAst: [
@@ -58,7 +100,7 @@ describe(`demos/import-tokenizer`, () => {
                     tagged: undefined,
                     from: 'x',
                     defaultName: undefined,
-                    errors: ['missing semicolon'],
+                    errors: [],
                     start: 0,
                     end: 10,
                 }),

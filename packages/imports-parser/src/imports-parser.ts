@@ -176,7 +176,7 @@ function findImports(
                 }
             }
             t = s.peek();
-            if (strictSemiColon && t.type !== ';') {
+            if (strictSemiColon && t.type !== ';' && !s.done()) {
                 errors.push('missing semicolon');
             } else if (t.type === ';') {
                 s.next();
