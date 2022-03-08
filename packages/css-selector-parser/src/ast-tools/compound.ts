@@ -46,6 +46,7 @@ export function groupCompoundSelectors<
             // second level: (parents.length === 1)
             if (options?.deep && `nodes` in node) {
                 // compound nested selectors
+                /* This `nodes` type is hard since it's internal we use any[] here. sorry */
                 const nodes: any[] = [];
                 for (const nested of node.nodes!) {
                     nodes.push(
