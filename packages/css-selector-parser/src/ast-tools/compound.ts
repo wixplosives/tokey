@@ -13,6 +13,7 @@ import { walk } from './walk';
 
 export interface GroupCompoundOptions {
     splitPseudoElements?: boolean;
+    deep?: boolean;
 }
 export function groupCompoundSelectors<AST extends Selector>(
     input: AST,
@@ -43,6 +44,19 @@ export function groupCompoundSelectors<
             context.addSelector(node);
         } else {
             // second level: (parents.length === 1)
+            if (options?.deep && `nodes` in node) {
+                // compound nested selectors
+                /* This `nodes` type is hard since it's internal we use any[] here. sorry */
+                const nodes: any[] = [];
+                for (const nested of node.nodes!) {
+                    nodes.push(
+                        nested.type === `selector`
+                            ? groupCompoundSelectors(nested, options)
+                            : nested
+                    );
+                }
+                node = { ...node, nodes };
+            }
             context.handleNode(node);
             // don't go deeper - shallow group
             return walk.skipNested;
