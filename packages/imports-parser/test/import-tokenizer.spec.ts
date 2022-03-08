@@ -5,6 +5,10 @@ const test = createParseTester({
     parse: (source: string) => parseImports(source, '{', '}'),
 });
 
+const testStrictSemiColon = createParseTester({
+    parse: (source: string) => parseImports(source, '{', '}', false, true),
+});
+
 const testTagged = createParseTester({
     parse: (source: string) => parseImports(source, '{', '}', true),
 });
@@ -41,6 +45,96 @@ describe(`demos/import-tokenizer`, () => {
                     errors: [],
                     start: 0,
                     end: 11,
+                }),
+            ],
+        });
+    });
+    it(`import "x" import "y" (strictSemiColon)`, () => {
+        testStrictSemiColon(`import "x" import "y"`, {
+            expectedAst: [
+                createImportValue({
+                    star: false,
+                    named: undefined,
+                    tagged: undefined,
+                    from: 'x',
+                    defaultName: undefined,
+                    errors: ['missing semicolon'],
+                    start: 0,
+                    end: 10,
+                }),
+                createImportValue({
+                    star: false,
+                    named: undefined,
+                    tagged: undefined,
+                    from: 'y',
+                    defaultName: undefined,
+                    errors: [],
+                    start: 11,
+                    end: 21,
+                })
+            ],
+        });
+    });
+    it(`import "x" (strictSemiColon)`, () => {
+        testStrictSemiColon(`import "x" /**/ `, {
+            expectedAst: [
+                createImportValue({
+                    star: false,
+                    named: undefined,
+                    tagged: undefined,
+                    from: 'x',
+                    defaultName: undefined,
+                    errors: [],
+                    start: 0,
+                    end: 10,
+                }),
+            ],
+        });
+    });
+    it(`import "x" (strictSemiColon)`, () => {
+        testStrictSemiColon(`import "x"`, {
+            expectedAst: [
+                createImportValue({
+                    star: false,
+                    named: undefined,
+                    tagged: undefined,
+                    from: 'x',
+                    defaultName: undefined,
+                    errors: [],
+                    start: 0,
+                    end: 10,
+                }),
+            ],
+        });
+    });
+    it(`import "x" ; (strictSemiColon)`, () => {
+        testStrictSemiColon(`import "x" ;`, {
+            expectedAst: [
+                createImportValue({
+                    star: false,
+                    named: undefined,
+                    tagged: undefined,
+                    from: 'x',
+                    defaultName: undefined,
+                    errors: [],
+                    start: 0,
+                    end: 12,
+                }),
+            ],
+        });
+    });
+    it(`import "x"/**/ ; (strictSemiColon)`, () => {
+        testStrictSemiColon(`import "x"/**/ ;`, {
+            expectedAst: [
+                createImportValue({
+                    star: false,
+                    named: undefined,
+                    tagged: undefined,
+                    from: 'x',
+                    defaultName: undefined,
+                    errors: [],
+                    start: 0,
+                    end: 16,
                 }),
             ],
         });

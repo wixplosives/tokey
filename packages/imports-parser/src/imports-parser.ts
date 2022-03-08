@@ -20,7 +20,8 @@ export function parseImports(
     source: string,
     blockStart = '{',
     blockEnd = '}',
-    taggedImportSupport = false
+    taggedImportSupport = false,
+    strictSemiColon = false
 ) {
     return findImports(
         tokenize<CodeToken>(source, {
@@ -35,7 +36,8 @@ export function parseImports(
         }),
         blockStart,
         blockEnd,
-        taggedImportSupport
+        taggedImportSupport,
+        strictSemiColon
     );
 }
 
@@ -71,7 +73,8 @@ function findImports(
     tokens: CodeToken[],
     blockStart: string,
     blockEnd: string,
-    taggedImportSupport = false
+    taggedImportSupport = false,
+    strictSemiColon = false
 ) {
     const imports: ImportValue[] = [];
     const s = new Seeker<CodeToken>(tokens);
@@ -172,8 +175,10 @@ function findImports(
                     errors.push('invalid missing source');
                 }
             }
-
-            if (s.peek().type === ';') {
+            t = s.peek();
+            if (strictSemiColon && t.type !== ';' && !s.done()) {
+                errors.push('missing semicolon');
+            } else if (t.type === ';') {
                 s.next();
             }
 
