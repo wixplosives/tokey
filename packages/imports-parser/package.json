@@ -1,14 +1,14 @@
 {
   "name": "@tokey/imports-parser",
   "description": "parser for esm like imports",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "main": "dist/imports-parser.js",
   "types": "dist/imports-parser.d.ts",
   "scripts": {
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },
   "dependencies": {
-    "@tokey/core": "^1.2.1"
+    "@tokey/core": "^1.3.0"
   },
   "keywords": [
     "parser",

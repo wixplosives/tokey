@@ -1,14 +1,14 @@
 {
   "name": "@tokey/url-tokenizer",
   "description": "tokenize css url() syntax",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "main": "dist/url-tokenizer.js",
   "types": "dist/url-tokenizer.d.ts",
   "scripts": {
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },
   "dependencies": {
-    "@tokey/core": "^1.2.1"
+    "@tokey/core": "^1.3.0"
   },
   "keywords": [
     "parser",
