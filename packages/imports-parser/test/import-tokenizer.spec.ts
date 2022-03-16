@@ -71,7 +71,7 @@ describe(`demos/import-tokenizer`, () => {
                     errors: [],
                     start: 11,
                     end: 21,
-                })
+                }),
             ],
         });
     });
