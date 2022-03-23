@@ -10,9 +10,6 @@
   "dependencies": {
     "@tokey/core": "^1.3.0"
   },
-  "devDependencies": {
-    "@webref/css": "^3.0.9"
-  },
   "keywords": [
     "parser",
     "css",
