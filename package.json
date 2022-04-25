@@ -20,7 +20,7 @@
     "@types/mocha": "^9.1.0",
     "@types/node": "12",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
-    "@typescript-eslint/parser": "^5.19.0",
+    "@typescript-eslint/parser": "^5.21.0",
     "@webref/css": "^4.0.0",
     "chai": "^4.3.6",
     "eslint": "^8.13.0",
