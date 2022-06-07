@@ -23,7 +23,7 @@
     "@typescript-eslint/parser": "^5.26.0",
     "@webref/css": "^4.2.1",
     "chai": "^4.3.6",
-    "eslint": "^8.16.0",
+    "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "mocha": "^10.0.0",
     "prettier": "^2.6.2",
