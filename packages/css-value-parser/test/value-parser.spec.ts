@@ -92,6 +92,11 @@ describe(`value-parser`, () => {
                 source: `(`,
                 expected: [literal({ value: `(`, start: 0, end: 1 })],
             },
+            {
+                type: `.`,
+                source: `.`,
+                expected: [literal({ value: `.`, start: 0, end: 1 })],
+            },
         ].forEach(createTest);
     });
     describe(`css-wide-keyword`, () => {
@@ -166,6 +171,24 @@ describe(`value-parser`, () => {
                             value: `abc5`,
                             start: 0,
                             end: 4,
+                        }),
+                    ],
+                },
+                {
+                    type: `<custom-ident>`,
+                    desc: `separated by dots`,
+                    source: `abc.xyz`,
+                    expected: [
+                        customIdent({
+                            value: `abc`,
+                            start: 0,
+                            end: 3,
+                        }),
+                        literal({ value: `.`, start: 3, end: 4 }),
+                        customIdent({
+                            value: `xyz`,
+                            start: 4,
+                            end: 7,
                         }),
                     ],
                 },
