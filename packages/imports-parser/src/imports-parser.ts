@@ -172,6 +172,7 @@ function findImports(
                 if (t.type === 'string') {
                     from = t.value.slice(1, -1);
                 } else {
+                    s.back();
                     errors.push('invalid missing source');
                 }
             }
