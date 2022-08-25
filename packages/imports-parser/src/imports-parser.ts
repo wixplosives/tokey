@@ -59,13 +59,15 @@ const shouldAddToken = (type: CodeToken['type']) =>
 export interface ImportValue {
     star: boolean;
     defaultName: string | undefined;
-    named: Record<string, string> | undefined;
-    tagged: Record<string, Record<string, string>> | undefined;
+    named: NamedMapping[] | undefined;
+    tagged: Record<string, NamedMapping[] | undefined>;
     from: string | undefined;
     errors: string[];
     start: number;
     end: number;
 }
+
+type NamedMapping = [from: string, to: string];
 
 const isImportBlockEndError = (token: CodeToken) => token.value === 'from' || token.type === ';';
 
@@ -89,8 +91,8 @@ function findImports(
             const errors = [];
             let defaultName;
             let star = false;
-            let named = undefined;
-            let tagged = undefined;
+            let named: ImportValue['named'] = undefined;
+            let tagged: ImportValue['tagged'] = {};
             let from;
             t = s.next();
             if (t.type === 'string') {
@@ -186,7 +188,7 @@ function findImports(
                 star,
                 defaultName,
                 named,
-                tagged: tagged,
+                tagged,
                 from,
                 errors,
                 start: s.tokens[startTokenIndex].start,
@@ -198,8 +200,8 @@ function findImports(
 }
 
 function processNamedBlock(block: CodeToken[], errors: string[], taggedImportSupport: boolean) {
-    const named: Record<string, string> = {};
-    const tagged: Record<string, Record<string, string>> = {};
+    const named: [from: string, to: string][] = [];
+    const tagged: Record<string, [from: string, to: string][]> = {};
     const tokens: CodeToken[] = [];
 
     for (let i = 0; i < block.length; i++) {
@@ -238,10 +240,10 @@ function processNamedBlock(block: CodeToken[], errors: string[], taggedImportSup
     function pushToken() {
         if (tokens.length === 1) {
             const name = tokens[0].value;
-            named[name] = name;
+            named.push([name, name]);
         } else if (tokens.length === 3) {
             if (tokens[1].value === 'as') {
-                named[tokens[0].value] = tokens[2].value;
+                named.push([tokens[0].value, tokens[2].value]);
             }
         }
         tokens.length = 0;
