@@ -284,39 +284,46 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
             }
             node.multipliers.range = typeToRange(token.type);
         } else if (token.type === '{') {
-            const node = lastParsedNode(ast);
-
-            if (!node || isLowLevelGroup(node) || node.type === 'juxtaposing') {
-                throw new Error('unexpected range modifier');
-            }
-
-            const start = s.eat('space').take('text');
-            if (!start) {
-                throw new Error('missing range start value');
-            }
-            const sep = s.eat('space').take(',');
-            if (sep) {
-                const end = s.eat('space').take('text');
-                const close = s.eat('space').take('}');
-                if (!close) {
-                    throw new Error('missing }');
-                }
-
-                node.multipliers ??= {};
-                if (node.multipliers.range) {
-                    throw new Error('multiple multipliers on same node');
-                }
-                node.multipliers.range = [parseNumber(start.value), parseNumber(end?.value ?? '∞')];
+            if (s.peekBack().type === 'space') {
+                ast.push(literal(token.value, false));
             } else {
-                const close = s.eat('space').take('}');
-                if (!close) {
-                    throw new Error('missing }');
+                const node = lastParsedNode(ast);
+
+                if (!node || isLowLevelGroup(node) || node.type === 'juxtaposing') {
+                    throw new Error('unexpected range modifier');
                 }
-                node.multipliers ??= {};
-                if (node.multipliers.range) {
-                    throw new Error('multiple multipliers on same node');
+
+                const start = s.eat('space').take('text');
+                if (!start) {
+                    throw new Error('missing range start value');
                 }
-                node.multipliers.range = [parseNumber(start.value), parseNumber(start.value)];
+                const sep = s.eat('space').take(',');
+                if (sep) {
+                    const end = s.eat('space').take('text');
+                    const close = s.eat('space').take('}');
+                    if (!close) {
+                        throw new Error('missing }');
+                    }
+
+                    node.multipliers ??= {};
+                    if (node.multipliers.range) {
+                        throw new Error('multiple multipliers on same node');
+                    }
+                    node.multipliers.range = [
+                        parseNumber(start.value),
+                        parseNumber(end?.value ?? '∞'),
+                    ];
+                } else {
+                    const close = s.eat('space').take('}');
+                    if (!close) {
+                        throw new Error('missing }');
+                    }
+                    node.multipliers ??= {};
+                    if (node.multipliers.range) {
+                        throw new Error('multiple multipliers on same node');
+                    }
+                    node.multipliers.range = [parseNumber(start.value), parseNumber(start.value)];
+                }
             }
         } else if (token.type === '#') {
             const node = lastParsedNode(ast);
@@ -333,6 +340,8 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
             ast.push(doubleAmpersand([]));
         } else if (token.type === '|') {
             ast.push(s.take('|') ? doubleBar([]) : bar([]));
+        } else if (token.type === '}') {
+            ast.push(literal(token.value, false));
         } else {
             throw new Error(`UnHandled ${JSON.stringify(token)}`);
         }
