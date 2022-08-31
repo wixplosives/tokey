@@ -284,6 +284,22 @@ describe(`demos/import-tokenizer`, () => {
                 ],
             });
         });
+        it(`import {a}`, () => {
+            test(`import {a}`, {
+                expectedAst: [
+                    createImportValue({
+                        star: false,
+                        named: { a: 'a' },
+                        tagged: {},
+                        from: undefined,
+                        defaultName: undefined,
+                        errors: ['invalid missing from', 'invalid missing source'],
+                        start: 0,
+                        end: 10,
+                    }),
+                ],
+            });
+        });
         it(`import {a as, b} "x"`, () => {
             // this case can be better by reporting missing name after as
             test(`import {a as, b} "x"`, {
