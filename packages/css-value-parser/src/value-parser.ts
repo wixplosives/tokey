@@ -178,6 +178,18 @@ function handleToken(
                 })
             );
         }
+    } else if (type === '.') {
+        if (parseNumber(token, ast, source, s)) {
+            // number parsed
+        } else {
+            ast.push(
+                literal({
+                    start,
+                    end,
+                    value,
+                })
+            );
+        }
     } else if (isComment(type)) {
         ast.push(
             comment({
@@ -255,7 +267,12 @@ function parseNumber(
     if (!numberUnit) {
         // collect potential extra number parts
         let nextToken = s.peek(peekCount);
-        while (nextToken.type === `-` || nextToken.type === `+` || nextToken.type === `text`) {
+        while (
+            nextToken.type === `-` ||
+            nextToken.type === `+` ||
+            nextToken.type === `.` ||
+            nextToken.type === `text`
+        ) {
             const nextValue = numberValue + nextToken.value;
             // const validNumber = isNumber(nextValue);
             startMatch = isStartOfNumber(nextValue);
@@ -347,12 +364,13 @@ const knownUnits = {
     }, {} as Record<typeof resolutionValidUnits[number], typeof resolution>),
 } as const;
 
-const NumberRegExp = /[-+]?(\d+\.?\d*|\d*\.?\d+)(e[-+]?\d+)?/i;
+const NumberRegExp = /^[-+]?(\d+\.?\d*|\d*\.?\d+)(e[-+]?\d+)?/i;
 const integerRegExp = /^[-+]?\d+$/i; // one or more decimal digits 0 through 9 (preceded by -/+ ) - https://www.w3.org/TR/css-values-4/#integer-value
 const validNumberRegex = [
     /[-+]?(\d+\.?\d*|\d*\.?\d+)(e[-+]?\d*)?/, // float+exponential
     /[-+]?\d+(e[-+]?\d*)?/, // int+exponential
     /[-+]/, // sign
+    /[-+]?\./, // optional-sign+dot
 ]
     .map((r) => r.source)
     .join(`|`); // join with one-of ("or")

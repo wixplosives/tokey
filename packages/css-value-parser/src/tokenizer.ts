@@ -10,7 +10,7 @@ import {
 } from '@tokey/core';
 import type { Token, Descriptors } from '@tokey/core';
 
-type Delimiters = '(' | ')' | ',' | '/' | '+' | '-' | '*' | '#';
+type Delimiters = '(' | ')' | ',' | '/' | '+' | '-' | '*' | '#' | '.';
 
 export type CSSValueToken = Token<Descriptors | Delimiters>;
 
@@ -42,4 +42,5 @@ const isDelimiter = (char: string, previousChar: string) =>
         char === '+' ||
         char === '-' ||
         char === '*' ||
-        char === '#');
+        char === '#' ||
+        char === '.');
