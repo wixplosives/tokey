@@ -311,7 +311,7 @@ describe(`demos/import-tokenizer`, () => {
                 expectedAst: [
                     createImportValue({
                         star: false,
-                        named: { a: 'a' },
+                        named: [['a', 'a']],
                         tagged: {},
                         from: undefined,
                         defaultName: undefined,
