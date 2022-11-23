@@ -17,7 +17,7 @@ import * as webCssRef from '@webref/css';
 
 describe(`sanity`, () => {
     const knownProblemticValuespacesCases = [
-        `<custom-selector>: <custom-arg>? : <extension-name> [ ( <custom-arg>+#? ) ]? ;`
+        `<custom-selector>: <custom-arg>? : <extension-name> [ ( <custom-arg>+#? ) ]? ;`,
     ];
     before(async () => {
         const specs = await webCssRef.listAll();
