@@ -8,12 +8,10 @@ declare module '@webref/css' {
                 initial: string;
             }
         >;
-        valuespaces: Record<
-            string,
-            {
-                value?: string;
-            }
-        >;
+        values: Array<{
+            name: string;
+            value?: string;
+        }>;
     }
     export function listAll(): Promise<Record<string, SpecData>>;
 }

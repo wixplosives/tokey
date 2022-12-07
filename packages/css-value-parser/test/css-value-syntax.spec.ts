@@ -33,7 +33,7 @@ describe(`sanity`, () => {
                     }
                 });
                 describe('valuespaces', () => {
-                    for (const [name, { value }] of Object.entries(data.valuespaces)) {
+                    for (const { name, value } of data.values) {
                         if (value) {
                             const title = `${name}: ${value}`;
                             if (knownProblemticValuespacesCases.includes(title)) {
