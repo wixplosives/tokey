@@ -3477,6 +3477,76 @@ describe(`selector-parser`, () => {
             });
         });
     });
+    describe('multiline', () => {
+        it(`.a\n \n.b`, () => {
+            test(`.a\n \n.b`, {
+                expectedAst: [
+                    createNode({
+                        type: `selector`,
+                        start: 0,
+                        end: 7,
+                        nodes: [
+                            createNode({
+                                type: `class`,
+                                value: `a`,
+                                start: 0,
+                                end: 2,
+                            }),
+                            createNode({
+                                type: `combinator`,
+                                combinator: `space`,
+                                value: `\n`,
+                                start: 2,
+                                end: 5,
+                                before: '',
+                                after: ' \n',
+                            }),
+                            createNode({
+                                type: `class`,
+                                value: `b`,
+                                start: 5,
+                                end: 7,
+                            }),
+                        ],
+                    }),
+                ],
+            });
+        });
+        it(`.a\n+\n.b`, () => {
+            test(`.a\n+\n.b`, {
+                expectedAst: [
+                    createNode({
+                        type: `selector`,
+                        start: 0,
+                        end: 7,
+                        nodes: [
+                            createNode({
+                                type: `class`,
+                                value: `a`,
+                                start: 0,
+                                end: 2,
+                            }),
+                            createNode({
+                                type: `combinator`,
+                                combinator: `+`,
+                                value: `+`,
+                                start: 2,
+                                end: 5,
+                                before: '\n',
+                                after: '\n',
+                            }),
+                            createNode({
+                                type: `class`,
+                                value: `b`,
+                                start: 5,
+                                end: 7,
+                            }),
+                        ],
+                    }),
+                ],
+            });
+        });
+    });
     describe(`config`, () => {
         describe(`offset`, () => {
             it(`should start from a given offset`, () => {
