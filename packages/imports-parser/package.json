@@ -1,7 +1,7 @@
 {
   "name": "@tokey/imports-parser",
   "description": "parser for esm like imports",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "dist/imports-parser.js",
   "types": "dist/imports-parser.d.ts",
   "scripts": {
