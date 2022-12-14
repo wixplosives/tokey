@@ -43,7 +43,7 @@ export function createCombinatorAst({
     return {
         type: `combinator`,
         combinator: type,
-        value: type === `space` ? ` ` : value,
+        value: type === `space` ? value[0] : value,
         start,
         end,
         before: ``,
