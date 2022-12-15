@@ -22,7 +22,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: false,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'x',
                     defaultName: undefined,
                     errors: [],
@@ -39,7 +39,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: false,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'x',
                     defaultName: undefined,
                     errors: [],
@@ -55,7 +55,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: false,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'x',
                     defaultName: undefined,
                     errors: ['missing semicolon'],
@@ -65,7 +65,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: false,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'y',
                     defaultName: undefined,
                     errors: [],
@@ -81,7 +81,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: false,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'x',
                     defaultName: undefined,
                     errors: [],
@@ -97,7 +97,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: false,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'x',
                     defaultName: undefined,
                     errors: [],
@@ -113,7 +113,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: false,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'x',
                     defaultName: undefined,
                     errors: [],
@@ -129,7 +129,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: false,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'x',
                     defaultName: undefined,
                     errors: [],
@@ -145,7 +145,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: false,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'x',
                     defaultName: 'name',
                     errors: [],
@@ -160,7 +160,7 @@ describe(`demos/import-tokenizer`, () => {
             expectedAst: [
                 createImportValue({
                     star: false,
-                    named: { named: 'named' },
+                    named: [['named', 'named']],
                     tagged: {},
                     from: 'x',
                     defaultName: undefined,
@@ -176,7 +176,7 @@ describe(`demos/import-tokenizer`, () => {
             expectedAst: [
                 createImportValue({
                     star: false,
-                    named: { named: 'renamed' },
+                    named: [['named', 'renamed']],
                     tagged: {},
                     from: 'x',
                     defaultName: undefined,
@@ -187,17 +187,16 @@ describe(`demos/import-tokenizer`, () => {
             ],
         });
     });
-    it.skip(`import {x, x as local-x} from "x"`, () => {
+    it(`import {x, x as local-x} from "x"`, () => {
         test(`import {x, x as local-x} from "x"`, {
             expectedAst: [
                 createImportValue({
                     star: false,
-                    named: {},
-                    // [
-                    //     ['x', 'x'],
-                    //     ['x', 'local-x'],
-                    // ],
-                    tagged: undefined,
+                    named: [
+                        ['x', 'x'],
+                        ['x', 'local-x'],
+                    ],
+                    tagged: {},
                     from: 'x',
                     defaultName: undefined,
                     errors: [],
@@ -212,7 +211,7 @@ describe(`demos/import-tokenizer`, () => {
             expectedAst: [
                 createImportValue({
                     star: false,
-                    named: { named: 'named' },
+                    named: [['named', 'named']],
                     tagged: {},
                     from: 'x',
                     defaultName: 'name',
@@ -229,7 +228,7 @@ describe(`demos/import-tokenizer`, () => {
                 createImportValue({
                     star: true,
                     named: undefined,
-                    tagged: undefined,
+                    tagged: {},
                     from: 'x',
                     defaultName: 'name',
                     errors: [],
@@ -244,7 +243,10 @@ describe(`demos/import-tokenizer`, () => {
             expectedAst: [
                 createImportValue({
                     star: false,
-                    named: { named1: 'named1', named2: 'named2' },
+                    named: [
+                        ['named1', 'named1'],
+                        ['named2', 'named2'],
+                    ],
                     tagged: {},
                     from: 'x',
                     defaultName: undefined,
@@ -260,7 +262,7 @@ describe(`demos/import-tokenizer`, () => {
             expectedAst: [
                 createImportValue({
                     star: false,
-                    named: { named: 'named' },
+                    named: [['named', 'named']],
                     tagged: {},
                     from: 'x',
                     defaultName: undefined,
@@ -278,7 +280,7 @@ describe(`demos/import-tokenizer`, () => {
                     createImportValue({
                         star: true,
                         named: undefined,
-                        tagged: undefined,
+                        tagged: {},
                         from: 'x',
                         defaultName: undefined,
                         errors: ['expected as after *'],
@@ -294,7 +296,7 @@ describe(`demos/import-tokenizer`, () => {
                     createImportValue({
                         star: true,
                         named: undefined,
-                        tagged: undefined,
+                        tagged: {},
                         from: 'x',
                         defaultName: undefined,
                         errors: ['expected as after *', 'invalid missing from'],
@@ -309,7 +311,7 @@ describe(`demos/import-tokenizer`, () => {
                 expectedAst: [
                     createImportValue({
                         star: false,
-                        named: { a: 'a' },
+                        named: [['a', 'a']],
                         tagged: {},
                         from: undefined,
                         defaultName: undefined,
@@ -326,7 +328,7 @@ describe(`demos/import-tokenizer`, () => {
                 expectedAst: [
                     createImportValue({
                         star: false,
-                        named: { b: 'b' },
+                        named: [['b', 'b']],
                         tagged: {},
                         from: 'x',
                         defaultName: undefined,
@@ -344,7 +346,7 @@ describe(`demos/import-tokenizer`, () => {
                     createImportValue({
                         star: false,
                         named: undefined,
-                        tagged: undefined,
+                        tagged: {},
                         from: 'x',
                         defaultName: undefined,
                         errors: ['unclosed block'],
@@ -360,7 +362,7 @@ describe(`demos/import-tokenizer`, () => {
                     createImportValue({
                         star: false,
                         named: undefined,
-                        tagged: undefined,
+                        tagged: {},
                         from: undefined,
                         defaultName: undefined,
                         errors: [
@@ -374,7 +376,7 @@ describe(`demos/import-tokenizer`, () => {
                     createImportValue({
                         star: false,
                         named: undefined,
-                        tagged: undefined,
+                        tagged: {},
                         from: 'y',
                         defaultName: undefined,
                         errors: [],
@@ -390,7 +392,7 @@ describe(`demos/import-tokenizer`, () => {
                     createImportValue({
                         star: false,
                         named: undefined,
-                        tagged: undefined,
+                        tagged: {},
                         from: 'x',
                         defaultName: undefined,
                         errors: ['missing name'],
@@ -405,7 +407,7 @@ describe(`demos/import-tokenizer`, () => {
                 expectedAst: [
                     createImportValue({
                         star: true,
-                        named: { a: 'a' },
+                        named: [['a', 'a']],
                         tagged: {},
                         from: 'x',
                         defaultName: 'x',
@@ -423,8 +425,13 @@ describe(`demos/import-tokenizer`, () => {
                 expectedAst: [
                     createImportValue({
                         star: false,
-                        named: {},
-                        tagged: { named: { a: 'b', c: 'c' } },
+                        named: [],
+                        tagged: {
+                            named: [
+                                ['a', 'b'],
+                                ['c', 'c'],
+                            ],
+                        },
                         from: 'x',
                         defaultName: undefined,
                         errors: [],
@@ -439,8 +446,13 @@ describe(`demos/import-tokenizer`, () => {
                 expectedAst: [
                     createImportValue({
                         star: false,
-                        named: {},
-                        tagged: { ',': { a: 'b', c: 'c' } },
+                        named: [],
+                        tagged: {
+                            ',': [
+                                ['a', 'b'],
+                                ['c', 'c'],
+                            ],
+                        },
                         from: 'x',
                         defaultName: undefined,
                         errors: ['invalid tag name: ,'],
@@ -455,8 +467,13 @@ describe(`demos/import-tokenizer`, () => {
                 expectedAst: [
                     createImportValue({
                         star: false,
-                        named: {},
-                        tagged: { named: { a: 'b', c: 'c' } },
+                        named: [],
+                        tagged: {
+                            named: [
+                                ['a', 'b'],
+                                ['c', 'c'],
+                            ],
+                        },
                         from: 'x',
                         defaultName: undefined,
                         errors: ['unclosed tagged import "named"'],
@@ -471,10 +488,8 @@ describe(`demos/import-tokenizer`, () => {
                 expectedAst: [
                     createImportValue({
                         star: false,
-                        named: {
-                            c: 'c',
-                        },
-                        tagged: { tag1: { a: 'a' }, tag2: { b: 'b' } },
+                        named: [['c', 'c']],
+                        tagged: { tag1: [['a', 'a']], tag2: [['b', 'b']] },
                         from: 'x',
                         defaultName: undefined,
                         errors: [],
