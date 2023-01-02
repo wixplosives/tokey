@@ -37,6 +37,18 @@ const isDelimiter = (char: string, previousChar: string) =>
     previousChar !== '\\' &&
     (char === '(' ||
         char === ')' ||
+        char === '[' ||
+        char === ']' ||
+        char === '<' ||
+        char === '>' ||
+        char === '{' ||
+        char === '}' ||
+        char === '@' ||
+        char === '|' ||
+        char === ':' ||
+        char === ';' ||
+        char === '~' ||
+        char === '&' ||
         char === ',' ||
         char === '/' ||
         char === '+' ||

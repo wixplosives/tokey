@@ -97,6 +97,32 @@ describe(`value-parser`, () => {
                 source: `.`,
                 expected: [literal({ value: `.`, start: 0, end: 1 })],
             },
+            {
+                type: `literals`,
+                source: `()[]<>{}@|:;~&,/+-*.`,
+                expected: [
+                    literal({ value: `(`, start: 0, end: 1 }),
+                    literal({ value: `)`, start: 1, end: 2 }),
+                    literal({ value: `[`, start: 2, end: 3 }),
+                    literal({ value: `]`, start: 3, end: 4 }),
+                    literal({ value: `<`, start: 4, end: 5 }),
+                    literal({ value: `>`, start: 5, end: 6 }),
+                    literal({ value: `{`, start: 6, end: 7 }),
+                    literal({ value: `}`, start: 7, end: 8 }),
+                    literal({ value: `@`, start: 8, end: 9 }),
+                    literal({ value: `|`, start: 9, end: 10 }),
+                    literal({ value: `:`, start: 10, end: 11 }),
+                    literal({ value: `;`, start: 11, end: 12 }),
+                    literal({ value: `~`, start: 12, end: 13 }),
+                    literal({ value: `&`, start: 13, end: 14 }),
+                    literal({ value: `,`, start: 14, end: 15 }),
+                    literal({ value: `/`, start: 15, end: 16 }),
+                    literal({ value: `+`, start: 16, end: 17 }),
+                    literal({ value: `-`, start: 17, end: 18 }),
+                    literal({ value: `*`, start: 18, end: 19 }),
+                    literal({ value: `.`, start: 19, end: 20 }),
+                ],
+            },
         ].forEach(createTest);
     });
     describe(`css-wide-keyword`, () => {
@@ -164,6 +190,18 @@ describe(`value-parser`, () => {
                 },
                 {
                     type: `<custom-ident>`,
+                    desc: `with all possible non escape chars`,
+                    source: `azAZ09_-🥸`,
+                    expected: [
+                        customIdent({
+                            value: `azAZ09_-🥸`,
+                            start: 0,
+                            end: 10,
+                        }),
+                    ],
+                },
+                {
+                    type: `<custom-ident>`,
                     desc: `end with number`,
                     source: `abc5`,
                     expected: [
@@ -190,6 +228,20 @@ describe(`value-parser`, () => {
                             start: 4,
                             end: 7,
                         }),
+                    ],
+                },
+                {
+                    type: `<custom-ident>`,
+                    desc: `wrapped in brackets`,
+                    source: `[abc]`,
+                    expected: [
+                        literal({ value: `[`, start: 0, end: 1 }),
+                        customIdent({
+                            value: `abc`,
+                            start: 1,
+                            end: 4,
+                        }),
+                        literal({ value: `]`, start: 4, end: 5 }),
                     ],
                 },
             ].forEach(createTest);
