@@ -80,13 +80,13 @@ export type Number = CSSValueAST<`<number>`>;
 export type Percentage = Unit<`<percentage>`, `%`>;
 export type Ratio = CSSValueAST<`<ratio>`>;
 // distance
-export type Length = Unit<`<length>`, AnyCase<typeof lengthValidUnits[number]>>;
+export type Length = Unit<`<length>`, AnyCase<(typeof lengthValidUnits)[number]>>;
 // other quantities
 export type Flex = Unit<`<flex>`, AnyCase<`fr`>>;
-export type Angle = Unit<`<angle>`, AnyCase<typeof angleValidUnits[number]>>;
-export type Time = Unit<`<time>`, AnyCase<typeof timeValidUnits[number]>>;
-export type Frequency = Unit<`<frequency>`, AnyCase<typeof frequencyValidUnits[number]>>;
-export type Resolution = Unit<`<resolution>`, AnyCase<typeof resolutionValidUnits[number]>>;
+export type Angle = Unit<`<angle>`, AnyCase<(typeof angleValidUnits)[number]>>;
+export type Time = Unit<`<time>`, AnyCase<(typeof timeValidUnits)[number]>>;
+export type Frequency = Unit<`<frequency>`, AnyCase<(typeof frequencyValidUnits)[number]>>;
+export type Resolution = Unit<`<resolution>`, AnyCase<(typeof resolutionValidUnits)[number]>>;
 // other
 export type Color = CSSValueAST<`<color>`>;
 export type Image = CSSValueAST<`<image>`>;
