@@ -345,23 +345,23 @@ const knownUnits = {
     ...lengthValidUnits.reduce((units, unit) => {
         units[unit] = length;
         return units;
-    }, {} as Record<typeof lengthValidUnits[number], typeof length>),
+    }, {} as Record<(typeof lengthValidUnits)[number], typeof length>),
     ...angleValidUnits.reduce((units, unit) => {
         units[unit] = angle;
         return units;
-    }, {} as Record<typeof angleValidUnits[number], typeof angle>),
+    }, {} as Record<(typeof angleValidUnits)[number], typeof angle>),
     ...timeValidUnits.reduce((units, unit) => {
         units[unit] = time;
         return units;
-    }, {} as Record<typeof timeValidUnits[number], typeof time>),
+    }, {} as Record<(typeof timeValidUnits)[number], typeof time>),
     ...frequencyValidUnits.reduce((units, unit) => {
         units[unit] = frequency;
         return units;
-    }, {} as Record<typeof frequencyValidUnits[number], typeof frequency>),
+    }, {} as Record<(typeof frequencyValidUnits)[number], typeof frequency>),
     ...resolutionValidUnits.reduce((units, unit) => {
         units[unit] = resolution;
         return units;
-    }, {} as Record<typeof resolutionValidUnits[number], typeof resolution>),
+    }, {} as Record<(typeof resolutionValidUnits)[number], typeof resolution>),
 } as const;
 
 const NumberRegExp = /^[-+]?(\d+\.?\d*|\d*\.?\d+)(e[-+]?\d+)?/i;
