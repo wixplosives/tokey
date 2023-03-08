@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "rimraf \"./packages/*/{dist,cjs,esm}\" \"./demos/dist\"",
+    "clean": "rimraf -g \"./packages/*/{dist,cjs,esm}\" \"./demos/dist\"",
     "build": "tsc --build",
     "watch": "npm run build -- -w",
     "lint": "eslint .",
@@ -19,15 +19,15 @@
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
     "@types/node": "12",
-    "@typescript-eslint/eslint-plugin": "^5.54.0",
-    "@typescript-eslint/parser": "^5.54.0",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
     "@webref/css": "^6.4.1",
     "chai": "^4.3.7",
     "eslint": "^8.35.0",
-    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-prettier": "^8.7.0",
     "mocha": "^10.2.0",
     "prettier": "^2.8.4",
-    "rimraf": "^3.0.2",
+    "rimraf": "^4.3.1",
     "typescript": "~4.9.5"
   },
   "engines": {
