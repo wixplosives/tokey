@@ -271,6 +271,7 @@ function parseNumber(
             nextToken.type === `-` ||
             nextToken.type === `+` ||
             nextToken.type === `.` ||
+            nextToken.type === `%` ||
             nextToken.type === `text`
         ) {
             const nextValue = numberValue + nextToken.value;
