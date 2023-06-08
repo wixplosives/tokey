@@ -244,6 +244,25 @@ describe(`value-parser`, () => {
                         literal({ value: `]`, start: 4, end: 5 }),
                     ],
                 },
+                {
+                    type: `<custom-ident>`,
+                    desc: `split custom ident`,
+                    source: `abc==efg`,
+                    expected: [
+                        customIdent({
+                            value: `abc`,
+                            start: 0,
+                            end: 3,
+                        }),
+                        literal({ value: `=`, start: 3, end: 4 }),
+                        literal({ value: `=`, start: 4, end: 5 }),
+                        customIdent({
+                            value: `efg`,
+                            start: 5,
+                            end: 8,
+                        }),
+                    ],
+                },
             ].forEach(createTest);
         });
         describe(`dashed-ident`, () => {

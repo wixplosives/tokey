@@ -15,12 +15,14 @@ export interface TokyOptions<T extends Token<unknown>> {
     ): boolean;
     getUnclosedComment(inComment: string): string;
     createToken(value: string, type: T['type'], start: number, end: number): T;
+    shouldClose?(ch: string, previousChar: string): boolean;
     offset?: number;
 }
 
 export function tokenize<T extends Token<unknown>>(
     source: string,
     {
+        shouldClose,
         isDelimiter,
         isStringDelimiter,
         isWhitespace,
@@ -70,6 +72,10 @@ export function tokenize<T extends Token<unknown>>(
         } else if (!isWhitespace(ch) && isWhitespace(previousChar)) {
             pushBuffer();
             buffer += ch;
+        } else if(shouldClose?.(ch, previousChar)) {
+            pushBuffer();
+            buffer += ch;
+            pushBuffer(ch);
         } else {
             buffer += ch;
         }
