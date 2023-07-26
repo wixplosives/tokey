@@ -15,12 +15,12 @@
     "start": "node scripts/dev-server.js"
   },
   "devDependencies": {
-    "@ts-tools/node": "^4.0.0",
+    "@ts-tools/node": "^5.0.1",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "12",
-    "@typescript-eslint/eslint-plugin": "^6.1.0",
-    "@typescript-eslint/parser": "^6.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
     "@webref/css": "^6.6.2",
     "chai": "^4.3.7",
     "eslint": "^8.45.0",
