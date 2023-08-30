@@ -15,20 +15,20 @@
     "start": "node scripts/dev-server.js"
   },
   "devDependencies": {
-    "@ts-tools/node": "^5.0.1",
+    "@ts-tools/node": "^5.0.2",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "12",
-    "@typescript-eslint/eslint-plugin": "^6.4.1",
-    "@typescript-eslint/parser": "^6.4.1",
-    "@webref/css": "^6.6.2",
-    "chai": "^4.3.7",
-    "eslint": "^8.47.0",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
+    "@webref/css": "^6.7.0",
+    "chai": "^4.3.8",
+    "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "mocha": "^10.2.0",
-    "prettier": "^3.0.2",
+    "prettier": "^3.0.3",
     "rimraf": "^5.0.1",
-    "typescript": "~5.1.6"
+    "typescript": "~5.2.2"
   },
   "engines": {
     "node": ">=12"
