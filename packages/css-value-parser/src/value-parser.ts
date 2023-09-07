@@ -50,12 +50,18 @@ function handleToken(
 ): void {
     const { type, value, start, end } = token;
     if (type === `space`) {
-        const firstSpace = value.indexOf(` `);
+        let firstSpace = value.indexOf(` `);
+        if (firstSpace === -1) {
+            firstSpace = value.indexOf(`\n`);
+        }
+        if (firstSpace === -1) {
+            firstSpace = value.indexOf(`\t`);
+        }
         const before = firstSpace !== -1 ? value.substring(0, firstSpace) : ``;
         const after = firstSpace !== -1 ? value.substring(firstSpace + 1) : value.substring(1);
         ast.push(
             space({
-                value: firstSpace !== -1 ? ` ` : value[0],
+                value: firstSpace !== -1 ? value[firstSpace] : value[0],
                 start,
                 end,
                 before,

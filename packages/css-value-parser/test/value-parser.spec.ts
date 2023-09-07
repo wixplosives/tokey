@@ -63,6 +63,16 @@ describe(`value-parser`, () => {
                     }),
                 ],
             },
+            {
+                type: `\\r\\n`,
+                source: `\r\n`,
+                expected: [space({ value: `\n`, before: '\r', start: 0, end: 2 })],
+            },
+            {
+                type: `\\r\\t`,
+                source: `\r\t`,
+                expected: [space({ value: `\t`, before: '\r', start: 0, end: 2 })],
+            },
         ].forEach(createTest);
     });
     describe(`literals`, () => {
