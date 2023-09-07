@@ -1670,6 +1670,27 @@ describe(`selector-parser`, () => {
                 ],
             });
         });
+        it(` /**/ `, () => {
+            test(` /**/ `, {
+                expectedAst: [
+                    createNode({
+                        type: `selector`,
+                        start: 0,
+                        end: 6,
+                        before: ` `,
+                        nodes: [
+                            createNode({
+                                type: `comment`,
+                                value: `/**/`,
+                                start: 1,
+                                end: 6,
+                                after: ` `,
+                            }),
+                        ],
+                    }),
+                ],
+            });
+        });
         it(`./*comment1???*//*???comment2*/classX`, () => {
             test(`./*comment1???*//*???comment2*/classX`, {
                 expectedAst: [
