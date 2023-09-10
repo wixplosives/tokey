@@ -109,8 +109,9 @@ export function trimCombinators(selector: Selector) {
         let current = lastNode;
         let lastComment: Comment | undefined;
         while (
-            current.type === `comment` ||
-            (current.type === `combinator` && current.combinator === `space`)
+            current &&
+            (current.type === `comment` ||
+                (current.type === `combinator` && current.combinator === `space`))
         ) {
             if (current.type === `combinator`) {
                 if (!lastComment) {
