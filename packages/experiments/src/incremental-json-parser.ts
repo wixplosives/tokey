@@ -351,11 +351,8 @@ export class IncrementalJSONParser {
         const lines = input.slice(0, this.index).split('\n');
         const line = lines.length;
         const col = this.index - input.lastIndexOf('\n', this.index);
-        const partialView = input.slice(this.index - 10, this.index + 10);
-        partialView;
-        const msg = `Unexpected character: ${ch} at line ${line} col ${col} near: \n${partialView}\n${
-            ' '.repeat(Math.min(input.length - 1, 10)) + '^'
-        }`;
+        const partialView = input.slice(Math.max(this.index - 10, 0), this.index + 10);
+        const msg = `Unexpected character: ${ch} at line ${line} col ${col} near: \n${partialView}`;
         if (expected) {
             return `${msg}. Expected: ${expected}`;
         }
