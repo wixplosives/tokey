@@ -2,8 +2,11 @@
   "name": "@tokey/core",
   "description": "simple code like tokenizer",
   "version": "1.4.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./helpers": "./dist/helpers.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },
