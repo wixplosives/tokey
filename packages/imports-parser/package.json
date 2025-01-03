@@ -2,8 +2,10 @@
   "name": "@tokey/imports-parser",
   "description": "parser for esm like imports",
   "version": "1.0.0",
-  "main": "dist/imports-parser.js",
-  "types": "dist/imports-parser.d.ts",
+  "exports": {
+    ".": "./dist/imports-parser.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },

@@ -1,5 +1,5 @@
 import { testTokenizer as test } from '@tokey/test-kit';
-import { trimTokens } from '@tokey/core/dist/helpers';
+import { trimTokens } from '@tokey/core/helpers';
 import type { Token } from '@tokey/core';
 
 const trimSpace = (tokens: Token[]) => trimTokens(tokens, (token) => token.type === 'space');

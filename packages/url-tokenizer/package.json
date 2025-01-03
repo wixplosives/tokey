@@ -2,8 +2,10 @@
   "name": "@tokey/url-tokenizer",
   "description": "tokenize css url() syntax",
   "version": "0.1.0",
-  "main": "dist/url-tokenizer.js",
-  "types": "dist/url-tokenizer.d.ts",
+  "exports": {
+    ".": "./dist/url-tokenizer.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "test": "mocha \"./dist/test/**/*.spec.js\""
   },

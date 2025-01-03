@@ -11,7 +11,7 @@ import {
     keyword,
     literal,
     property,
-} from '@tokey/css-value-parser/dist/value-syntax-parser';
+} from '@tokey/css-value-parser/value-syntax-parser';
 
 import * as webCssRef from '@webref/css';
 

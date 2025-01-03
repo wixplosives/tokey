@@ -7,7 +7,7 @@ import {
     getJSCommentStartType,
     isCommentEnd,
     getUnclosedComment,
-} from '@tokey/core/dist/helpers';
+} from '@tokey/core/helpers';
 import type { Token } from '@tokey/core';
 
 const options: TokyOptions<Token> = {
