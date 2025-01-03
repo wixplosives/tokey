@@ -3,18 +3,11 @@
   "references": [
     { "path": "./demos/client" },
     { "path": "./packages/core/src" },
-    { "path": "./packages/core/test" },
     { "path": "./packages/test-kit/src" },
-    { "path": "./packages/test-kit/test" },
     { "path": "./packages/css-selector-parser/src" },
-    { "path": "./packages/css-selector-parser/test" },
     { "path": "./packages/css-value-parser/src" },
-    { "path": "./packages/css-value-parser/test" },
     { "path": "./packages/imports-parser/src" },
-    { "path": "./packages/imports-parser/test" },
     { "path": "./packages/url-tokenizer/src" },
-    { "path": "./packages/url-tokenizer/test" },
     { "path": "./packages/experiments/src" },
-    { "path": "./packages/experiments/test" }
   ]
 }
