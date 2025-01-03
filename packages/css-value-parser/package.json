@@ -4,7 +4,6 @@
   "version": "0.1.4",
   "exports": {
     ".": "./dist/index.js",
-    "./value-syntax-parser": "./dist/value-syntax-parser.js",
     "./package.json": "./package.json"
   },
   "scripts": {
