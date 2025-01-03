@@ -28,6 +28,10 @@
   },
   "author": "Wix.com",
   "license": "MIT",
-  "repository": "https://github.com/wixplosives/tokey/packages/css-value-parser",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wixplosives/tokey.git",
+    "directory": "packages/css-value-parser"
+  },
   "sideEffects": false
 }

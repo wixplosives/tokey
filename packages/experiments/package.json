@@ -28,5 +28,9 @@
   },
   "author": "Wix.com",
   "license": "MIT",
-  "repository": "https://github.com/wixplosives/tokey/packages/experiments"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wixplosives/tokey.git",
+    "directory": "packages/experiments"
+  }
 }
