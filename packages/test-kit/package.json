@@ -11,7 +11,7 @@
   "files": [
     "src",
     "dist",
-    "!dist/test",
+    "!*/test",
     "!*/tsconfig.{json,tsbuildinfo}"
   ],
   "author": "Wix.com",
