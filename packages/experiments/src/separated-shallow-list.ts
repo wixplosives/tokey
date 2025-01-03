@@ -20,7 +20,7 @@ const shouldAddToken = () => true;
 export function getListItems<T extends string>(
     source: string,
     isDelimiter: (char: string) => char is T,
-    parseLineComments = true
+    parseLineComments = true,
 ) {
     return createListItems(
         tokenize<Token<Descriptors>>(source, {
@@ -35,7 +35,7 @@ export function getListItems<T extends string>(
             isCommentEnd,
             getUnclosedComment,
         }),
-        isDelimiter
+        isDelimiter,
     );
 }
 
@@ -45,8 +45,8 @@ function createListItems(
     processGroup: (tokens: Token[]) => Token[] = (tokens) =>
         trimTokens(
             tokens.filter(({ type }) => !isComment(type)),
-            ({ type }) => type === 'space'
-        )
+            ({ type }) => type === 'space',
+        ),
 ) {
     const groups: TokenGroup<'list-item'>[] = [];
     let group: Token[] = [];

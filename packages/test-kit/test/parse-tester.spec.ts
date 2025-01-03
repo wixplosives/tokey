@@ -49,7 +49,7 @@ describe(`createParseTester`, () => {
                 expectedAst: `321`,
             });
         }, `invalid stringify`).to.throw(
-            createParseTester.errors.mismatchStringify(`wrong value`, `123`)
+            createParseTester.errors.mismatchStringify(`wrong value`, `123`),
         );
     });
     it(`should test stringify when supplied (test against custom value)`, () => {
@@ -70,7 +70,7 @@ describe(`createParseTester`, () => {
                 expectedString: `custom`,
             });
         }, `mismatch stringify`).to.throw(
-            createParseTester.errors.mismatchStringify(`stringified`, `custom`)
+            createParseTester.errors.mismatchStringify(`stringified`, `custom`),
         );
     });
     it(`should add label prefix to failed error`, () => {
@@ -85,7 +85,7 @@ describe(`createParseTester`, () => {
                 label: `test message`,
             });
         }, `ast check`).to.throw(
-            createParseTester.errors.mismatchAst(`"321"`, `"xxx"`, `test message`)
+            createParseTester.errors.mismatchAst(`"321"`, `"xxx"`, `test message`),
         );
         expect(() => {
             testReverser(`123`, {
@@ -93,7 +93,7 @@ describe(`createParseTester`, () => {
                 label: `test message`,
             });
         }, `stringify check`).to.throw(
-            createParseTester.errors.mismatchStringify(`stringified`, `123`, `test message`)
+            createParseTester.errors.mismatchStringify(`stringified`, `123`, `test message`),
         );
     });
 });

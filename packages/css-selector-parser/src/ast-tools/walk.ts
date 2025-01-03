@@ -14,7 +14,7 @@ export type WalkVisitor<AST extends SelectorNode | ImmutableSelectorNode> = (
     node: AST,
     index: number,
     nodes: AST[],
-    parents: AST[]
+    parents: AST[],
 ) => number | undefined | void;
 const nestEnd = Symbol(`nest-end`);
 
@@ -32,23 +32,23 @@ const nestEnd = Symbol(`nest-end`);
 export function walk<AST extends SelectorNode | SelectorList>(
     topNode: AST,
     visit: WalkVisitor<SelectorNode>,
-    options?: WalkOptions
+    options?: WalkOptions,
 ): void;
 export function walk<AST extends ImmutableSelectorNode | ImmutableSelectorList>(
     topNode: AST,
     visit: WalkVisitor<ImmutableSelectorNode>,
-    options?: WalkOptions
+    options?: WalkOptions,
 ): void;
 export function walk<
-    AST extends SelectorNode | SelectorList | ImmutableSelectorNode | ImmutableSelectorList
+    AST extends SelectorNode | SelectorList | ImmutableSelectorNode | ImmutableSelectorList,
 >(
     topNode: AST,
     visit: WalkVisitor<SelectorNode> | WalkVisitor<ImmutableSelectorNode>,
-    options: WalkOptions = {}
+    options: WalkOptions = {},
 ): void {
     // set initial top nodes to traverse
     const toVisit: Array<SelectorNode | ImmutableSelectorNode | typeof nestEnd> = Array.isArray(
-        topNode
+        topNode,
     )
         ? [...topNode]
         : [topNode];
@@ -71,7 +71,7 @@ export function walk<
                     current as SelectorNode,
                     context.indexInSelector,
                     context.nodesInSelector as SelectorNode[],
-                    context.parents as SelectorNode[]
+                    context.parents as SelectorNode[],
                 ) as number) ?? -1;
             // point to next selector node
             context.next();
@@ -113,10 +113,10 @@ interface WalkContext<AST> {
 }
 function createWalkContext(topNode: SelectorNode | SelectorList): WalkContext<SelectorNode>;
 function createWalkContext(
-    topNode: ImmutableSelectorNode | ImmutableSelectorList
+    topNode: ImmutableSelectorNode | ImmutableSelectorList,
 ): WalkContext<ImmutableSelectorNode>;
 function createWalkContext(
-    topNode: SelectorNode | SelectorList | ImmutableSelectorNode | ImmutableSelectorList
+    topNode: SelectorNode | SelectorList | ImmutableSelectorNode | ImmutableSelectorList,
 ) {
     const prevIndex: number[] = [];
     const prevParents: ImmutableSelectorNode[][] = [[]];
@@ -126,8 +126,8 @@ function createWalkContext(
         nodesInSelector: Array.isArray(topNode)
             ? topNode
             : `nodes` in topNode
-            ? topNode.nodes!
-            : ([topNode] as SelectorNode[]),
+              ? topNode.nodes!
+              : ([topNode] as SelectorNode[]),
         up() {
             context.parents.pop();
             context.indexInSelector = prevIndex.shift()!;

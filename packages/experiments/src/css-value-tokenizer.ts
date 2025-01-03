@@ -53,7 +53,7 @@ export function createCssValueAST(source: string, parseLineComments = false): CS
                 : getMultilineCommentStartType,
             isCommentEnd,
             getUnclosedComment,
-        })
+        }),
     ).ast;
 }
 
@@ -64,7 +64,7 @@ const shouldAddToken = () => true;
 function parseDeclValueTokens(
     source: string,
     tokens: CSSValueCodeToken[],
-    startAtIdx = 0
+    startAtIdx = 0,
 ): { ast: CSSCodeAst[]; stoppedAtIdx: number } {
     const ast: CSSCodeAst[] = [];
     let before: CSSSeparatorTokens[] = [];

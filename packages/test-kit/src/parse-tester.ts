@@ -26,7 +26,7 @@ export function createParseTester<AST, INPUT extends string, CONFIG>({
     };
     return (
         source: INPUT,
-        { expectedAst, expectedString, label, config }: TestOptions<AST, CONFIG>
+        { expectedAst, expectedString, label, config }: TestOptions<AST, CONFIG>,
     ) => {
         const [actualAst, parseError] = safeParse(source, config);
         if (parseError) {
@@ -42,7 +42,7 @@ export function createParseTester<AST, INPUT extends string, CONFIG>({
             expectedString = expectedString ?? source;
             if (actualString !== expectedString) {
                 throw new Error(
-                    createParseTester.errors.mismatchStringify(actualString, expectedString, label)
+                    createParseTester.errors.mismatchStringify(actualString, expectedString, label),
                 );
             }
         }

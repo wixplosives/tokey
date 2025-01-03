@@ -355,7 +355,7 @@ describe.skip(`value-parser/define-property`, () => {
                 };
 
                 expect(
-                    p.classify(ast, { resolveBuildVar: ({ id }) => buildVars[id] })
+                    p.classify(ast, { resolveBuildVar: ({ id }) => buildVars[id] }),
                 ).deep.include({
                     amount: {
                         value: [buildVars.$x[0]],
@@ -384,7 +384,7 @@ describe.skip(`value-parser/define-property`, () => {
                 };
 
                 expect(
-                    p.classify(ast, { resolveBuildVar: ({ id }) => buildVars[id] })
+                    p.classify(ast, { resolveBuildVar: ({ id }) => buildVars[id] }),
                 ).deep.include({
                     amount: {
                         value: [buildVars.$x[0], ast[1]],

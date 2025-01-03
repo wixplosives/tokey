@@ -21,7 +21,7 @@ export function parseImports(
     blockStart = '{',
     blockEnd = '}',
     taggedImportSupport = false,
-    strictSemiColon = false
+    strictSemiColon = false,
 ) {
     return findImports(
         tokenize<CodeToken>(source, {
@@ -37,7 +37,7 @@ export function parseImports(
         blockStart,
         blockEnd,
         taggedImportSupport,
-        strictSemiColon
+        strictSemiColon,
     );
 }
 
@@ -76,7 +76,7 @@ function findImports(
     blockStart: string,
     blockEnd: string,
     taggedImportSupport = false,
-    strictSemiColon = false
+    strictSemiColon = false,
 ) {
     const imports: ImportValue[] = [];
     const s = new Seeker<CodeToken>(tokens);

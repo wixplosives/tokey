@@ -59,7 +59,7 @@ export function parseValueSyntax(source: string) {
             isCommentEnd: () => false,
             getUnclosedComment: () => '',
         }),
-        source
+        source,
     );
 }
 
@@ -172,7 +172,7 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
         token: ValueSyntaxToken,
         { ast }: ParsingContext,
         _source: string,
-        s: Seeker<ValueSyntaxToken>
+        s: Seeker<ValueSyntaxToken>,
     ) => {
         if (token.type === '<') {
             let closed = false;
@@ -188,7 +188,7 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
                     }
                 },
                 [],
-                _source
+                _source,
             );
             if (nameBlock.length === 0) {
                 throw new Error('missing data type name');
@@ -244,7 +244,7 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
                             return token.value.endsWith("'") ? false : undefined;
                         },
                         [token] as ValueSyntaxToken[],
-                        source
+                        source,
                     );
                     if (tokens.length <= 2) {
                         throw new Error('unclosed or empty literal');
@@ -252,8 +252,8 @@ function parseTokens(tokens: ValueSyntaxToken[], source: string) {
                         ast.push(
                             literal(
                                 getText(tokens, undefined, undefined, source).slice(1, -1),
-                                true
-                            )
+                                true,
+                            ),
                         );
                     }
                 } else {
@@ -443,7 +443,7 @@ function applyJuxtaposing(ast: ValueSyntaxAstNode[]) {
 }
 
 function isLowLevelGroup(
-    node: ValueSyntaxAstNode
+    node: ValueSyntaxAstNode,
 ): node is DoubleBarNode | DoubleAmpersandNode | BarNode {
     const { type } = node;
     return type === '&&' || type === '|' || type === '||';

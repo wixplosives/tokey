@@ -5,7 +5,7 @@ export type Specificity = [
     inlineLevel: number,
     idLevel: number,
     classOrAttributeLevel: number,
-    typeOrElementLevel: number
+    typeOrElementLevel: number,
 ];
 export function calcSpecificity(ast: ImmutableSelectorNode): Specificity {
     const result: Specificity = [0, 0, 0, 0];

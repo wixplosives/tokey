@@ -17,25 +17,25 @@ export interface GroupCompoundOptions {
 }
 export function groupCompoundSelectors<AST extends Selector>(
     input: AST,
-    options?: GroupCompoundOptions
+    options?: GroupCompoundOptions,
 ): Selector;
 export function groupCompoundSelectors<AST extends ImmutableSelector>(
     input: AST,
-    options?: GroupCompoundOptions
+    options?: GroupCompoundOptions,
 ): ImmutableSelector;
 export function groupCompoundSelectors<AST extends SelectorList>(
     input: AST,
-    options?: GroupCompoundOptions
+    options?: GroupCompoundOptions,
 ): SelectorList;
 export function groupCompoundSelectors<AST extends ImmutableSelectorList>(
     input: AST,
-    options?: GroupCompoundOptions
+    options?: GroupCompoundOptions,
 ): ImmutableSelectorList;
 export function groupCompoundSelectors<
-    AST extends Selector | ImmutableSelector | SelectorList | ImmutableSelectorList
+    AST extends Selector | ImmutableSelector | SelectorList | ImmutableSelectorList,
 >(
     input: AST,
-    options?: GroupCompoundOptions
+    options?: GroupCompoundOptions,
 ): Selector | ImmutableSelector | SelectorList | ImmutableSelectorList {
     const context = createCompoundContext(options);
     walk(input, (node, _index, _nodes, parents) => {
@@ -52,7 +52,7 @@ export function groupCompoundSelectors<
                     nodes.push(
                         nested.type === `selector`
                             ? groupCompoundSelectors(nested, options)
-                            : nested
+                            : nested,
                     );
                 }
                 node = { ...node, nodes };
@@ -150,14 +150,14 @@ function createCompoundContext({ splitPseudoElements = true }: GroupCompoundOpti
 
 export function splitCompoundSelectors<AST extends Selector>(input: AST): Selector;
 export function splitCompoundSelectors<AST extends ImmutableSelector>(
-    input: AST
+    input: AST,
 ): ImmutableSelector;
 export function splitCompoundSelectors<AST extends SelectorList>(input: AST): SelectorList;
 export function splitCompoundSelectors<AST extends ImmutableSelectorList>(
-    input: AST
+    input: AST,
 ): ImmutableSelectorList;
 export function splitCompoundSelectors<AST extends SelectorList | Selector>(
-    input: AST
+    input: AST,
 ): SelectorList | Selector | ImmutableSelector | ImmutableSelectorList {
     const inputSelectors: SelectorList = Array.isArray(input) ? input : [input];
     const output: SelectorList = [];

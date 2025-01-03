@@ -27,40 +27,40 @@ export const test = createParseTester({
 });
 
 export function createNode<TYPE extends SelectorNode['type']>(
-    expected: Partial<SelectorNode> & { type: TYPE }
+    expected: Partial<SelectorNode> & { type: TYPE },
 ): TYPE extends 'selector'
     ? Selector
     : TYPE extends 'universal'
-    ? Universal
-    : TYPE extends 'comment'
-    ? Comment
-    : TYPE extends 'nth'
-    ? Nth
-    : TYPE extends 'nth_step'
-    ? NthStep
-    : TYPE extends 'nth_dash'
-    ? NthDash
-    : TYPE extends 'nth_offset'
-    ? NthOffset
-    : TYPE extends 'nth_of'
-    ? NthOf
-    : TYPE extends 'compound_selector'
-    ? CompoundSelector
-    : TYPE extends 'class'
-    ? Class
-    : TYPE extends 'pseudo_element'
-    ? PseudoElement
-    : TYPE extends 'pseudo_class'
-    ? PseudoClass
-    : TYPE extends 'attribute'
-    ? Attribute
-    : TYPE extends 'type'
-    ? Type
-    : TYPE extends 'id'
-    ? Id
-    : TYPE extends 'nesting'
-    ? Nesting
-    : SelectorNode {
+      ? Universal
+      : TYPE extends 'comment'
+        ? Comment
+        : TYPE extends 'nth'
+          ? Nth
+          : TYPE extends 'nth_step'
+            ? NthStep
+            : TYPE extends 'nth_dash'
+              ? NthDash
+              : TYPE extends 'nth_offset'
+                ? NthOffset
+                : TYPE extends 'nth_of'
+                  ? NthOf
+                  : TYPE extends 'compound_selector'
+                    ? CompoundSelector
+                    : TYPE extends 'class'
+                      ? Class
+                      : TYPE extends 'pseudo_element'
+                        ? PseudoElement
+                        : TYPE extends 'pseudo_class'
+                          ? PseudoClass
+                          : TYPE extends 'attribute'
+                            ? Attribute
+                            : TYPE extends 'type'
+                              ? Type
+                              : TYPE extends 'id'
+                                ? Id
+                                : TYPE extends 'nesting'
+                                  ? Nesting
+                                  : SelectorNode {
     const defaults: SelectorNode = {
         type: expected.type,
         start: 0,

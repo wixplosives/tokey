@@ -25,7 +25,7 @@ describe(`helpers/trim-tokens`, () => {
                 { end: 0, start: 0, type: 'space', value: ' ' },
             ]),
             trimSpace,
-            [{ end: 0, start: 0, type: 'text', value: 'value' }]
+            [{ end: 0, start: 0, type: 'text', value: 'value' }],
         );
     });
     it(`should remove single before & after`, () => {
@@ -36,7 +36,7 @@ describe(`helpers/trim-tokens`, () => {
                 { end: 0, start: 0, type: 'space', value: ' ' },
             ]),
             trimSpace,
-            [{ end: 0, start: 0, type: 'text', value: 'value' }]
+            [{ end: 0, start: 0, type: 'text', value: 'value' }],
         );
     });
     it(`should remove single after`, () => {
@@ -46,7 +46,7 @@ describe(`helpers/trim-tokens`, () => {
                 { end: 0, start: 0, type: 'space', value: ' ' },
             ]),
             trimSpace,
-            [{ end: 0, start: 0, type: 'text', value: 'value' }]
+            [{ end: 0, start: 0, type: 'text', value: 'value' }],
         );
     });
     it(`should remove single before `, () => {
@@ -56,7 +56,7 @@ describe(`helpers/trim-tokens`, () => {
                 { end: 0, start: 0, type: 'text', value: 'value' },
             ]),
             trimSpace,
-            [{ end: 0, start: 0, type: 'text', value: 'value' }]
+            [{ end: 0, start: 0, type: 'text', value: 'value' }],
         );
     });
     it(`should not trim when there is nothing to trim`, () => {
@@ -73,7 +73,7 @@ describe(`helpers/trim-tokens`, () => {
                 { end: 0, start: 0, type: 'space', value: ' ' },
             ]),
             trimSpace,
-            []
+            [],
         );
     });
     it(`should trim all when all is "trimmable" (single)`, () => {
@@ -89,7 +89,7 @@ describe(`helpers/trim-tokens`, () => {
                 { end: 0, start: 0, type: 'space', value: ' ' },
             ]),
             trimSpace,
-            [{ end: 0, start: 0, type: 'text', value: 'value' }]
+            [{ end: 0, start: 0, type: 'text', value: 'value' }],
         );
     });
     it(`should remove multiple before`, () => {
@@ -102,7 +102,7 @@ describe(`helpers/trim-tokens`, () => {
                 { end: 0, start: 0, type: 'text', value: 'value' },
             ]),
             trimSpace,
-            [{ end: 0, start: 0, type: 'text', value: 'value' }]
+            [{ end: 0, start: 0, type: 'text', value: 'value' }],
         );
     });
 });

@@ -4,7 +4,7 @@ import type { ParseResults } from './value-parser';
 export function defineProperty<
     FORMATS extends string,
     CLASSIFICATIONS extends string,
-    TOP_COMMA extends boolean = false
+    TOP_COMMA extends boolean = false,
 >(_config: {
     name: string;
     syntax: string;
@@ -33,7 +33,7 @@ export function defineProperty<
     getFormat: (ast: CSSValueAST<any>[], options?: ActionParams) => FORMATS;
     classify: (
         ast: CSSValueAST<any>[],
-        options?: ActionParams & { deep?: boolean; ignoreComments?: boolean }
+        options?: ActionParams & { deep?: boolean; ignoreComments?: boolean },
     ) => TOP_COMMA extends true
         ? Record<CLASSIFICATIONS, Classification>[]
         : Record<CLASSIFICATIONS, Classification>;
@@ -58,7 +58,7 @@ type MatchClassification = (
         index: number;
         indexOfType: number;
         amountOfType: number;
-    }
+    },
 ) => boolean;
 
 type Classification = {

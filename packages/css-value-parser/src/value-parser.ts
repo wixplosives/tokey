@@ -36,7 +36,7 @@ export type ParseResults = Array<BaseAstNode>;
 
 export function parseCSSValue(
     source: string,
-    _options?: { parseBuildVar?: () => { id: string; subType: string } }
+    _options?: { parseBuildVar?: () => { id: string; subType: string } },
 ): ParseResults {
     const tokens = tokenizeValue(source);
     return new Seeker(tokens).run<ParseResults>(handleToken, [], source);
@@ -46,7 +46,7 @@ function handleToken(
     token: CSSValueToken,
     ast: ParseResults,
     source: string,
-    s: Seeker<CSSValueToken>
+    s: Seeker<CSSValueToken>,
 ): void {
     const { type, value, start, end } = token;
     if (type === `space`) {
@@ -66,7 +66,7 @@ function handleToken(
                 end,
                 before,
                 after,
-            })
+            }),
         );
     } else if (type === `text` || type === `-`) {
         // numbers and lengths
@@ -86,7 +86,7 @@ function handleToken(
                     return handleToken(token, args, source, s);
                 },
                 args,
-                source
+                source,
             );
             const before =
                 args.length && args[0].type === `space` ? stringifyCSSValue(args.shift()!) : ``;
@@ -102,7 +102,7 @@ function handleToken(
                     args,
                     before,
                     after,
-                })
+                }),
             );
         } else if (ident.match(/^inherit|unset|initial$/i)) {
             // css-wide keyword
@@ -111,7 +111,7 @@ function handleToken(
                     value: ident as any,
                     start: token.start,
                     end: s.peek(0).end,
-                })
+                }),
             );
         } else if (ident.match(/^--/)) {
             // dashed ident
@@ -120,7 +120,7 @@ function handleToken(
                     value: ident,
                     start: token.start,
                     end: s.peek(0).end,
-                })
+                }),
             );
         } else if (ident.match(/^[-][a-z]|[a-z]/i)) {
             // custom ident
@@ -129,7 +129,7 @@ function handleToken(
                     value: ident,
                     start: token.start,
                     end: s.peek(0).end,
-                })
+                }),
             );
         } else {
             ast.push(
@@ -137,7 +137,7 @@ function handleToken(
                     value: ident,
                     start,
                     end: s.peek(0).end,
-                })
+                }),
             );
         }
     } else if (type === `string`) {
@@ -146,7 +146,7 @@ function handleToken(
                 value,
                 start,
                 end,
-            })
+            }),
         );
     } else if (type === `+`) {
         if (parseNumber(token, ast, source, s)) {
@@ -157,7 +157,7 @@ function handleToken(
                 value,
                 start,
                 end,
-            })
+            }),
         );
     } else if (type === `#`) {
         const nextToken = s.next(); // #000000
@@ -172,7 +172,7 @@ function handleToken(
                     value: value + nextToken.value,
                     start,
                     end: nextToken.end,
-                })
+                }),
             );
         } else {
             s.back();
@@ -181,7 +181,7 @@ function handleToken(
                     value: `#`,
                     start,
                     end,
-                })
+                }),
             );
         }
     } else if (type === '.') {
@@ -193,7 +193,7 @@ function handleToken(
                     start,
                     end,
                     value,
-                })
+                }),
             );
         }
     } else if (isComment(type)) {
@@ -202,7 +202,7 @@ function handleToken(
                 value,
                 start,
                 end,
-            })
+            }),
         );
     } else if (value.length === 1) {
         /* catches: , / or any other single char value.
@@ -214,7 +214,7 @@ function handleToken(
                 start,
                 end,
                 value,
-            })
+            }),
         );
     } else {
         ast.push(
@@ -222,7 +222,7 @@ function handleToken(
                 value,
                 start,
                 end,
-            })
+            }),
         );
     }
 }
@@ -232,7 +232,7 @@ function collectIdent(
     token: CSSValueToken,
     _ast: ParseResults,
     _source: string,
-    s: Seeker<CSSValueToken>
+    s: Seeker<CSSValueToken>,
 ) {
     let collectedValue = ``;
     let pickAmount = 0;
@@ -251,7 +251,7 @@ function parseNumber(
     token: CSSValueToken,
     ast: ParseResults,
     _source: string,
-    s: Seeker<CSSValueToken>
+    s: Seeker<CSSValueToken>,
 ) {
     const { value, start } = token;
     let startMatch = isStartOfNumber(value);
@@ -332,7 +332,7 @@ function parseNumber(
                 integer: !!isInteger,
                 start,
                 end: s.peek(0).end,
-            } as any)
+            } as any),
         );
     } else {
         const nodeType = isInteger ? integer : number;
@@ -341,7 +341,7 @@ function parseNumber(
                 value: numberValue,
                 start,
                 end: s.peek(0).end,
-            })
+            }),
         );
     }
     return true;
@@ -349,26 +349,41 @@ function parseNumber(
 const knownUnits = {
     '%': percentage,
     fr: flex,
-    ...lengthValidUnits.reduce((units, unit) => {
-        units[unit] = length;
-        return units;
-    }, {} as Record<(typeof lengthValidUnits)[number], typeof length>),
-    ...angleValidUnits.reduce((units, unit) => {
-        units[unit] = angle;
-        return units;
-    }, {} as Record<(typeof angleValidUnits)[number], typeof angle>),
-    ...timeValidUnits.reduce((units, unit) => {
-        units[unit] = time;
-        return units;
-    }, {} as Record<(typeof timeValidUnits)[number], typeof time>),
-    ...frequencyValidUnits.reduce((units, unit) => {
-        units[unit] = frequency;
-        return units;
-    }, {} as Record<(typeof frequencyValidUnits)[number], typeof frequency>),
-    ...resolutionValidUnits.reduce((units, unit) => {
-        units[unit] = resolution;
-        return units;
-    }, {} as Record<(typeof resolutionValidUnits)[number], typeof resolution>),
+    ...lengthValidUnits.reduce(
+        (units, unit) => {
+            units[unit] = length;
+            return units;
+        },
+        {} as Record<(typeof lengthValidUnits)[number], typeof length>,
+    ),
+    ...angleValidUnits.reduce(
+        (units, unit) => {
+            units[unit] = angle;
+            return units;
+        },
+        {} as Record<(typeof angleValidUnits)[number], typeof angle>,
+    ),
+    ...timeValidUnits.reduce(
+        (units, unit) => {
+            units[unit] = time;
+            return units;
+        },
+        {} as Record<(typeof timeValidUnits)[number], typeof time>,
+    ),
+    ...frequencyValidUnits.reduce(
+        (units, unit) => {
+            units[unit] = frequency;
+            return units;
+        },
+        {} as Record<(typeof frequencyValidUnits)[number], typeof frequency>,
+    ),
+    ...resolutionValidUnits.reduce(
+        (units, unit) => {
+            units[unit] = resolution;
+            return units;
+        },
+        {} as Record<(typeof resolutionValidUnits)[number], typeof resolution>,
+    ),
 } as const;
 
 const NumberRegExp = /^[-+]?(\d+\.?\d*|\d*\.?\d+)(e[-+]?\d+)?/i;

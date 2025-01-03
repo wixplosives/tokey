@@ -34,7 +34,7 @@ export function tokenizeCSSUrls(source: string, parseLineComments = false) {
                 : getMultilineCommentStartType,
             isCommentEnd,
             getUnclosedComment,
-        })
+        }),
     );
 }
 

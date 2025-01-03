@@ -2,7 +2,7 @@ export function initPreview(
     input: HTMLTextAreaElement,
     output: HTMLElement,
     tokenizeValues: (value: string) => any[],
-    renderer = renderShallowToken
+    renderer = renderShallowToken,
 ) {
     const render = true;
     let start = 0;
@@ -52,7 +52,7 @@ export function renderToken(
     token: any,
     range: { start: number; end: number },
     level = 0,
-    parentInRange = false
+    parentInRange = false,
 ) {
     const isArray = Array.isArray(token);
     const open = isArray ? '[' : '{';
@@ -87,7 +87,7 @@ export function renderNestedToken(range: {
 
 export function isInRange(
     token: { start: number; end: number },
-    range: { start: number; end: number }
+    range: { start: number; end: number },
 ) {
     if (range.end === range.start) {
         if (token.start <= range.start && range.start < token.end) {

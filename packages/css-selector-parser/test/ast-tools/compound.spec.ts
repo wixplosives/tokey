@@ -655,7 +655,7 @@ describe(`ast-tools/compound`, () => {
                         ],
                     }),
                 ],
-            })
+            }),
         );
         expect(splitCompoundSelectors(groupedSelector), `split`).to.eql(ast[1]);
     });

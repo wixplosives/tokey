@@ -66,7 +66,7 @@ export function createCommentAst({ value, start, end }: CSSSelectorToken): Comme
 // type guards
 
 export function isCombinatorToken(
-    token: CSSSelectorToken
+    token: CSSSelectorToken,
 ): token is Token<'space' | '+' | '>' | '~'> {
     return token.type === 'space' || token.type === '+' || token.type === '>' || token.type === '~';
 }

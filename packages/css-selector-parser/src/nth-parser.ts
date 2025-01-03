@@ -45,7 +45,10 @@ export class NthParser {
     public state: 'step' | `dash` | `offset` | `of` | `selector` = `step`;
     private standaloneDash = false;
     private ast: Nth['nodes'];
-    constructor(private selectorNode: Nth, private s: Seeker<CSSSelectorToken>) {
+    constructor(
+        private selectorNode: Nth,
+        private s: Seeker<CSSSelectorToken>,
+    ) {
         this.ast = selectorNode.nodes;
     }
     public handleToken(token: CSSSelectorToken): boolean {

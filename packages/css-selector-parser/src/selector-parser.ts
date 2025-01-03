@@ -38,7 +38,7 @@ function handleToken(
     token: CSSSelectorToken,
     selectors: SelectorList,
     source: string,
-    s: Seeker<CSSSelectorToken>
+    s: Seeker<CSSSelectorToken>,
 ): void {
     let t;
     const currentSelector = ensureSelector(selectors, token);
@@ -88,7 +88,7 @@ function handleToken(
                 return token.type !== ']';
             },
             [token],
-            source
+            source,
         );
         const closed = last(block)?.type === ']';
         if (closed) {
@@ -325,7 +325,7 @@ function handleToken(
                     return nthParser.handleToken(token);
                 },
                 nthSelector,
-                source
+                source,
             );
             // setup next selector
             if (s.peek().type !== `)`) {
@@ -350,7 +350,7 @@ function handleToken(
                 return handleToken(token, selectors, source, s);
             },
             res,
-            source
+            source,
         );
 
         const ended = s.peek(0);

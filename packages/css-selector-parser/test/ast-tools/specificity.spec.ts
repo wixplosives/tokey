@@ -78,25 +78,25 @@ describe(`ast-tools/specificity`, () => {
             });
             it(`should add :nth-child pseudo-class plus the most specific inner selectors`, () => {
                 const specificity = calcSpecificity(
-                    parseCssSelector(`:nth-child(5n - 4 of .a, #b)`)[0]
+                    parseCssSelector(`:nth-child(5n - 4 of .a, #b)`)[0],
                 );
                 expect(specificity).to.eql([0, 1, 1, 0]);
             });
             it(`should add :nth-last-child pseudo-class plus the most specific inner selectors`, () => {
                 const specificity = calcSpecificity(
-                    parseCssSelector(`:nth-last-child(5n -4 of .a, #b)`)[0]
+                    parseCssSelector(`:nth-last-child(5n -4 of .a, #b)`)[0],
                 );
                 expect(specificity).to.eql([0, 1, 1, 0]);
             });
             it(`should add :nth-of-type pseudo-class plus the most specific inner selectors`, () => {
                 const specificity = calcSpecificity(
-                    parseCssSelector(`:nth-of-type(5n -4 of .a, #b)`)[0]
+                    parseCssSelector(`:nth-of-type(5n -4 of .a, #b)`)[0],
                 );
                 expect(specificity).to.eql([0, 1, 1, 0]);
             });
             it(`should add :nth-last-of-type pseudo-class plus the most specific inner selectors`, () => {
                 const specificity = calcSpecificity(
-                    parseCssSelector(`:nth-last-of-type(5n -4 of .a, #b)`)[0]
+                    parseCssSelector(`:nth-last-of-type(5n -4 of .a, #b)`)[0],
                 );
                 expect(specificity).to.eql([0, 1, 1, 0]);
             });
@@ -108,7 +108,7 @@ describe(`ast-tools/specificity`, () => {
             });
             it(`should handle nested pseudo classes`, () => {
                 const specificity = calcSpecificity(
-                    parseCssSelector(`:is(:where(#zero), :has(:not(span, #a), .a))`)[0]
+                    parseCssSelector(`:is(:where(#zero), :has(:not(span, #a), .a))`)[0],
                 );
                 expect(specificity).to.eql([0, 1, 0, 0]);
             });
@@ -123,20 +123,20 @@ describe(`ast-tools/specificity`, () => {
             it(`should not take non native functional selectors arguments into account`, () => {
                 const specificity = calcSpecificity(
                     parseCssSelector(
-                        `div(#a).x(#b)::y(#c)[attr](#d)&(#e)*(#f)#id(#g):unknown(#h)`
-                    )[0]
+                        `div(#a).x(#b)::y(#c)[attr](#d)&(#e)*(#f)#id(#g):unknown(#h)`,
+                    )[0],
                 );
                 expect(specificity).to.eql([0, 1, 3, 2]);
             });
             it(`should handle compound selector AST`, () => {
                 const specificity = calcSpecificity(
-                    groupCompoundSelectors(parseCssSelector(`.a .b`)[0])
+                    groupCompoundSelectors(parseCssSelector(`.a .b`)[0]),
                 );
                 expect(specificity).to.eql([0, 0, 2, 0]);
             });
             it(`should handle empty functional selector`, () => {
                 const specificity = calcSpecificity(
-                    groupCompoundSelectors(parseCssSelector(`div:not()`)[0])
+                    groupCompoundSelectors(parseCssSelector(`div:not()`)[0]),
                 );
                 expect(specificity).to.eql([0, 0, 0, 1]);
             });

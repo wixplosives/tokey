@@ -11,7 +11,7 @@ export interface TokyOptions<T extends Token<unknown>> {
         ch: string,
         source: string,
         nextCharIndex: number,
-        previousChar: string
+        previousChar: string,
     ): boolean;
     getUnclosedComment(inComment: string): string;
     createToken(value: string, type: T['type'], start: number, end: number): T;
@@ -32,7 +32,7 @@ export function tokenize<T extends Token<unknown>>(
         isCommentEnd,
         getUnclosedComment,
         offset = 0,
-    }: TokyOptions<T>
+    }: TokyOptions<T>,
 ): T[] {
     const tokens: T[] = [];
     let previousChar = '';
@@ -72,7 +72,7 @@ export function tokenize<T extends Token<unknown>>(
         } else if (!isWhitespace(ch) && isWhitespace(previousChar)) {
             pushBuffer();
             buffer += ch;
-        } else if(shouldClose?.(ch, previousChar)) {
+        } else if (shouldClose?.(ch, previousChar)) {
             pushBuffer();
             buffer += ch;
             pushBuffer(ch);

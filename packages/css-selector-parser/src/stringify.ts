@@ -26,7 +26,7 @@ import type {
 } from './ast-types';
 
 export function stringifySelectorAst(
-    value: ImmutableSelectorNode | ImmutableSelectorList | ImmutableNthSelectorList
+    value: ImmutableSelectorNode | ImmutableSelectorList | ImmutableNthSelectorList,
 ): string {
     return 'length' in value ? stringifySelectors(value) : stringifyNode(value);
 }

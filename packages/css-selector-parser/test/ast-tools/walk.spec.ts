@@ -23,16 +23,16 @@ function testWalk(
             node: SelectorNode,
             index: number,
             nodes: SelectorNode[],
-            parents: SelectorNode[]
+            parents: SelectorNode[],
         ) => any;
         resultVisit?: (
             node: SelectorNode,
             index: number,
             nodes: SelectorNode[],
-            parents: SelectorNode[]
+            parents: SelectorNode[],
         ) => number | undefined;
         expectedMap: any[];
-    }
+    },
 ) {
     const actual: any[] = [];
     try {
@@ -42,12 +42,12 @@ function testWalk(
                 current: SelectorNode,
                 index: number,
                 nodes: SelectorNode[],
-                parents: SelectorNode[]
+                parents: SelectorNode[],
             ) => {
                 actual.push(mapVisit ? mapVisit(current, index, nodes, parents) : current);
                 return resultVisit ? resultVisit(current, index, nodes, parents) : undefined;
             },
-            walkOptions
+            walkOptions,
         );
     } catch (e) {
         throw new Error(`error in walk, ${e as string}`);
@@ -453,7 +453,7 @@ describe(`ast-tools/walk`, () => {
                     { type, value }: any,
                     _index: number,
                     _nodes: any[],
-                    parents: any[]
+                    parents: any[],
                 ) => ({
                     type,
                     value,

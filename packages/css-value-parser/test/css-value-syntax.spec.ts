@@ -74,7 +74,7 @@ describe('value-syntax-parser', () => {
             expect(parseValueSyntax(`<'name' [1,1000]>`)).to.eql(property('name', [1, 1000]));
             expect(parseValueSyntax(`<'name' [ 1 , 1000 ] >`)).to.eql(property('name', [1, 1000]));
             expect(parseValueSyntax(`<'name' [ -∞ , ∞ ] >`)).to.eql(
-                property('name', [-Infinity, Infinity])
+                property('name', [-Infinity, Infinity]),
             );
         });
     });
@@ -109,56 +109,56 @@ describe('value-syntax-parser', () => {
     describe('multipliers', () => {
         it('data-type with multipliers', () => {
             expect(parseValueSyntax(`<name>!`)).to.eql(
-                dataType('name', undefined, { range: [1, 1] })
+                dataType('name', undefined, { range: [1, 1] }),
             );
             expect(parseValueSyntax(`<name>?`)).to.eql(
-                dataType('name', undefined, { range: [0, 1] })
+                dataType('name', undefined, { range: [0, 1] }),
             );
             expect(parseValueSyntax(`<name>+`)).to.eql(
-                dataType('name', undefined, { range: [1, Infinity] })
+                dataType('name', undefined, { range: [1, Infinity] }),
             );
             expect(parseValueSyntax(`<name>*`)).to.eql(
-                dataType('name', undefined, { range: [0, Infinity] })
+                dataType('name', undefined, { range: [0, Infinity] }),
             );
             expect(parseValueSyntax(`<name>{2}`)).to.eql(
-                dataType('name', undefined, { range: [2, 2] })
+                dataType('name', undefined, { range: [2, 2] }),
             );
             expect(parseValueSyntax(`<name>{2, 4}`)).to.eql(
-                dataType('name', undefined, { range: [2, 4] })
+                dataType('name', undefined, { range: [2, 4] }),
             );
         });
         it('property with multipliers', () => {
             expect(parseValueSyntax(`<'name'>!`)).to.eql(
-                property('name', undefined, { range: [1, 1] })
+                property('name', undefined, { range: [1, 1] }),
             );
             expect(parseValueSyntax(`<'name'>?`)).to.eql(
-                property('name', undefined, { range: [0, 1] })
+                property('name', undefined, { range: [0, 1] }),
             );
             expect(parseValueSyntax(`<'name'>+`)).to.eql(
-                property('name', undefined, { range: [1, Infinity] })
+                property('name', undefined, { range: [1, Infinity] }),
             );
             expect(parseValueSyntax(`<'name'>*`)).to.eql(
-                property('name', undefined, { range: [0, Infinity] })
+                property('name', undefined, { range: [0, Infinity] }),
             );
             expect(parseValueSyntax(`<'name'>{2}`)).to.eql(
-                property('name', undefined, { range: [2, 2] })
+                property('name', undefined, { range: [2, 2] }),
             );
             expect(parseValueSyntax(`<'name'>{2, 4}`)).to.eql(
-                property('name', undefined, { range: [2, 4] })
+                property('name', undefined, { range: [2, 4] }),
             );
         });
         it('literal with multipliers', () => {
             expect(parseValueSyntax(`'name'!`)).to.eql(literal('name', true, { range: [1, 1] }));
             expect(parseValueSyntax(`'name'?`)).to.eql(literal('name', true, { range: [0, 1] }));
             expect(parseValueSyntax(`'name'+`)).to.eql(
-                literal('name', true, { range: [1, Infinity] })
+                literal('name', true, { range: [1, Infinity] }),
             );
             expect(parseValueSyntax(`'name'*`)).to.eql(
-                literal('name', true, { range: [0, Infinity] })
+                literal('name', true, { range: [0, Infinity] }),
             );
             expect(parseValueSyntax(`'name'{2}`)).to.eql(literal('name', true, { range: [2, 2] }));
             expect(parseValueSyntax(`'name'{2, 4}`)).to.eql(
-                literal('name', true, { range: [2, 4] })
+                literal('name', true, { range: [2, 4] }),
             );
         });
         it('keyword with multipliers', () => {
@@ -173,10 +173,10 @@ describe('value-syntax-parser', () => {
             expect(parseValueSyntax(`[a]!`)).to.eql(group([keyword('a')], { range: [1, 1] }));
             expect(parseValueSyntax(`[a]?`)).to.eql(group([keyword('a')], { range: [0, 1] }));
             expect(parseValueSyntax(`[a]+`)).to.eql(
-                group([keyword('a')], { range: [1, Infinity] })
+                group([keyword('a')], { range: [1, Infinity] }),
             );
             expect(parseValueSyntax(`[a]*`)).to.eql(
-                group([keyword('a')], { range: [0, Infinity] })
+                group([keyword('a')], { range: [0, Infinity] }),
             );
             expect(parseValueSyntax(`[a]{2}`)).to.eql(group([keyword('a')], { range: [2, 2] }));
             expect(parseValueSyntax(`[a]{2, 4}`)).to.eql(group([keyword('a')], { range: [2, 4] }));
@@ -198,19 +198,19 @@ describe('value-syntax-parser', () => {
             });
             it('should parse juxtaposition combinator (with three nodes)', () => {
                 expect(parseValueSyntax(`a b c`)).to.eql(
-                    juxtaposing([keyword('a'), keyword('b'), keyword('c')])
+                    juxtaposing([keyword('a'), keyword('b'), keyword('c')]),
                 );
             });
         });
         describe('double-ampersand', () => {
             it('should parse double-ampersand combinator', () => {
                 expect(parseValueSyntax(`a && b`)).to.eql(
-                    doubleAmpersand([keyword('a'), keyword('b')])
+                    doubleAmpersand([keyword('a'), keyword('b')]),
                 );
             });
             it('should parse double-ampersand combinator with more then two items', () => {
                 expect(parseValueSyntax(`a && b && c`)).to.eql(
-                    doubleAmpersand([keyword('a'), keyword('b'), keyword('c')])
+                    doubleAmpersand([keyword('a'), keyword('b'), keyword('c')]),
                 );
             });
         });
@@ -220,7 +220,7 @@ describe('value-syntax-parser', () => {
             });
             it('should parse double-bar combinator with more then two items', () => {
                 expect(parseValueSyntax(`a || b || c`)).to.eql(
-                    doubleBar([keyword('a'), keyword('b'), keyword('c')])
+                    doubleBar([keyword('a'), keyword('b'), keyword('c')]),
                 );
             });
         });
@@ -230,7 +230,7 @@ describe('value-syntax-parser', () => {
             });
             it('should parse bar combinator', () => {
                 expect(parseValueSyntax(`a | b | c`)).to.eql(
-                    bar([keyword('a'), keyword('b'), keyword('c')])
+                    bar([keyword('a'), keyword('b'), keyword('c')]),
                 );
             });
         });
@@ -245,7 +245,7 @@ describe('value-syntax-parser', () => {
                         keyword('c'),
                         doubleAmpersand([keyword('d'), juxtaposing([keyword('e'), keyword('f')])]),
                     ]),
-                ])
+                ]),
             );
         });
     });

@@ -69,7 +69,7 @@ export class Seeker<T extends Token<unknown>> {
     run<A>(
         handleToken: (token: T, ast: A, source: string, seeker: this) => void | boolean,
         ast: A,
-        source: string
+        source: string,
     ) {
         let token;
         while ((token = this.next()) && token.type) {

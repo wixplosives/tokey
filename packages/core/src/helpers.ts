@@ -32,7 +32,7 @@ export const createToken = <Type extends string>(
     value: string,
     type: Type,
     start: number,
-    end: number
+    end: number,
 ) => {
     return {
         value,
@@ -48,7 +48,7 @@ export const createToken = <Type extends string>(
 export function getJSCommentStartType(
     ch: string,
     source: string,
-    nextCharIndex: number
+    nextCharIndex: number,
 ): '' | 'line-comment' | 'multi-comment' {
     if (ch === '/' && source[nextCharIndex] === '/') {
         return 'line-comment';
@@ -63,7 +63,7 @@ export function getJSCommentStartType(
 export function getMultilineCommentStartType(
     ch: string,
     source: string,
-    nextCharIndex: number
+    nextCharIndex: number,
 ): '' | 'multi-comment' {
     return ch === '/' && source[nextCharIndex] === '*' ? 'multi-comment' : '';
 }
@@ -76,7 +76,7 @@ export function isCommentEnd(
     ch: string,
     _source: string,
     _nextCharIndex: number,
-    previousChar: string
+    previousChar: string,
 ): boolean {
     if (commentType === 'line-comment' && ch === '\n') {
         return true;
@@ -128,7 +128,7 @@ export function getText(tokens: Token<any>[], startIndex = 0, upToIndex = -1, so
 export function groupTokens<Tokens extends Token<any>[], T extends string = 'tokens'>(
     tokens: Tokens,
     type: T = 'tokens' as T,
-    source?: string
+    source?: string,
 ) {
     return {
         type,
@@ -144,7 +144,7 @@ export function groupTokens<Tokens extends Token<any>[], T extends string = 'tok
  */
 export function trimTokens<Tokens extends Token<any>[]>(
     tokens: Tokens,
-    shouldTrimToken: (token: Token<any>) => boolean
+    shouldTrimToken: (token: Token<any>) => boolean,
 ) {
     let start = 0;
     let end = tokens.length;
