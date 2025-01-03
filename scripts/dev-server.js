@@ -64,7 +64,7 @@ async function lookupRequest(url) {
                     content: await fs.readFile(fullPath, 'utf-8'),
                     ext,
                 };
-            } catch (e) {
+            } catch {
                 // console.error(e);
             }
         }

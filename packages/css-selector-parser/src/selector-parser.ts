@@ -245,7 +245,6 @@ function handleToken(
         let target: CSSSelectorToken | undefined;
         let searchIndex = 1;
         const potentialAfterComments: CSSSelectorToken[] = [];
-        // eslint-disable-next-line no-constant-condition
         while (true) {
             const nextToken = s.peek(searchIndex);
             if (isComment(nextToken.type)) {
