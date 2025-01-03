@@ -455,9 +455,9 @@ export function stringify(node: ValueSyntaxAstNode): string {
         throw new Error('TODO: multipliers');
     }
     if (type === 'property') {
-        return `<'${node.name}'${node.range ? ` [${node.range}]` : ''}>`;
+        return `<'${node.name}'${node.range ? ` [${node.range[0]}, ${node.range[1]}]` : ''}>`;
     } else if (type === 'data-type') {
-        return `<${node.name}${node.range ? ` [${node.range}]` : ''}>`;
+        return `<${node.name}${node.range ? ` [${node.range[0]}, ${node.range[1]}]` : ''}>`;
     } else if (type === 'literal') {
         return node.enclosed ? `'${node.name}'` : `${node.name}`;
     } else if (type === 'group') {
